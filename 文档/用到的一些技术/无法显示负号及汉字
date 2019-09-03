@@ -1,0 +1,3 @@
+# 无法显示汉字及负号
+mpl.rcParams['font.sans-serif'] = ['SimHei']
+matplotlib.rcParams['axes.unicode_minus']=False

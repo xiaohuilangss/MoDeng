@@ -1,0 +1,2 @@
+model_checkpoint_path: "cyb_high.ckpt"
+all_model_checkpoint_paths: "cyb_high.ckpt"
