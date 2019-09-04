@@ -1,14 +1,10 @@
 # encoding = utf-8
-from Config.AutoStkConfig import rootPath
-
+from Config.AutoGenerateConfigFile import stk_config_url
 import json
-
-# 配置文件的路径
-config_file_path = rootPath + '/Config/config.json'
 
 
 def readConfig():
-    with open(config_file_path, 'r') as f:
+    with open(stk_config_url, 'r') as f:
         return json.load(f)
 
 

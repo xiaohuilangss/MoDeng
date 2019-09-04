@@ -150,10 +150,10 @@ localDBInfo = {'host': 'localhost',
                'password': 'yourpasswd',
                'charset': 'utf8'}
 
-(conn_profit, engine_profit)                 = genDbConn(localDBInfo, stk_profit_data_db_name)
+# (conn_profit, engine_profit)                 = genDbConn(localDBInfo, stk_profit_data_db_name)
 # (conn_tick,engine_tick)                     = genDbConn(localDBInfo,stk_tick_data_db_name)
 # (conn_k,engine_k)                           = genDbConn(localDBInfo,stk_k_data_db_name)
-(conn_basic,engine_basic)                   = genDbConn(localDBInfo,stk_basic_data_db_name)
+# (conn_basic,engine_basic)                   = genDbConn(localDBInfo,stk_basic_data_db_name)
 # (conn_dd,engine_dd)                         = genDbConn(localDBInfo,stk_dd_data_db_name)
 # (conn_stkBasics,engine_stkBasics)           = genDbConn(localDBInfo,stk_dd_data_db_name)
 # (conn_growth, engine_growth)                 = genDbConn(localDBInfo, stk_growth_data_db_name)
@@ -175,10 +175,10 @@ gSleepTime = 10
 # 所有stk信息：
 
 # 读取total stk 信息
-g_total_stk_info_mysql = get_total_table_data(conn_basic, total_stk_info_table_name)
+# g_total_stk_info_mysql = get_total_table_data(conn_basic, total_stk_info_table_name)
 
 # stk code信息
-g_total_stk_code = g_total_stk_info_mysql.code
+# g_total_stk_code = g_total_stk_info_mysql.code
 
 # 调试文件存储路径
 g_debug_file_url = "F:/MYAI/文档资料/用于调试的过程文件/"
