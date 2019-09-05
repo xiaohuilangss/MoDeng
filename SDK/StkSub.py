@@ -2,7 +2,7 @@
 
 """ 本脚本是用来存储一些与stk息息相关的子函数"""
 from pylab import *
-from Config.GlobalSetting import g_total_stk_info_mysql
+# from Config.GlobalSetting import g_total_stk_info_mysql
 from SDK.Normalize import normal01
 from SDK.PlotOptSub import addXticklabel
 import tushare as ts
@@ -162,7 +162,7 @@ def calExchangeFee(stk_code, stk_amount, stk_price, buy=True, commissionRatio=0.
         if site=='sh':
             if debug:
                 print('函数 calExchangeFee：'+'\n'+
-                      '交易stk：'+getNameByStkCode(g_total_stk_info_mysql, stk_code)+'\n'+
+                      # '交易stk：'+getNameByStkCode(g_total_stk_info_mysql, stk_code)+'\n'+
                       '所在交易所：'+{'sh':'上交所','sz':'深交所'}.get(site)+'\n'+
                       '买入卖出：'+'买入'+'\n'+
                       '印花税：'+'无'+'\n'+
@@ -176,7 +176,7 @@ def calExchangeFee(stk_code, stk_amount, stk_price, buy=True, commissionRatio=0.
         else:
             if debug:
                 print('函数 calExchangeFee：'+'\n'+
-                      '交易stk：'+getNameByStkCode(g_total_stk_info_mysql, stk_code)+'\n'+
+                      # '交易stk：'+getNameByStkCode(g_total_stk_info_mysql, stk_code)+'\n'+
                       '所在交易所：'+{'sh':'上交所','sz':'深交所'}.get(site)+'\n'+
                       '买入卖出：'+'买入'+'\n'+
                       '印花税：'+'无'+'\n'+
@@ -193,7 +193,7 @@ def calExchangeFee(stk_code, stk_amount, stk_price, buy=True, commissionRatio=0.
         if site == 'sh':
             if debug:
                 print('函数 calExchangeFee：' + '\n' +
-                      '交易stk：' + getNameByStkCode(g_total_stk_info_mysql, stk_code) + '\n' +
+                      # '交易stk：' + getNameByStkCode(g_total_stk_info_mysql, stk_code) + '\n' +
                       '所在交易所：' + {'sh': '上交所', 'sz': '深交所'}.get(site) + '\n' +
                       '买入卖出：' + '卖出' + '\n' +
                       '印花税：' + str(stampTax) + '\n' +
@@ -207,7 +207,7 @@ def calExchangeFee(stk_code, stk_amount, stk_price, buy=True, commissionRatio=0.
         else:
             if debug:
                 print('函数 calExchangeFee：' + '\n' +
-                      '交易stk：' + getNameByStkCode(g_total_stk_info_mysql, stk_code) + '\n' +
+                      # '交易stk：' + getNameByStkCode(g_total_stk_info_mysql, stk_code) + '\n' +
                       '所在交易所：' + {'sh': '上交所', 'sz': '深交所'}.get(site) + '\n' +
                       '买入卖出：' + '卖出' + '\n' +
                       '印花税：' + str(stampTax) + '\n' +

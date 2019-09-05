@@ -46,11 +46,11 @@ def plot_W_M(df_w, df_m):
 
     return fig, ax
 
-def send_W_M_Macd(stk_code, win_qq_name):
+def send_W_M_Macd(stk_code, towho):
     """
 
     :param stk_code:
-    :param win_qq_name:
+    :param towho:
     :return:
     """
 
@@ -109,13 +109,13 @@ def send_W_M_Macd(stk_code, win_qq_name):
     plt.title(stk_code + 'month-stray' + date_last)
 
     # 发送图片
-    send_pic_qq(win_qq_name, fig)
+    send_pic_qq(towho, fig)
 
     # 关闭图片
     plt.close()
 
 
-def week_macd_stray_judge(stk_code, win_qq_name, debug_plot=False):
+def week_macd_stray_judge(stk_code, towho, debug_plot=False):
 
     try:
         # 获取今天的情况，涨幅没有超过3%的不考虑
@@ -179,7 +179,7 @@ def week_macd_stray_judge(stk_code, win_qq_name, debug_plot=False):
                 plt.title(stk_code + 'month-stray' + date_last)
 
                 # 发送图片
-                send_pic_qq(win_qq_name, fig)
+                send_pic_qq(towho, fig)
 
                 # 关闭图片
                 plt.close()
@@ -187,7 +187,7 @@ def week_macd_stray_judge(stk_code, win_qq_name, debug_plot=False):
         else:
             return False, pd.DataFrame()
     except Exception as e:
-        send_qq(win_qq_name, stk_code + '出错：\n' + str(e))
+        send_qq(towho, stk_code + '出错：\n' + str(e))
         return False, pd.DataFrame()
 
 def calStkPlevel(c):
@@ -217,8 +217,8 @@ def calStkPlevel(c):
 
 def checkWeekStrayForAll():
 
-    win_qq_name = '影子2'
-    send_qq(win_qq_name, '以下是今晚海选结果：')
+    towho = '影子2'
+    send_qq(towho, '以下是今晚海选结果：')
 
     df_total = ts.get_stock_basics()
 
@@ -226,7 +226,7 @@ def checkWeekStrayForAll():
     df_age_filter = df_total[df_total.apply(lambda x: int(str(x['timeToMarket'])[:4]) <= int(get_current_date_str()[:4]) - 4, axis=1)]
 
     # 根据week反转情况进行过滤，保留有反转的单位
-    df_age_filter_stray = list(df_age_filter.reset_index().apply(lambda x: (x['code'], week_macd_stray_judge(x['code'], win_qq_name)), axis=1))
+    df_age_filter_stray = list(df_age_filter.reset_index().apply(lambda x: (x['code'], week_macd_stray_judge(x['code'], towho)), axis=1))
 
     # 过滤掉非反转的情况
     df_age_f2 = list(filter(lambda x: x[1][0], df_age_filter_stray))
@@ -252,20 +252,20 @@ def checkWeekStrayForAll():
     for stk in stk_list:
 
         # 打印周与月信息
-        send_W_M_Macd(stk_code=stk, win_qq_name=win_qq_name)
+        send_W_M_Macd(stk_code=stk, towho=towho)
 
         # 打印日线信息
         df = get_k_data_JQ(stk, count=400, end_date=get_current_date_str())
         fig, _ = genStkPicForQQ(df)
 
         plt.title(str(stk))
-        send_pic_qq(win_qq_name, fig)
+        send_pic_qq(towho, fig)
         plt.close()
 
         fig, _ = genStkIdxPicForQQ(df)
 
         plt.title(str(stk))
-        send_pic_qq(win_qq_name, fig)
+        send_pic_qq(towho, fig)
         plt.close()
 
 

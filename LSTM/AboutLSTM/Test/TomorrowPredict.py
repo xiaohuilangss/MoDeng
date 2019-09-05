@@ -101,8 +101,8 @@ def predict_tomorrow(
 
 def printPredict2Public():
 
-    win_qq_name = u'大盘上涨概率公示'
-    send_qq(win_qq_name, '各位：\n以下是下一个交易日大盘最高价、最低价和收盘价的预测，因为三个价格使用相互独立的模型，所以会出现收盘价低于最低价的情况，以及类似的情形，希望各位注意！' +
+    towho = u'大盘上涨概率公示'
+    send_qq(towho, '各位：\n以下是下一个交易日大盘最高价、最低价和收盘价的预测，因为三个价格使用相互独立的模型，所以会出现收盘价低于最低价的情况，以及类似的情形，希望各位注意！' +
                          '\n' +
                          '周一~周五 晚上19：30 计算并发送该消息！\n格式及解释：\n' +
             "('high', '2989.57','0.11%')" + '\n' +
@@ -132,12 +132,12 @@ def printPredict2Public():
             'cyb': '创业板'
         }
 
-        send_qq(win_qq_name, stk2name[stk] + ':\n' + str(r_contrast))
+        send_qq(towho, stk2name[stk] + ':\n' + str(r_contrast))
 
 
 def printConcernedPredict2Self():
 
-    win_qq_name = u'影子2'
+    towho = u'影子2'
 
     for stk in ['000001', '000333', '300508']:
         close_today = ts.get_k_data(stk, start=add_date_str(get_current_date_str(), -5)).tail(1)['close'].values[0]
@@ -159,7 +159,7 @@ def printConcernedPredict2Self():
         #     'cyb': '创业板'
         # }
 
-        send_qq(win_qq_name, stk + ':\n' + str(r_contrast))
+        send_qq(towho, stk + ':\n' + str(r_contrast))
 
 
 if __name__ == '__main__':
