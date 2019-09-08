@@ -20,9 +20,11 @@ from SendMsgByQQ.QQGUI import send_qq
 from SendMsgByQQ.SendPicByQQ import send_pic_qq
 
 
+
 def sendRelaLevel2QQ():
     send_qq(towho='影子2', msge='注意低位囤货：')
     calRelaPLevel(readConfig()['safe_stk'], -720, '影子2')
+
 
 def sendPLevel2QQ(df, towho):
     """
@@ -39,8 +41,8 @@ def sendPLevel2QQ(df, towho):
     fig, ax = plt.subplots(ncols=1, nrows=1)
 
     ax.bar(range(0, len(r_df_sort)), r_df_sort['level'])
-    ax.plot(range(0, len(r_df_sort)), [0.1 for x in r_df_sort['level']], 'r--')
-    ax.plot(range(0, len(r_df_sort)), [0.5 for x in r_df_sort['level']], 'r--')
+    # ax.plot(range(0, len(r_df_sort)), [0.1 for x in r_df_sort['level']], 'r--')
+    # ax.plot(range(0, len(r_df_sort)), [0.5 for x in r_df_sort['level']], 'r--')
 
     # 获取code2name字典
     c2n = code2name_dict()
@@ -49,6 +51,7 @@ def sendPLevel2QQ(df, towho):
     ax.set_xticklabels([c2n[x] for x in r_df_sort['code']], rotation=45)
 
     plt.ylim((0, 1))
+    plt.grid()
     send_pic_qq(towho, fig)
     plt.close()
 

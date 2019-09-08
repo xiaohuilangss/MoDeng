@@ -350,17 +350,14 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
 
 def updateRSVRecord():
     try:
-        (conn_opt, engine_opt) = genDbConn(localDBInfo,  'stk_opt_info')
-        df = pd.read_sql(con=conn_opt, sql='select * from now')
+        code_list = readConfig()['buy_stk']
 
         # global  RSV_Record
-        if not df.empty:
-            for idx in df.index:
-                RSV_Record[df.loc[idx, 'stk_code']] = calRSVRank(df.loc[idx, 'stk_code'], 5)
+        for stk in code_list:
+            RSV_Record[stk] = calRSVRank(stk, 5)
 
-        conn_opt.close()
-    except:
-        send_qq('影子2', 'RSV数据更新失败！')
+    except  Exception as e:
+        send_qq('影子2', 'RSV数据更新失败！\n' + str(e))
 
 
 def calRSVRank(stk_code, Mdays, history_length=400):
@@ -374,7 +371,14 @@ def calRSVRank(stk_code, Mdays, history_length=400):
     df['high_M'+str(M)] = df['high'].rolling(window=M).mean()
     df['close_M'+str(M)] = df['close'].rolling(window=M).mean()
 
-    df['RSV'] = df.apply(lambda x: (x['close_M'+str(M)] - x['low_M'+str(M)])/(x['high_M'+str(M)] - x['low_M'+str(M)]), axis=1)
+    for idx in df.index:
+        if (df.loc[idx, 'high_M'+str(M)] - df.loc[idx, 'low_M'+str(M)] ==0) | (df.loc[idx, 'close_M'+str(M)] - df.loc[idx, 'low_M'+str(M)] ==0):
+            df.loc[idx, 'RSV'] = 0.5
+
+        else:
+            df.loc[idx, 'RSV'] = (df.loc[idx, 'close_M'+str(M)] - df.loc[idx, 'low_M'+str(M)])/(df.loc[idx, 'high_M'+str(M)] - df.loc[idx, 'low_M'+str(M)])
+
+    # df['RSV'] = df.apply(lambda x: (x['close_M'+str(M)] - x['low_M'+str(M)])/(x['high_M'+str(M)] - x['low_M'+str(M)]), axis=1)
 
     return df.tail(1)['RSV'].values[0]
 
