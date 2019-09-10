@@ -9,7 +9,7 @@ import json
 config_path = 'c:/MoDeng/'
 data_source_url = config_path+'data_source.json'
 stk_config_url = config_path+'stk_config.json'
-
+data_dir = config_path + 'data/'
 
 def checkConfigFile():
 
@@ -20,6 +20,10 @@ def checkConfigFile():
     if not os.path.exists(config_path):
         os.makedirs(config_path)
         configReadyFlag = False
+
+    # 如果没有data文件夹，创建它
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
 
     # 依次检查是否有相应的配置文件，如果没有，创建！
     if not os.path.exists(data_source_url):

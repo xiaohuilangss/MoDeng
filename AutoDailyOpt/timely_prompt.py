@@ -3,7 +3,7 @@
 """
 本脚本用于定时提示now表中的stk数据
 """
-from Config.AutoGenerateConfigFile import checkConfigFile
+
 
 """ =========================== 将当前路径及工程的跟目录添加到路径中 ============================ """
 import sys
@@ -18,7 +18,8 @@ sys.path.append(rootPath)
 from Config.AutoGenerateConfigFile import checkConfigFile
 
 import matplotlib
-
+from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, update_middle_period_hour_data
+from Config.AutoGenerateConfigFile import checkConfigFile
 from Config.GlobalSetting import localDBInfo
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_Macd, checkWeekStrayForAll
@@ -57,7 +58,7 @@ basic_ratio = 4                 # 获取的每只stk的权值，除以基础rati
 money_each_opt = 5000
 
 
-def printStkListPic2QQ(code_list, win_qq_name, title=None):
+def printStkListPic2QQ(code_list, towho, title=None):
 
     if title is not None:
         title_str = title
@@ -69,13 +70,13 @@ def printStkListPic2QQ(code_list, win_qq_name, title=None):
         fig, _ = genStkPicForQQ(df)
 
         plt.title(str(x)+title_str)
-        send_pic_qq(win_qq_name, fig)
+        send_pic_qq(towho, fig)
         plt.close()
 
         fig, _ = genStkIdxPicForQQ(df)
 
         plt.title(str(x)+title_str)
-        send_pic_qq(win_qq_name, fig)
+        send_pic_qq(towho, fig)
         plt.close()
 
 
@@ -149,30 +150,27 @@ def sendConcernedStkPicToSelf_T():
     """
     towho = '影子2'
     send_qq(towho, '以下是已入的stk的形势图：')
-    (conn_opt, engine_opt) = genDbConn(localDBInfo, db_name)
-    df = pd.read_sql(con=conn_opt, sql='select * from now')
 
-    if not df.empty:
-        for x in list(df['stk_code']) + ['sh', 'sz', 'cyb']:
+    stk_buy = readConfig()['buy_stk']
 
-            df = get_k_data_JQ(x, 400)
-            fig, _ = genStkPicForQQ(df)
+    for x in stk_buy + ['sh', 'sz', 'cyb']:
 
-            plt.title(str(x))
-            send_pic_qq(towho, fig)
-            # plt.show()
-            plt.close()
+        df = get_k_data_JQ(x, 400)
+        fig, _ = genStkPicForQQ(df)
 
-            fig, _ = genStkIdxPicForQQ(df)
+        plt.title(str(x))
+        send_pic_qq(towho, fig)
+        # plt.show()
+        plt.close()
 
-            plt.title(str(x))
-            send_pic_qq(towho, fig)
-            # plt.show()
-            plt.close()
+        fig, _ = genStkIdxPicForQQ(df)
 
-            send_W_M_Macd(x, towho)
+        plt.title(str(x))
+        send_pic_qq(towho, fig)
+        # plt.show()
+        plt.close()
 
-    conn_opt.close()
+        send_W_M_Macd(x, towho)
 
 
 def sendMainIndexStkPic2Public():
@@ -194,62 +192,6 @@ def sendMainIndexStkPic2Public():
         fig, _ = genStkIdxPicForQQ(df)
 
         plt.title(str(x))
-        send_pic_qq('大盘上涨概率公示', fig)
-        plt.close()
-
-
-def sendMainIndexPicToPublic():
-    """
-    不准，因为历史数据获取的不够
-
-    :return:
-    """
-
-    for x in ['sh', 'sz', 'cyb']:
-        # df = ts.get_k_data(x, start=add_date_str(get_current_date_str(), -400))
-
-        stk_code_normal = {
-            'sh': '000001.XSHG',
-            'sz': '399001.XSHE',
-            'cyb': '399006.XSHE'
-        }[x]
-        df = jqdatasdk.get_price(stk_code_normal, frequency='daily', count=100,
-                                 end_date=get_current_date_str())
-
-        df['datetime'] = df.index
-        df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
-
-        # 计算MACD
-        df['MACD'], df['MACDsignal'], df['MACDhist'] = talib.MACD(df.close,
-                                                                        fastperiod=12, slowperiod=26,
-                                                                        signalperiod=9)
-
-        # 测试相对均值偏移度
-        df['m9'] = df['close'].rolling(window=9).mean()
-        df['diff_m9'] = df.apply(lambda x: x['close'] - x['m9'], axis=1)
-
-        df['rank'] = df.apply(lambda x: relativeRank(df['diff_m9'], x['diff_m9']), axis=1)
-
-        df_plot = df.tail(50)
-        # df.tail(50).plot('date', ['close', 'rank', 'MACD'],
-        #                  subplots=True,
-        #                  title=['历史收盘价', '历史分数', 'MACD指标'],
-        #                  legend=True)
-
-        fig, ax = subplots(ncols=1, nrows=3)
-        ax[0].plot(range(0, len(df_plot)), df_plot['close'], 'g--', label='收盘价')
-        ax[1].plot(range(0, len(df_plot)), df_plot['rank'], 'r--', label='上涨概率')
-        ax[2].bar(range(0, len(df_plot)), df_plot['MACD'])
-
-        for ax_sig in ax:
-            ax_sig.set_xticks(range(0, len(df_plot)))
-            ax_sig.set_xticklabels([x[-5:] for x in list(df_plot['date'].values)], rotation=90)
-            ax_sig.legend(loc='best')
-
-        ax[0].set_title({'sh': "上证", 'sz': '深证', 'cyb': '创业板'}[x])
-
-        # ----------------------- 将图片发到qq -----------------------------------
-
         send_pic_qq('大盘上涨概率公示', fig)
         plt.close()
 
@@ -364,7 +306,6 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
               '\nthh_sale:' + str(thh_sale) + \
               '\nthh_buy:' + str(thh_buy))
 
-
     if price_diff > thh_sale:
         # if JudgePChangeRatio(stk_code, price_diff_ratio):
         send_qq(qq,
@@ -412,17 +353,14 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
 
 def updateRSVRecord():
     try:
-        (conn_opt, engine_opt) = genDbConn(localDBInfo,  'stk_opt_info')
-        df = pd.read_sql(con=conn_opt, sql='select * from now')
+        code_list = readConfig()['buy_stk']
 
         # global  RSV_Record
-        if not df.empty:
-            for idx in df.index:
-                RSV_Record[df.loc[idx, 'stk_code']] = calRSVRank(df.loc[idx, 'stk_code'], 5)
+        for stk in code_list:
+            RSV_Record[stk] = calRSVRank(stk, 5)
 
-        conn_opt.close()
-    except:
-        send_qq('影子2', 'RSV数据更新失败！')
+    except  Exception as e:
+        send_qq('影子2', 'RSV数据更新失败！\n' + str(e))
 
 
 def calRSVRank(stk_code, Mdays, history_length=400):
@@ -436,16 +374,23 @@ def calRSVRank(stk_code, Mdays, history_length=400):
     df['high_M'+str(M)] = df['high'].rolling(window=M).mean()
     df['close_M'+str(M)] = df['close'].rolling(window=M).mean()
 
-    df['RSV'] = df.apply(lambda x: (x['close_M'+str(M)] - x['low_M'+str(M)])/(x['high_M'+str(M)] - x['low_M'+str(M)]), axis=1)
+    for idx in df.index:
+        if (df.loc[idx, 'high_M'+str(M)] - df.loc[idx, 'low_M'+str(M)] ==0) | (df.loc[idx, 'close_M'+str(M)] - df.loc[idx, 'low_M'+str(M)] ==0):
+            df.loc[idx, 'RSV'] = 0.5
+
+        else:
+            df.loc[idx, 'RSV'] = (df.loc[idx, 'close_M'+str(M)] - df.loc[idx, 'low_M'+str(M)])/(df.loc[idx, 'high_M'+str(M)] - df.loc[idx, 'low_M'+str(M)])
+
+    # df['RSV'] = df.apply(lambda x: (x['close_M'+str(M)] - x['low_M'+str(M)])/(x['high_M'+str(M)] - x['low_M'+str(M)]), axis=1)
 
     return df.tail(1)['RSV'].values[0]
 
 
 def callback():
-    win_qq_name = '影子2'
+    towho = '影子2'
     buy_stk_list = readConfig()['buy_stk']
     for stk in buy_stk_list:
-        JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=win_qq_name)
+        JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho)
 
 
 def autoShutdown():
@@ -453,15 +398,14 @@ def autoShutdown():
     os.system('shutdown -s -f -t 120')
 
 
-
 """ =========================== 定时器相关 ============================ """
 sched = BlockingScheduler()
 
-trigger = OrTrigger([
-    CronTrigger(hour='9', minute='31-59/3'),
-    CronTrigger(hour='10', minute='*/3'),
-    CronTrigger(hour='11', minute='1-29/3'),
-    CronTrigger(hour='13-14', minute='*/3')
+trigger_1 = OrTrigger([
+    CronTrigger(hour='9', minute='59'),
+    CronTrigger(hour='10', minute='30,59'),
+    CronTrigger(hour='11', minute='30'),
+    CronTrigger(hour='13-14', minute='30,59')
 ])
 trigger_RT = OrTrigger([
     CronTrigger(hour='9', minute='31-59', second='*/30'),
@@ -470,15 +414,23 @@ trigger_RT = OrTrigger([
     CronTrigger(hour='13-14', minute='*', second='*/30')
 ])
 
+sched.add_job(concerned_stk_middle_check,
+              trigger_1,
+              day_of_week='mon-fri',
+              max_instances=10)
+
+# 定时打印中期水平
 sched.add_job(callback,
               trigger_RT,
               day_of_week='mon-fri',
               minute='*/2',
               max_instances=10)
 
-
 # 打印已有的stk情况
 sched.add_job(func=sendConcernedStkPicToSelf_T, trigger='cron', day_of_week='mon-fri', hour=18, minute=50, misfire_grace_time=3600, coalesce=True)
+
+# 定时更新中期价格小时数据
+sched.add_job(func=update_middle_period_hour_data, trigger='cron', day_of_week='mon-fri', hour=3, minute=50, misfire_grace_time=3600, coalesce=True)
 
 # 打印save stk 的相对水平，低位囤货
 sched.add_job(func=sendRelaLevel2QQ, trigger='cron', day_of_week='mon-fri', hour=18, minute=20, misfire_grace_time=3600, coalesce=True)
@@ -507,7 +459,7 @@ if __name__ == '__main__':
     # 导入聚宽数据
     from DataSource.auth_info import *
 
-    printPredict2Public()
+    # printPredict2Public()
     # checkWeekStrayForAll()
     updateConcernStkMData()
     updateRSVRecord()

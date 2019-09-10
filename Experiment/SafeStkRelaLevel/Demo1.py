@@ -20,31 +20,29 @@ from SendMsgByQQ.QQGUI import send_qq
 from SendMsgByQQ.SendPicByQQ import send_pic_qq
 
 
+
 def sendRelaLevel2QQ():
     send_qq(towho='影子2', msge='注意低位囤货：')
-    calRelaPLevel(readConfig()['safe_stk'], '影子2')
+    calRelaPLevel(readConfig()['safe_stk'], -720, '影子2')
 
 
-def calRelaPLevel(stk_list, win_qq_name):
+def sendPLevel2QQ(df, towho):
     """
-    计算相对价格，并发送到qq
-    :param stk_list:
+    将stk的价格水平发送到qq
+    :df: code, level
     :return:
     """
 
-    r = [
-        (x, calStkPlevel(np.array(get_k_data_JQ(stk_code=x, start_date=add_date_str(get_current_date_str(), -720))['close']))['total_last'])
-        for x in stk_list]
-    r_df = pd.DataFrame(data=r, columns=['code', 'level'])
+    r_df = df
 
     # 按level从低到高进行排序
-    r_df_sort = r_df.sort_values(by='level', ascending=True).head(8)
+    r_df_sort = r_df.sort_values(by='level', ascending=True).head(12)
 
     fig, ax = plt.subplots(ncols=1, nrows=1)
 
     ax.bar(range(0, len(r_df_sort)), r_df_sort['level'])
-    ax.plot(range(0, len(r_df_sort)), [0.1 for x in r_df_sort['level']], 'r--')
-    ax.plot(range(0, len(r_df_sort)), [0.5 for x in r_df_sort['level']], 'r--')
+    # ax.plot(range(0, len(r_df_sort)), [0.1 for x in r_df_sort['level']], 'r--')
+    # ax.plot(range(0, len(r_df_sort)), [0.5 for x in r_df_sort['level']], 'r--')
 
     # 获取code2name字典
     c2n = code2name_dict()
@@ -53,10 +51,24 @@ def calRelaPLevel(stk_list, win_qq_name):
     ax.set_xticklabels([c2n[x] for x in r_df_sort['code']], rotation=45)
 
     plt.ylim((0, 1))
-    send_pic_qq(win_qq_name, fig)
+    plt.grid()
+    send_pic_qq(towho, fig)
     plt.close()
-    # plt.show()
 
+
+def calRelaPLevel(stk_list, period, towho):
+    """
+    计算相对价格，并发送到qq
+    :param stk_list:
+    :return:
+    """
+
+    r = [
+        (x, calStkPlevel(np.array(get_k_data_JQ(stk_code=x, start_date=add_date_str(get_current_date_str(), period))['close']))['total_last'])
+        for x in stk_list]
+    r_df = pd.DataFrame(data=r, columns=['code', 'level'])
+
+    sendPLevel2QQ(r_df, towho)
 
 
 if __name__ == '__main__':

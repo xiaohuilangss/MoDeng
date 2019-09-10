@@ -13,7 +13,7 @@ from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from SendMsgByQQ.SendPicByQQ import send_pic_qq
 
 
-def printStkListPic2QQ(code_list, win_qq_name, title=None):
+def printStkListPic2QQ(code_list, towho, title=None):
 
     if title is not None:
         title_str = title
@@ -25,13 +25,13 @@ def printStkListPic2QQ(code_list, win_qq_name, title=None):
         fig, _ = genStkPicForQQ(df)
 
         plt.title(str(x)+title_str)
-        send_pic_qq(win_qq_name, fig)
+        send_pic_qq(towho, fig)
         plt.close()
 
         fig, _ = genStkIdxPicForQQ(df)
 
         plt.title(str(x)+title_str)
-        send_pic_qq(win_qq_name, fig)
+        send_pic_qq(towho, fig)
         plt.close()
 
 
