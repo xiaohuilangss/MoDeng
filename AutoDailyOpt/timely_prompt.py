@@ -14,6 +14,9 @@ rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject
 sys.path.append('..')
 sys.path.append(rootPath)
 
+
+from Config.AutoGenerateConfigFile import checkConfigFile
+
 import matplotlib
 
 from Config.GlobalSetting import localDBInfo
