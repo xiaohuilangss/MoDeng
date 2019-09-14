@@ -15,6 +15,8 @@ sys.path.append('..')
 sys.path.append(rootPath)
 
 import matplotlib
+matplotlib.use('agg')
+
 from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, update_middle_period_hour_data
 from Config.AutoGenerateConfigFile import checkConfigFile
 from Config.GlobalSetting import localDBInfo
@@ -27,7 +29,7 @@ from Experiment.SafeStkRelaLevel.Demo1 import sendRelaLevel2QQ
 from LSTM.AboutLSTM.Test.TomorrowPredict import printPredict2Public
 from SDK.MyTimeOPT import get_current_date_str
 
-matplotlib.use('agg')
+
 
 
 from Config.Sub import readConfig
@@ -153,21 +155,20 @@ def sendConcernedStkPicToSelf_T():
     for x in stk_buy + ['sh', 'sz', 'cyb']:
 
         df = get_k_data_JQ(x, 400)
-        fig, _ = genStkPicForQQ(df)
+        fig, _, attention = genStkPicForQQ(df, x)
 
-        plt.title(str(x))
-        send_pic_qq(towho, fig)
-        # plt.show()
+        if attention:
+            send_pic_qq(towho, fig)
+            send_W_M_Macd(x, towho)
         plt.close()
 
-        fig, _ = genStkIdxPicForQQ(df)
+        # 打印第二张套图
+        fig, _, attention = genStkIdxPicForQQ(df, x)
+        if attention:
+            send_pic_qq(towho, fig)
 
-        plt.title(str(x))
-        send_pic_qq(towho, fig)
-        # plt.show()
         plt.close()
 
-        send_W_M_Macd(x, towho)
 
 
 def sendMainIndexStkPic2Public():
@@ -399,10 +400,12 @@ def autoShutdown():
 sched = BlockingScheduler()
 
 trigger_1 = OrTrigger([
-    CronTrigger(hour='9', minute='59'),
-    CronTrigger(hour='10', minute='30,59'),
-    CronTrigger(hour='11', minute='30'),
-    CronTrigger(hour='13-14', minute='30,59')
+    CronTrigger(hour='9', minute='31'),
+    CronTrigger(hour='10', minute='1,31'),
+    CronTrigger(hour='11', minute='1,31'),
+    CronTrigger(hour='13', minute='31'),
+    CronTrigger(hour='14', minute='1,31'),
+    CronTrigger(hour='14', minute='1')
 ])
 trigger_RT = OrTrigger([
     CronTrigger(hour='9', minute='31-59', second='*/30'),
@@ -430,7 +433,7 @@ sched.add_job(func=sendConcernedStkPicToSelf_T, trigger='cron', day_of_week='mon
 sched.add_job(func=update_middle_period_hour_data, trigger='cron', day_of_week='mon-fri', hour=3, minute=50, misfire_grace_time=3600, coalesce=True)
 
 # 打印save stk 的相对水平，低位囤货
-sched.add_job(func=sendRelaLevel2QQ, trigger='cron', day_of_week='mon-fri', hour=18, minute=20, misfire_grace_time=3600, coalesce=True)
+# sched.add_job(func=sendRelaLevel2QQ, trigger='cron', day_of_week='mon-fri', hour=18, minute=20, misfire_grace_time=3600, coalesce=True)
 
 # 检测周背离 checkWeekStrayForAll
 sched.add_job(func=checkWeekStrayForAll, trigger='cron', day_of_week='mon-fri', hour=19, minute=15, misfire_grace_time=3600, coalesce=True)
@@ -445,7 +448,7 @@ sched.add_job(func=updateRSVRecord, trigger='cron', day_of_week='mon-fri', hour=
 sched.add_job(func=autoShutdown, trigger='cron', day_of_week='sat', hour=1, minute=30, misfire_grace_time=3600, coalesce=True)
 
 # 打印深度学习的预测
-sched.add_job(func=printPredict2Public, trigger='cron', day_of_week='mon-fri', hour=19, minute=30, misfire_grace_time=3600, coalesce=True)
+# sched.add_job(func=printPredict2Public, trigger='cron', day_of_week='mon-fri', hour=19, minute=30, misfire_grace_time=3600, coalesce=True)
 
 
 if __name__ == '__main__':
@@ -456,6 +459,8 @@ if __name__ == '__main__':
     # 导入聚宽数据
     from DataSource.auth_info import *
 
+    # concerned_stk_middle_check()
+    # sendConcernedStkPicToSelf_T()
     # printPredict2Public()
     # checkWeekStrayForAll()
     updateConcernStkMData()

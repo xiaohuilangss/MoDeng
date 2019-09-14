@@ -14,6 +14,7 @@ from AutoDailyOpt.p_diff_ratio_last import MACD_min_last, MACD_min_History, M_Da
 
 from AutoDailyOpt.SeaSelect.stk_pool import stk_pool
 from Config.GlobalSetting import localDBInfo
+from Config.Sub import readConfig
 from SDK.DBOpt import genDbConn
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from Config.AutoStkConfig import stk_list, SeaSelectDataPWD, LastScale
@@ -541,22 +542,18 @@ def updateSingleMacdHistory(stk_code, history_dict):
             'min60': df_60['close']
         }
 
+
 def checkHourMACD_callback():
 
-    (conn_opt, engine_opt) = genDbConn(localDBInfo, 'stk_opt_info')
-    df = pd.read_sql(con=conn_opt, sql='select * from now')
+    buy_stk_list = readConfig()['buy_stk']
+    for code in buy_stk_list + ['sh', 'sz', 'cyb']:
 
-    for code in ['sh', 'sz', 'cyb']:
         checkSingleStkHourMACD(code)
 
-    if not df.empty:
-        for idx in df.index:
-            stk_code = df.loc[idx, 'stk_code']
-            checkSingleStkHourMACD(stk_code)
-    conn_opt.close()
 
 
-def sendHourMACDToQQ(stk_code, qq, source='jq'):
+
+def sendHourMACDToQQ(stk_code, qq, source='jq', title=''):
     if source == 'jq':
         df_30 = get_k_data_JQ(stk_code, start_date=add_date_str(get_current_date_str(), -20), end_date=add_date_str(get_current_date_str(), 1), freq='30m')
         df_60 = get_k_data_JQ(stk_code, start_date=add_date_str(get_current_date_str(), -20), end_date=add_date_str(get_current_date_str(), 1), freq='60m')
@@ -598,7 +595,7 @@ def sendHourMACDToQQ(stk_code, qq, source='jq'):
 
     for ax_sig in ax:
         ax_sig.legend(loc='best')
-    plt.title(stk_code)
+    plt.title(stk_code + title)
     fig.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=1)  # 调整子图间距
 
@@ -663,33 +660,17 @@ def checkSingleStkHourMACD(stk_code, source='jq'):
         send_pic = True
         MACD_min_last[stk_code] = sts
 
-    print('函数 checkSingleStkHourMACD：' + stk_code + ':\nsend_pic标志位:' + str(send_pic) + '\nsts标志位:' + str(sts) + '\n')
-
-    # 生成图片
-    df_30 = df_30.dropna()
-    df_60 = df_60.dropna()
-
-    fig, ax = subplots(ncols=1, nrows=4)
-
-    ax[0].plot(range(0, len(df_30)), df_30['close'], 'g*--', label='close_30min')
-    ax[1].bar(range(0, len(df_30)), df_30['MACD'], label='macd_30min')
-    ax[2].plot(range(0, len(df_60)), df_60['close'], 'g*--', label='close_60min')
-    ax[3].bar(range(0, len(df_60)), df_60['MACD'], label='macd_60min')
-
-    for ax_sig in ax:
-        ax_sig.legend(loc='best')
-    plt.title(stk_code + '-' + title_str)
-
     if send_pic & (sts != 0):
-        send_pic_qq('影子', fig)
+        sendHourMACDToQQ(stk_code, '影子2', title='-' + title_str)
 
-    # send_pic_qq('影子', fig)
-    plt.close()
+
 
 
 if __name__ == '__main__':
 
     from DataSource.auth_info import *
+
+    checkHourMACD_callback()
 
     sendHourMACDToQQ('300508', '影子', source='jq')
     # updateConcernStkMData()

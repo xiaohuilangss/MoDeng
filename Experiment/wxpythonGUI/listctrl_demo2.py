@@ -32,7 +32,7 @@ class MyFrame(wx.Frame):
         output.close()
 
 
-        fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(6, 4))
+        fig, ax = plt.subplots(ncols=1, nrows=2, figsize=(6, 4))
         plt.title('这是第二个图的标题！')
         output = BytesIO()  # BytesIO实现了在内存中读写byte
         buf_save = BytesIO()

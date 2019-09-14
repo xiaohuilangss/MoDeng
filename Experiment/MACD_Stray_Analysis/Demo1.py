@@ -121,7 +121,7 @@ def week_macd_stray_judge(stk_code, towho, debug_plot=False):
         # 获取今天的情况，涨幅没有超过3%的不考虑
         df_now = get_k_data_JQ(stk_code, count=2, end_date=get_current_date_str()).reset_index()
 
-        if (df_now.tail(1)['close'].values[0]-df_now.head(1)['close'].values[0])/df_now.head(1)['close'].values[0] < 0.03:
+        if (df_now.tail(1)['close'].values[0]-df_now.head(1)['close'].values[0])/df_now.head(1)['close'].values[0] < -0.05:
             print('函数week_macd_stray_judge：' + stk_code + '涨幅不够！')
             return False, pd.DataFrame()
 
@@ -236,15 +236,15 @@ def checkWeekStrayForAll():
 
     # 按总体水平排序，筛选优异者
     df_level.sort(key=lambda x: x[2]['total_last'])
-    df_level = df_level[:50]
+    df_level = df_level[:math.floor(len(df_level)/3*2)]
 
     # 按照近30的波动率进行排序,筛选优异者
     df_level.sort(key=lambda x: x[2]['std'], reverse=True)
-    df_level = df_level[:30]
+    df_level = df_level[:math.floor(len(df_level) / 3 * 2)]
 
     # 按照近30的水平排序，留下最后8只
     df_level.sort(key=lambda x: x[2]['t30_last'], reverse=False)
-    df_level = df_level[:10]
+    df_level = df_level[:np.min([math.floor(len(df_level) / 3 * 2), 15])]
 
     # 打印信息
     stk_list = [k[0] for k in df_level]
@@ -273,7 +273,7 @@ if __name__ == '__main__':
 
     from DataSource.auth_info import *
 
-    week_macd_stray_judge('603421', '影子')
+    # week_macd_stray_judge('603421', '影子')
 
 
     checkWeekStrayForAll()

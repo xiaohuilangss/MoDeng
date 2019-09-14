@@ -8,7 +8,7 @@ import talib
 from talib import MA_Type
 
 import tushare as ts
-
+import numpy as np
 from SDK.DataPro import normalize
 from SDK.MyTimeOPT import DateStr2Sec
 from SDK.MyTimeOPT import get_current_date_str
@@ -44,7 +44,7 @@ def genMIMEImageList(pic_dir_list):
     return msgImage_list
 
 
-def genStkPicForQQ(stk_df):
+def genStkPicForQQ(stk_df, stk_code=''):
     """
     函数功能：给定stk的df，已经确定stk当前处于拐点状态，需要将当前stk的信息打印成图片，便于人工判断！
     :param stk_df           从tushare下载下来的原生df
@@ -104,7 +104,18 @@ def genStkPicForQQ(stk_df):
     fig.tight_layout()                          # 调整整体空白
     plt.subplots_adjust(wspace=0, hspace=1)     # 调整子图间距
 
-    return fig, ax
+    # 检查日级别的MACD是否有异常
+    attention = False
+    macd_list = stk_df_current.tail(3)['MACD'].values
+
+    if macd_list[1] == np.min(macd_list):
+        plt.title(stk_code + '日级别 MACD 见底了！')
+        attention = True
+    elif macd_list[1] == np.max(macd_list):
+        plt.title(stk_code + '日级别 MACD 到顶了！')
+        attention = True
+
+    return fig, ax, attention
 
 
 def genStkPic(stk_df, stk_code, current_date, root_save_dir, pic_name='stk_A_C_M.png'):
@@ -236,7 +247,7 @@ def genStkIdxPic(stk_df, stk_code, current_date, root_save_dir, pic_name='stk_id
     return save_dir + pic_name
 
 
-def genStkIdxPicForQQ(stk_df):
+def genStkIdxPicForQQ(stk_df, stk_code=''):
 
     """
     打印常用指标
@@ -293,7 +304,16 @@ def genStkIdxPicForQQ(stk_df):
     fig.tight_layout()  # 调整整体空白
     plt.subplots_adjust(wspace=0, hspace=0)  # 调整子图间距
 
-    return fig, ax
+    # 检查SAR
+    attention = False
+    sar_tail = stk_df.tail(2)
+    sar_tail['compare'] = sar_tail.apply(lambda x: x['SAR'] - x['close'], axis=1)
+
+    if sar_tail.head(1)['compare'].values[0]*sar_tail.tail(1)['compare'].values[0] < 0:
+        plt.title(stk_code + ' 注意 SAR 指标异动！')
+        attention = True
+
+    return fig, ax, attention
 
 
 def IsPotInCurveMedian(y_axis, median_neighbourhood):
