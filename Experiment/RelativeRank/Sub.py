@@ -15,6 +15,7 @@ from AutoDailyOpt.p_diff_ratio_last import MACD_min_last, MACD_min_History, M_Da
 from AutoDailyOpt.SeaSelect.stk_pool import stk_pool
 from Config.GlobalSetting import localDBInfo
 from Config.Sub import readConfig
+from DataSource.Data_Sub import get_k_data_JQ, my_pro_bar
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkPicForQQ
 from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_Macd
 from SDK.DBOpt import genDbConn
@@ -89,63 +90,7 @@ def relativeRank(v_total, v_now):
 #     return relativeRank(df['diff_m9'], p_now)
 
 
-def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
-    """
-    使用JQData来下载stk的历史数据
-    :param stk_code:
-    :param amount:
-    :return:
-    """
-    if stk_code in ['sh', 'sz', 'cyb']:
 
-        stk_code_normal = {
-            'sh': '000001.XSHG',
-            'sz': '399001.XSHE',
-            'cyb': '399006.XSHE'
-        }[stk_code]
-        df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
-                                 end_date=end_date)
-    else:
-        df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk_code), frequency=freq, count=count,
-                                 end_date=end_date, start_date=start_date)
-
-    df['datetime'] = df.index
-    df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
-
-    return df
-
-
-def ts_code_normalize(code):
-    """
-    规整tushare 代码
-    :return:
-    """
-
-    if code in ['sh', 'sz', 'cyb']:
-
-        return {
-            'sh': '000001.SH',
-            'sz': '399001.SZ',
-            'cyb': '399006.SZ'
-        }[code]
-
-    if code[0] == '6':
-        code_normal = code+'.SH'
-    else:
-        code_normal = code+'.SZ'
-
-    return code_normal
-
-
-def my_pro_bar(stk_code, start, end=get_current_date_str(), adj='qfq', freq='D'):
-
-    df = ts.pro_bar(ts_code=ts_code_normalize(stk_code), start_date=start, end_date=end, adj=adj, freq=freq)
-    if freq == 'D':
-        df = df.rename(columns={'trade_date': 'date'}).sort_values(by='date', ascending=True)
-        df['date'] = df.apply(lambda x: x['date'][:4]+'-'+x['date'][4:6]+'-'+x['date'][6:], axis=1)
-    elif 'min' in freq:
-        df = df.rename(columns={'trade_time': 'time'}).sort_values(by='time', ascending=True)
-    return df
 
 
 def saveStkMRankHistoryData2Global(stk_code, history_days, m_days, save_dir):

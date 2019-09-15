@@ -14,10 +14,10 @@ import matplotlib
 # matplotlib.use('agg')
 from io import BytesIO
 
-# from CornerDetectAndAutoEmail.Sub import genStkPicForQQ, genStkIdxPicForQQ
-# from RelativeRank.Sub import get_k_data_JQ, my_pro_bar
+
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 from Experiment.RelativeRank.Sub import get_k_data_JQ
+
 from SendMsgByQQ.QQGUI import send_qq
 from SendMsgByQQ.SendPicByQQ import send_pic_qq, send_pic_qq_data
 from PIL import Image
