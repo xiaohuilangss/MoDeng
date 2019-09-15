@@ -15,6 +15,8 @@ from AutoDailyOpt.p_diff_ratio_last import MACD_min_last, MACD_min_History, M_Da
 from AutoDailyOpt.SeaSelect.stk_pool import stk_pool
 from Config.GlobalSetting import localDBInfo
 from Config.Sub import readConfig
+from Experiment.CornerDetectAndAutoEmail.Sub import genStkPicForQQ
+from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_Macd
 from SDK.DBOpt import genDbConn
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from Config.AutoStkConfig import stk_list, SeaSelectDataPWD, LastScale
@@ -660,8 +662,19 @@ def checkSingleStkHourMACD(stk_code, source='jq'):
         send_pic = True
         MACD_min_last[stk_code] = sts
 
+    # 发图
+    towho = '影子2'
+
     if send_pic & (sts != 0):
         sendHourMACDToQQ(stk_code, '影子2', title='-' + title_str)
+
+        # 小时MACD有预警的情况下，同时打印日线MACD，辅助分析
+        df = get_k_data_JQ(stk_code, 400)
+        fig, _, attention = genStkPicForQQ(df, stk_code)
+
+        send_pic_qq(towho, fig)
+        send_W_M_Macd(stk_code, towho)
+        plt.close()
 
 
 
