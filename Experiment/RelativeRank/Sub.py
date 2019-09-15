@@ -492,7 +492,7 @@ def updateSingleMacdHistory(stk_code, history_dict):
 
 def checkHourMACD_callback():
 
-    buy_stk_list = readConfig()['buy_stk']
+    buy_stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
     for code in buy_stk_list + ['sh', 'sz', 'cyb']:
 
         checkSingleStkHourMACD(code)
