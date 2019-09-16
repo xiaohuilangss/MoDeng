@@ -52,6 +52,7 @@ def sendPLevel2QQ(df, towho):
 
     plt.ylim((0, 1))
     plt.grid()
+    plt.title('注意低位囤货！')
     send_pic_qq(towho, fig)
     plt.close()
 

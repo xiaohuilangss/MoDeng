@@ -4,12 +4,13 @@
 
 将关心的和持仓的股票的中等长度的小时数据保存到json文件中
 """
-from Config.AutoGenerateConfigFile import config_path, data_dir
+from Config.AutoGenerateConfigFile import data_dir
 from Config.Sub import readConfig
 
 
 # 获取股票列表
-from Experiment.RelativeRank.Sub import get_k_data_JQ, get_RT_price, relativeRank
+from DataSource.Data_Sub import get_k_data_JQ
+from Experiment.RelativeRank.Sub import get_RT_price, relativeRank, checkHourMACD_callback
 from Experiment.SafeStkRelaLevel.Demo1 import calRelaPLevel, sendPLevel2QQ
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from SendMsgByQQ.QQGUI import send_qq
@@ -45,9 +46,9 @@ def check_single_stk_middle_level(stk_code, dict):
         l = relativeRank(dict[stk_code], current_price)
     else:
         df_hour = get_k_data_JQ(stk_code, count=None, start_date=add_date_str(get_current_date_str(), -60), freq='60m')
-        dict[stk_code] = list(df_hour.values)
+        dict[stk_code] = list(df_hour['close'].values)
 
-        l = relativeRank(list(df_hour.values), current_price)
+        l = relativeRank(list(df_hour['close'].values), current_price)
 
         with open(data_dir + 'middlePeriodHourData.json', 'w') as f:
             json.dump(dict, f)
@@ -79,9 +80,12 @@ def check_stklist_middle_level(stk_list, towho):
 
 def concerned_stk_middle_check():
     towho='影子2'
-    send_qq(towho, '以下是中期价格水平排名：')
+
     stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
     check_stklist_middle_level(stk_list, towho)
+
+    # 检查小时MACD
+    checkHourMACD_callback()
 
 
 if __name__ == '__main__':

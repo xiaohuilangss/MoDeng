@@ -14,6 +14,10 @@ from AutoDailyOpt.p_diff_ratio_last import MACD_min_last, MACD_min_History, M_Da
 
 from AutoDailyOpt.SeaSelect.stk_pool import stk_pool
 from Config.GlobalSetting import localDBInfo
+from Config.Sub import readConfig
+from DataSource.Data_Sub import get_k_data_JQ, my_pro_bar
+from Experiment.CornerDetectAndAutoEmail.Sub import genStkPicForQQ
+from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_Macd
 from SDK.DBOpt import genDbConn
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from Config.AutoStkConfig import stk_list, SeaSelectDataPWD, LastScale
@@ -86,63 +90,7 @@ def relativeRank(v_total, v_now):
 #     return relativeRank(df['diff_m9'], p_now)
 
 
-def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
-    """
-    使用JQData来下载stk的历史数据
-    :param stk_code:
-    :param amount:
-    :return:
-    """
-    if stk_code in ['sh', 'sz', 'cyb']:
 
-        stk_code_normal = {
-            'sh': '000001.XSHG',
-            'sz': '399001.XSHE',
-            'cyb': '399006.XSHE'
-        }[stk_code]
-        df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
-                                 end_date=end_date)
-    else:
-        df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk_code), frequency=freq, count=count,
-                                 end_date=end_date, start_date=start_date)
-
-    df['datetime'] = df.index
-    df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
-
-    return df
-
-
-def ts_code_normalize(code):
-    """
-    规整tushare 代码
-    :return:
-    """
-
-    if code in ['sh', 'sz', 'cyb']:
-
-        return {
-            'sh': '000001.SH',
-            'sz': '399001.SZ',
-            'cyb': '399006.SZ'
-        }[code]
-
-    if code[0] == '6':
-        code_normal = code+'.SH'
-    else:
-        code_normal = code+'.SZ'
-
-    return code_normal
-
-
-def my_pro_bar(stk_code, start, end=get_current_date_str(), adj='qfq', freq='D'):
-
-    df = ts.pro_bar(ts_code=ts_code_normalize(stk_code), start_date=start, end_date=end, adj=adj, freq=freq)
-    if freq == 'D':
-        df = df.rename(columns={'trade_date': 'date'}).sort_values(by='date', ascending=True)
-        df['date'] = df.apply(lambda x: x['date'][:4]+'-'+x['date'][4:6]+'-'+x['date'][6:], axis=1)
-    elif 'min' in freq:
-        df = df.rename(columns={'trade_time': 'time'}).sort_values(by='time', ascending=True)
-    return df
 
 
 def saveStkMRankHistoryData2Global(stk_code, history_days, m_days, save_dir):
@@ -541,22 +489,18 @@ def updateSingleMacdHistory(stk_code, history_dict):
             'min60': df_60['close']
         }
 
+
 def checkHourMACD_callback():
 
-    (conn_opt, engine_opt) = genDbConn(localDBInfo, 'stk_opt_info')
-    df = pd.read_sql(con=conn_opt, sql='select * from now')
+    buy_stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
+    for code in buy_stk_list + ['sh', 'sz', 'cyb']:
 
-    for code in ['sh', 'sz', 'cyb']:
         checkSingleStkHourMACD(code)
 
-    if not df.empty:
-        for idx in df.index:
-            stk_code = df.loc[idx, 'stk_code']
-            checkSingleStkHourMACD(stk_code)
-    conn_opt.close()
 
 
-def sendHourMACDToQQ(stk_code, qq, source='jq'):
+
+def sendHourMACDToQQ(stk_code, qq, source='jq', title=''):
     if source == 'jq':
         df_30 = get_k_data_JQ(stk_code, start_date=add_date_str(get_current_date_str(), -20), end_date=add_date_str(get_current_date_str(), 1), freq='30m')
         df_60 = get_k_data_JQ(stk_code, start_date=add_date_str(get_current_date_str(), -20), end_date=add_date_str(get_current_date_str(), 1), freq='60m')
@@ -598,7 +542,7 @@ def sendHourMACDToQQ(stk_code, qq, source='jq'):
 
     for ax_sig in ax:
         ax_sig.legend(loc='best')
-    plt.title(stk_code)
+    plt.title(stk_code + title)
     fig.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=1)  # 调整子图间距
 
@@ -663,33 +607,28 @@ def checkSingleStkHourMACD(stk_code, source='jq'):
         send_pic = True
         MACD_min_last[stk_code] = sts
 
-    print('函数 checkSingleStkHourMACD：' + stk_code + ':\nsend_pic标志位:' + str(send_pic) + '\nsts标志位:' + str(sts) + '\n')
-
-    # 生成图片
-    df_30 = df_30.dropna()
-    df_60 = df_60.dropna()
-
-    fig, ax = subplots(ncols=1, nrows=4)
-
-    ax[0].plot(range(0, len(df_30)), df_30['close'], 'g*--', label='close_30min')
-    ax[1].bar(range(0, len(df_30)), df_30['MACD'], label='macd_30min')
-    ax[2].plot(range(0, len(df_60)), df_60['close'], 'g*--', label='close_60min')
-    ax[3].bar(range(0, len(df_60)), df_60['MACD'], label='macd_60min')
-
-    for ax_sig in ax:
-        ax_sig.legend(loc='best')
-    plt.title(stk_code + '-' + title_str)
+    # 发图
+    towho = '影子2'
 
     if send_pic & (sts != 0):
-        send_pic_qq('影子', fig)
+        sendHourMACDToQQ(stk_code, '影子2', title='-' + title_str)
 
-    # send_pic_qq('影子', fig)
-    plt.close()
+        # 小时MACD有预警的情况下，同时打印日线MACD，辅助分析
+        df = get_k_data_JQ(stk_code, 400)
+        fig, _, attention = genStkPicForQQ(df, stk_code)
+
+        send_pic_qq(towho, fig)
+        send_W_M_Macd(stk_code, towho)
+        plt.close()
+
+
 
 
 if __name__ == '__main__':
 
     from DataSource.auth_info import *
+
+    checkHourMACD_callback()
 
     sendHourMACDToQQ('300508', '影子', source='jq')
     # updateConcernStkMData()
