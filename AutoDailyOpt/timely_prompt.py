@@ -3,7 +3,7 @@
 """
 本脚本用于定时提示now表中的stk数据
 """
-
+from DataSource.Code2Name import code2name
 
 """ =========================== 将当前路径及工程的跟目录添加到路径中 ============================ """
 import sys
@@ -13,6 +13,9 @@ rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject
 
 sys.path.append('..')
 sys.path.append(rootPath)
+
+
+from Config.AutoGenerateConfigFile import checkConfigFile
 
 import matplotlib
 matplotlib.use('agg')
@@ -307,7 +310,7 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
     if price_diff > thh_sale:
         # if JudgePChangeRatio(stk_code, price_diff_ratio):
         send_qq(qq,
-                "Reach! S! "+stk_code +
+                "Reach! S! "+stk_code + code2name(stk_code) +
                 '\nAmount:' + str(stk_amount_last) +
                 '\nP_now:' + str(current_price) +
                 '\nP_last:' + str(stk_price_last) +
@@ -321,7 +324,7 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
     elif price_diff < -thh_buy:
         # if JudgePChangeRatio(stk_code, price_diff_ratio):
         send_qq(qq,
-                "@Time Reach! B! " + stk_code +
+                "@Time Reach! B! " + stk_code + code2name(stk_code) +
                 '\nAmount:' + str(buy_amount) +
                 '\nP_now:' + str(current_price) +
                 '\nP_last:' + str(stk_price_last) +
@@ -338,7 +341,7 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
     # 波动检测
     if JudgePChangeRatio(stk_code, price_diff_ratio):
         send_qq(qq,
-                "波动推送! " + stk_code +
+                "波动推送! " + stk_code + code2name(stk_code) +
                 '\nAmount:' + str(buy_amount) +
                 '\nP_now:' + str(current_price) +
                 '\nP_last:' + str(stk_price_last) +
