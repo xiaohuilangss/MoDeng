@@ -11,17 +11,16 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, parent, id, title, size=(1300, 800))
         panel = wx.Panel(self, -1)
         panel.SetBackgroundColour('white')
-        self.browserList=wx.ListCtrl(panel, size=(1200, 1200), style=wx.LC_REPORT|wx.BORDER_SUNKEN)
+        self.browserList = wx.ListCtrl(panel, size=(1200, 1200), style=wx.LC_REPORT|wx.BORDER_SUNKEN)
         self.browserList.InsertColumn(0, 'Image', width=600)
-        self.browserList.InsertColumn(1, 'Browser: ', width=400)
+        self.browserList.InsertColumn(1, 'text: ', width=400)
+        self.browserList.InsertColumn(2, 'text2: ', width=600)
 
-        self.list=wx.ImageList(600, 400)
-        self.browserList.SetImageList(self.list, wx.IMAGE_LIST_SMALL)
-
-
+        self.list = wx.ImageList(600, 400)
+        self.browserList.SetImageList(self.list, wx.IMAGE_LIST_STATE )
 
         fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(6, 4))
-        plt.title('这是标题，看到表示有图！')
+        plt.title('图一！')
         output = BytesIO()  # BytesIO实现了在内存中读写byte
         buf_save = BytesIO()
         fig.savefig(output, dpi=100)
@@ -31,9 +30,8 @@ class MyFrame(wx.Frame):
         buf_save.close()
         output.close()
 
-
         fig, ax = plt.subplots(ncols=1, nrows=2, figsize=(6, 4))
-        plt.title('这是第二个图的标题！')
+        plt.title('图二')
         output = BytesIO()  # BytesIO实现了在内存中读写byte
         buf_save = BytesIO()
         fig.savefig(output, dpi=100)
@@ -43,28 +41,23 @@ class MyFrame(wx.Frame):
         buf_save.close()
         output.close()
 
-
-        # images=['./1.png','./1.png']
-        # x=0
-        # for i in images:
-        #     img=wx.Image(i, wx.BITMAP_TYPE_ANY)
-        #     img=wx.BitmapFromImage(img)
-        #     browserimg=self.list.Add(img)
-        # self.browserList.InsertImageItem(x, 0)
-        # self.browserList.InsertImageItem(x, 1)
-
         browserimg = self.list.Add(pic_id)
         browserimg = self.list.Add(pic_id2)
 
-        self.browserList.InsertItem(0, 1)
-        self.browserList.InsertItem(0, 0)
-        self.browserList.InsertItem(0, 1)
-        self.browserList.InsertItem(0, 0)
+        index_list = [self.browserList.InsertItem(self.browserList.GetItemCount(), '插入行标志1') for x in range(10)]
 
-        self.browserList.SetItem(0, 1, "Mozilla Firefox")
-        self.browserList.SetItem(1, 1, "Google Chrome")
-        self.browserList.SetItem(2, 1, "Mozilla Firefox")
-        self.browserList.SetItem(3, 1, "Google Chrome")
+        # self.browserList.InsertItem(0, 'text')
+        # self.browserList.InsertItem(1, '第二张图')
+        # self.browserList.InsertItem(0, 1)
+        # self.browserList.InsertItem(0, 0)
+
+        self.browserList.SetItem(4, 2, 'test')
+        self.browserList.SetItem(5, 2, 'test')
+        self.browserList.SetItem(3, 0, 'test')
+        # self.browserList.SetItem(2, 1, "Mozilla Firefox")
+        # self.browserList.SetItem(3, 1, "Google Chrome")
+
+    # def insert_item(self):
 #
 #
 # class MyFrame(wx.Frame):

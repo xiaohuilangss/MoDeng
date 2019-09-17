@@ -7,6 +7,7 @@ class ClockWindow(wx.Window):
     def __init__(self, parent):
         wx.Window.__init__(self, parent)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
+
         self.timer = wx.Timer(self)                             # 创建定时器
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)       # 绑定一个定时器事件
         self.timer.Start(1000)                                  # 设定时间间隔
@@ -36,7 +37,7 @@ class MyFrame(wx.Frame):
         ClockWindow(self)
 
 
-app = wx.PySimpleApp()
+app = wx.App()
 frm = MyFrame()
 frm.Show()
 app.MainLoop()
