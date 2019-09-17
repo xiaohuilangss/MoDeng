@@ -256,13 +256,13 @@ def checkWeekStrayForAll():
 
         # 打印日线信息
         df = get_k_data_JQ(stk, count=400, end_date=get_current_date_str())
-        fig, _ = genStkPicForQQ(df)
+        fig, _, _ = genStkPicForQQ(df)
 
         plt.title(str(stk))
         send_pic_qq(towho, fig)
         plt.close()
 
-        fig, _ = genStkIdxPicForQQ(df)
+        fig, _, _ = genStkIdxPicForQQ(df)
 
         plt.title(str(stk))
         send_pic_qq(towho, fig)
