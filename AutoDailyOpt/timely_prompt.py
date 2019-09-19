@@ -3,7 +3,6 @@
 """
 本脚本用于定时提示now表中的stk数据
 """
-from DataSource.Code2Name import code2name
 
 """ =========================== 将当前路径及工程的跟目录添加到路径中 ============================ """
 import sys
@@ -16,6 +15,7 @@ sys.path.append(rootPath)
 
 
 from Config.AutoGenerateConfigFile import checkConfigFile
+from DataSource.Code2Name import code2name
 
 import matplotlib
 matplotlib.use('agg')
@@ -466,7 +466,7 @@ if __name__ == '__main__':
     # sendConcernedStkPicToSelf_T()
     # printPredict2Public()
     # checkWeekStrayForAll()
-    updateConcernStkMData()
+    # updateConcernStkMData()
     updateRSVRecord()
 
     sched.start()
