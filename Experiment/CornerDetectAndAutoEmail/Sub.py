@@ -106,12 +106,12 @@ def genStkPicForQQ(stk_df, stk_code=''):
 
     # 检查日级别的MACD是否有异常
     attention = False
-    macd_list = stk_df_current.tail(3)['MACD'].values
+    MACD_list = stk_df_current.tail(3)['MACD'].values
 
-    if macd_list[1] == np.min(macd_list):
+    if MACD_list[1] == np.min(MACD_list):
         plt.title(stk_code + '日级别 MACD 见底了！')
         attention = True
-    elif macd_list[1] == np.max(macd_list):
+    elif MACD_list[1] == np.max(MACD_list):
         plt.title(stk_code + '日级别 MACD 到顶了！')
         attention = True
 
@@ -388,10 +388,10 @@ def JudgeCornerPot(stk_df, stk_code, current_date, debug=False):
     sh_index = stk_df.tail(100)
     # sh_index['date'] = sh_index.index
 
-    # 按时间降序排序，方便计算macd
+    # 按时间降序排序，方便计算MACD
     sh_index = sh_index.sort_values(by='date', ascending=True)
 
-    # 在原始df中增加macd信息
+    # 在原始df中增加MACD信息
     sh_index['MACD'], sh_index['MACDsignal'], sh_index['MACDhist'] = talib.MACD(sh_index.close,
                                                                                 fastperiod=12, slowperiod=26,
                                                                                 signalperiod=9)

@@ -112,10 +112,10 @@ def JudgeCornerPot(stk_df, stk_code):
     sh_index = stk_df
     sh_index['date'] = sh_index.index
 
-    # 按时间降序排序，方便计算macd
+    # 按时间降序排序，方便计算MACD
     sh_index = sh_index.sort_values(by='date', ascending=True)
 
-    # 在原始df中增加macd信息
+    # 在原始df中增加MACD信息
     sh_index['MACD'], sh_index['MACDsignal'], sh_index['MACDhist'] = talib.MACD(sh_index.close,
                                                                                 fastperiod=12, slowperiod=26,
                                                                                 signalperiod=9)

@@ -27,12 +27,12 @@ single_stk = ts.get_k_data('300508')
 single_stk['datetime'] = single_stk.apply(lambda x: convert_str_to_datetime(x['date'] + ' 00:00:00'), axis=1)
 single_stk = single_stk.set_index(keys='datetime')
 
-# 按周采样并计算macd
+# 按周采样并计算MACD
 single_stk_W = single_stk.resample('W').bfill()
 single_stk_W['MACD'], single_stk_W['MACDsignal'], single_stk_W['MACDhist'] = talib.MACD(single_stk_W.close,
                                 fastperiod=12, slowperiod=26, signalperiod=9)
 
-# 按月采样并计算macd
+# 按月采样并计算MACD
 single_stk_M = single_stk.resample('M').bfill()
 single_stk_M['MACD'], single_stk_M['MACDsignal'], single_stk_M['MACDhist'] = talib.MACD(single_stk_M.close,
                                 fastperiod=12, slowperiod=26, signalperiod=9)

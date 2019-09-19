@@ -24,7 +24,7 @@ from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, 
 from Config.AutoGenerateConfigFile import checkConfigFile
 from Config.GlobalSetting import localDBInfo
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
-from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_Macd, checkWeekStrayForAll
+from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_MACD, checkWeekStrayForAll
 from Experiment.RelativeRank.Sub import relativeRank, get_k_data_JQ, calRealtimeRankWithGlobal, get_current_price_JQ, \
     get_RT_price, sendHourMACDToQQ, updateConcernStkMData
 from Experiment.Reseau.StdForReseau.Demo1 import getSigleStkReseau
@@ -43,7 +43,6 @@ import pandas as pd
 
 from AutoDailyOpt.Sub import readLastP, saveLastP
 from AutoDailyOpt.p_diff_ratio_last import p_diff_ratio_last_dic, RSV_Record
-from SDK.DBOpt import genDbConn
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.combining import OrTrigger
 from apscheduler.triggers.cron import CronTrigger
@@ -141,7 +140,7 @@ def sendConcernedStkPicToSelf_V2():
         # plt.show()
         plt.close()
 
-        send_W_M_Macd(x, towho)
+        send_W_M_MACD(x, towho)
 
 
 def sendConcernedStkPicToSelf_T():
@@ -162,7 +161,7 @@ def sendConcernedStkPicToSelf_T():
 
         if attention:
             send_pic_qq(towho, fig)
-            send_W_M_Macd(x, towho)
+            send_W_M_MACD(x, towho)
         plt.close()
 
         # 打印第二张套图
@@ -171,7 +170,6 @@ def sendConcernedStkPicToSelf_T():
             send_pic_qq(towho, fig)
 
         plt.close()
-
 
 
 def sendMainIndexStkPic2Public():

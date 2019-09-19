@@ -19,7 +19,7 @@ else:
     pic_save_dir_root = 'C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/'
 
 plot_current_days_amount = 40   # 画出近期的stk走势情况，该参数指示最近取的天数
-tailLengthForMacd = 150         # 在计算MACD时，因为之用最近的几个数，所以不需要往前延伸太多，以节省计算量
+tailLengthForMACD = 150         # 在计算MACD时，因为之用最近的几个数，所以不需要往前延伸太多，以节省计算量
 
 # 关心的stk
 stk_list = [

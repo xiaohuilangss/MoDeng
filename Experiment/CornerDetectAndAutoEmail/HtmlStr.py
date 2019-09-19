@@ -49,7 +49,7 @@ def gen_H_Unit(stk_code, stk_name, pic_dir):
     单位模块字符串
     :param stk_code:        stk代码
     :param pic_AC_ID:       类似 "stk_ave.png"
-    :param pic_M_ID:        类似 "stk_macd.png"
+    :param pic_M_ID:        类似 "stk_MACD.png"
     :return:
     """
 
@@ -102,13 +102,13 @@ def addInfoToMsg(msg, html_str, date, pic_dir):
 #     '东软载波',
 #     '2019-02-15',
 #     "stk_ave.png",
-#     "stk_macd.png")\
+#     "stk_MACD.png")\
 # + gen_H_Unit(
 #     '300508',
 #     '东软载波',
 #     '2019-02-15',
 #     "stk_ave.png",
-#     "stk_macd.png")
+#     "stk_MACD.png")
 #
 #
 # f = open("C:/Users/Administrator/Desktop/html练习2.htm", 'w')

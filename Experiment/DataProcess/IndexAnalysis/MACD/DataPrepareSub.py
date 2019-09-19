@@ -35,49 +35,49 @@ def prepare_lstm_data(code,df_class_belong_to,predict_depth,batch_size):
     df = get_total_table_data(conn_k, 'k'+code).sort_values(by='date', ascending=True)
 
     # 添加MACD信息
-    df_macd = get_MACD(df)
+    df_MACD = get_MACD(df)
 
     # 精简列,并时间降序，用以计算未来增长情况
-    df_macd = df_macd.loc[:, ['close', 'date', 'macd', 'volume','low','high']].sort_values(by='date', ascending=False)
+    df_MACD = df_MACD.loc[:, ['close', 'date', 'MACD', 'volume','low','high']].sort_values(by='date', ascending=False)
 
     # 增加未来预测天数内天最大值
-    df_macd['close_max_' + str(predict_depth)] = df_macd.close.rolling(window=predict_depth).max()
+    df_MACD['close_max_' + str(predict_depth)] = df_MACD.close.rolling(window=predict_depth).max()
 
     # 计算“当前值”与“未来10天最大值”之间的变化幅度
-    df_macd['inc_ratio_' + str(predict_depth)] = df_macd.apply(
+    df_MACD['inc_ratio_' + str(predict_depth)] = df_MACD.apply(
         lambda x: (x['close_max_' + str(predict_depth)] - x['close']) / (x['close'] + 0.000000000000001), axis=1)
 
     # 去除存在控制的行
-    df_macd = df_macd.dropna(axis=0)
+    df_MACD = df_MACD.dropna(axis=0)
 
     # 恢复为时间升序
-    df_macd = df_macd.sort_values(by='date', ascending=True)
+    df_MACD = df_MACD.sort_values(by='date', ascending=True)
 
-    macd_min = df_macd.macd.min()
-    macd_max = df_macd.macd.max()
+    MACD_min = df_MACD.MACD.min()
+    MACD_max = df_MACD.MACD.max()
 
-    close_min = df_macd.close.min()
-    close_max = df_macd.close.max()
+    close_min = df_MACD.close.min()
+    close_max = df_MACD.close.max()
 
-    volume_min = df_macd.volume.min()
-    volume_max = df_macd.volume.max()
+    volume_min = df_MACD.volume.min()
+    volume_max = df_MACD.volume.max()
 
-    df_macd['macd'] = (df_macd.macd - macd_min) / (macd_max - macd_min)
-    df_macd['close'] = (df_macd.close - close_min) / (close_max - close_min)
-    df_macd['volume'] = (df_macd.volume - volume_min) / (volume_max - volume_min)
-    df_macd['high'] = (df_macd.high - df_macd.high.min()) / (df_macd.high.max() - df_macd.high.min())
-    df_macd['low'] = (df_macd.low - df_macd.low.min()) / (df_macd.low.max() - df_macd.low.min())
+    df_MACD['MACD'] = (df_MACD.MACD - MACD_min) / (MACD_max - MACD_min)
+    df_MACD['close'] = (df_MACD.close - close_min) / (close_max - close_min)
+    df_MACD['volume'] = (df_MACD.volume - volume_min) / (volume_max - volume_min)
+    df_MACD['high'] = (df_MACD.high - df_MACD.high.min()) / (df_MACD.high.max() - df_MACD.high.min())
+    df_MACD['low'] = (df_MACD.low - df_MACD.low.min()) / (df_MACD.low.max() - df_MACD.low.min())
 
 
-    # 如果有输入所属class的df，即参数df_class_belong_to不为空，则计算其所属class相关macd， 并将其与stk的df按日期合并
+    # 如果有输入所属class的df，即参数df_class_belong_to不为空，则计算其所属class相关MACD， 并将其与stk的df按日期合并
     if len(df_class_belong_to):
 
-        # 计算class的macd
-        class_df = get_MACD(df_class_belong_to.rename(columns={'c_close':'close'})).rename(columns={'macd':'c_macd','close':'c_close'})
+        # 计算class的MACD
+        class_df = get_MACD(df_class_belong_to.rename(columns={'c_close':'close'})).rename(columns={'MACD':'c_MACD','close':'c_close'})
 
         # 对class中的df进行归一化
-        class_df['c_macd'] = (class_df.c_macd-class_df.c_macd.min())/(
-                class_df.c_macd.max() - class_df.c_macd.min())
+        class_df['c_MACD'] = (class_df.c_MACD-class_df.c_MACD.min())/(
+                class_df.c_MACD.max() - class_df.c_MACD.min())
 
         class_df['c_volume'] = (class_df.c_volume - class_df.c_volume.min()) / (
                     class_df.c_volume.max() - class_df.c_volume.min())
@@ -85,15 +85,15 @@ def prepare_lstm_data(code,df_class_belong_to,predict_depth,batch_size):
         class_df['c_close'] = (class_df.c_close - class_df.c_close.min()) / (
                     class_df.c_close.max() - class_df.c_close.min())
 
-        df_macd = pd.concat([df_macd.set_index(keys='date',drop=True),class_df.set_index(keys='date',drop=True).loc[:,['c_close','c_volume','c_macd','c_open']]],join='inner',axis=1).reset_index()
+        df_MACD = pd.concat([df_MACD.set_index(keys='date',drop=True),class_df.set_index(keys='date',drop=True).loc[:,['c_close','c_volume','c_MACD','c_open']]],join='inner',axis=1).reset_index()
 
 
     # 组成学习样本list
     example_list = []
-    for id in df_macd.loc[predict_depth:, :].index:
+    for id in df_MACD.loc[predict_depth:, :].index:
         example_list.append(
-            np.array([np.array(df_macd.loc[id - predict_depth:id - 1, ['macd', 'volume', 'close','high','low','c_macd','c_volume','c_close']]),
-                      np.array(df_macd.loc[id - 1, 'inc_ratio_' + str(predict_depth)])])
+            np.array([np.array(df_MACD.loc[id - predict_depth:id - 1, ['MACD', 'volume', 'close','high','low','c_MACD','c_volume','c_close']]),
+                      np.array(df_MACD.loc[id - 1, 'inc_ratio_' + str(predict_depth)])])
         )
 
     # 组成batch

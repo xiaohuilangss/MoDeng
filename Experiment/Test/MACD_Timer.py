@@ -1,7 +1,7 @@
 # encoding = utf-8
 
 """
-这个脚本用来每天定时检测相关stk的macd指标是否处于拐点区域，若处于拐点，则将其打印到pdf中，并发送邮件
+这个脚本用来每天定时检测相关stk的MACD指标是否处于拐点区域，若处于拐点，则将其打印到pdf中，并发送邮件
 """
 import os
 
@@ -16,7 +16,7 @@ from Auto_Report.ReportLab.SubFunction import RPL_Bk_Page
 from SDK.MyTimeOPT import get_current_date_str
 
 
-def macd_test_daily():
+def MACD_test_daily():
 
     step = 5
     datenow = get_current_date_str()
@@ -36,7 +36,7 @@ def macd_test_daily():
         df_bk = ts.get_k_data(bk)
 
         if df_bk.empty:
-            print('函数 macd_test_daily：stk ' + bk +'没有数据！')
+            print('函数 MACD_test_daily：stk ' + bk +'没有数据！')
             continue
 
         # 只取时间上最新的100条数据
@@ -62,7 +62,7 @@ def macd_test_daily():
 
         print('完成stk' + bk + '的MACD检测！')
 
-    # 如果存在macd指标符合的stk，生成pdf并发送邮件
+    # 如果存在MACD指标符合的stk，生成pdf并发送邮件
     if exist_flag:
         c.save()
 
@@ -79,5 +79,5 @@ def macd_test_daily():
                  'Nothing happened today!')
 
 # -------------------------- 测试 --------------------------------
-# macd_test_daily()
+# MACD_test_daily()
 
