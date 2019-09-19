@@ -21,6 +21,6 @@ def get_MACD(df,short=12,long=26,M=9):
             df.ix[i,'dea']=df.ix[i,'diff']
         if i>0:
             df.ix[i,'dea']=(2*df.ix[i,'diff']+(M-1)*df.ix[i-1,'dea'])/(M+1)
-    df['macd']=2*(df['diff']-df['dea'])
+    df['MACD']=2*(df['diff']-df['dea'])
     return df
 

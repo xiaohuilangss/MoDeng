@@ -393,10 +393,10 @@ def RPL_Bk_Page(canvas_para, bk_name):
     sh_index = sh_index.reset_index(drop=True)
 
 
-    # 按时间降序排序，方便计算macd
+    # 按时间降序排序，方便计算MACD
     sh_index = sh_index.sort_values(by='date',ascending=True)
 
-    # 在原始df中增加macd信息
+    # 在原始df中增加MACD信息
     sh_index['MACD'],sh_index['MACDsignal'],sh_index['MACDhist'] = talib.MACD(sh_index.close,
                                 fastperiod=12, slowperiod=26, signalperiod=9)
 
@@ -435,7 +435,7 @@ def RPL_Bk_Page(canvas_para, bk_name):
     m10 = ExtractPointFromDf_DateX(sh_index, 'date', 'ma10')
     m20 = ExtractPointFromDf_DateX(sh_index, 'date', 'ma20')
 
-    macd = ExtractPointFromDf_DateX(sh_index, 'date', 'MACD')
+    MACD = ExtractPointFromDf_DateX(sh_index, 'date', 'MACD')
 
     data = [tuple(close),tuple(m5),tuple(m10),tuple(m20)]
     data_name = ['close','m5','m10','m20']
@@ -443,8 +443,8 @@ def RPL_Bk_Page(canvas_para, bk_name):
     drawing_ave = genLPDrawing(data=data, data_note=data_name,height=letter[1]*0.15)
     renderPDF.draw(drawing=drawing_ave, canvas=canvas_para, x=10, y=letter[1] * 0.8)
 
-    drawing_macd = genBarDrawing(data=macd, data_note=['macd'])
-    renderPDF.draw(drawing=drawing_macd, canvas=canvas_para, x=10, y=letter[1]*0.6)
+    drawing_MACD = genBarDrawing(data=MACD, data_note=['MACD'])
+    renderPDF.draw(drawing=drawing_MACD, canvas=canvas_para, x=10, y=letter[1]*0.6)
 
 
     # 整理kdj信息

@@ -18,8 +18,8 @@ df = get_total_table_data(conn_k,'k300508').sort_values(by='date',ascending=Fals
 # x = range(0,len(df.close))
 #
 # ax[0].plot(x,df.close,'y*--',label='close')
-# ax[1].plot(x,df.MACD,'g--',label='macd')
-# ax[1].plot(x,df.MACDsignal,'r--',label='macd-signal')
+# ax[1].plot(x,df.MACD,'g--',label='MACD')
+# ax[1].plot(x,df.MACDsignal,'r--',label='MACD-signal')
 # ax[1].bar(x,df.MACDhist)
 #
 # for a in ax:

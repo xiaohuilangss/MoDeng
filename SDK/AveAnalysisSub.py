@@ -287,22 +287,22 @@ def plot_ave(code_param,ave_df_param,df_all,today_all,save_dir,days,ax_out,title
     # ----------------------- 画MACD指标 ----------------------
 
     ax[1, 0].cla()
-    df_macd = get_MACD(df_all_head)
+    df_MACD = get_MACD(df_all_head)
 
-    if len(df_macd):
+    if len(df_MACD):
 
         # 从index中恢复date
-        df_macd = df_macd.sort_values(by='date',ascending=True)
+        df_MACD = df_MACD.sort_values(by='date',ascending=True)
 
-        xtick_macd = range(0,len(df_macd))
+        xtick_MACD = range(0,len(df_MACD))
 
-        ax[1,0].bar(xtick_macd,df_macd.macd)
-        ax[1,0].set_xticks(xtick_macd)
-        ax[1,0].set_xticklabels(df_macd.date,rotation=45,fontsize=1)
+        ax[1,0].bar(xtick_MACD,df_MACD.MACD)
+        ax[1,0].set_xticks(xtick_MACD)
+        ax[1,0].set_xticklabels(df_MACD.date,rotation=45,fontsize=1)
 
         ax[1,0].set_title(U'MACD', fontsize=5)
 
-        del xtick_macd
+        del xtick_MACD
 
     # ----------------------- 画RSI指标 --------------------------------------
     ax[0,2].cla()
@@ -377,7 +377,7 @@ def plot_ave(code_param,ave_df_param,df_all,today_all,save_dir,days,ax_out,title
 
     del ave_df_param,\
         df_all_head,\
-        df_macd,\
+        df_MACD,\
         df_all,\
         growth,\
         singleGrowth,\

@@ -2,6 +2,7 @@ import wx.grid as grid
 import os
 import wx
 
+
 class healthStatus(wx.Frame):
     organs = ["heart", "lungs", "brain", "liver"]
     health_icons = []
@@ -14,18 +15,24 @@ class healthStatus(wx.Frame):
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.health_grid = grid.Grid(self)
-        self.health_grid.CreateGrid(len(self.organs),2)
+        self.health_grid.CreateGrid(len(self.organs), 2)
         self.health_grid.SetColLabelValue(0, "Organ")
         self.health_grid.SetColLabelValue(1, "Status")
         self.health_grid.SetRowLabelSize(0)
 
         try:
-            self.health_icons.append(self.getFilePath("images" + os.sep + "unknown.png"))
-            self.health_icons.append(self.getFilePath("images" + os.sep + "unhealthy.png"))
-            self.health_icons.append(self.getFilePath("images" + os.sep + "healthy.png"))
+            # self.health_icons.append(self.getFilePath("images" + os.sep + "img3.png"))
+            # self.health_icons.append(self.getFilePath("images" + os.sep + "img2.png"))
+            # self.health_icons.append(self.getFilePath("images" + os.sep + "img1.png"))
+
+            self.health_icons.append("./img3.png")
+            self.health_icons.append("./img2.png")
+            self.health_icons.append("./img1.png")
+
         except Exception as e:
             wx.MessageBox("Cannot load icons. \n Please ensure the images directory has not been moved\n\n"
                           + e.message, "Cannot Load Icons", wx.ICON_ERROR)
+
         index = 0
         for organ in self.organs:
             self.addItem(index, organ)
@@ -43,9 +50,8 @@ class healthStatus(wx.Frame):
         self.health_grid.SetCellValue(index, 0, organ)
         self.health_grid.SetCellRenderer(index, 1, BitmapRenderer(self.health_icons[0]))
 
-
     def updateProgress(self, index, progress):
-        self.health_grid.SetCellRenderer(index, 1, BitmapRenderer(self.health_icons[progress]))
+        self.health_grid.SetCellRenderer(index, 0, BitmapRenderer(self.health_icons[progress]))
         self.health_grid.Refresh()
 
     def getFilePath(self, directory):
@@ -64,7 +70,7 @@ class healthStatus(wx.Frame):
                 self.progress += 1
             elif self.row < self.health_grid.GetNumberRows() + 1:
                 self.progress = 0
-                self.row +=1
+                self.row += 1
 
         self.updateProgress(self.row, self.progress)
 

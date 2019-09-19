@@ -3,7 +3,7 @@ import talib
 import tushare as ts
 
 from CornerDetectAndAutoEmail.Sub import JudgeCornerPot, IsPotInCurveMedian
-from Config.AutoStkConfig import tailLengthForMacd, corner_Pot_Retrospective_Half
+from Config.AutoStkConfig import tailLengthForMACD, corner_Pot_Retrospective_Half
 from SDK.MyTimeOPT import DateStr2Sec
 from pylab import *
 
@@ -20,8 +20,8 @@ stk_df = sh_index.sort_values(by='date', ascending=True)
 sh_index = stk_df
 stk_df_addInfo = stk_df
 
-for idx in sh_index.loc[tailLengthForMacd:, :].index:
-    df_part = sh_index.loc[idx - tailLengthForMacd:idx, :]
+for idx in sh_index.loc[tailLengthForMACD:, :].index:
+    df_part = sh_index.loc[idx - tailLengthForMACD:idx, :]
 
     # 获取当前时间并先验拐点
     current_date = df_part.tail(1)['date'].values[0]

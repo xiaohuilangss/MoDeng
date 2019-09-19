@@ -86,18 +86,18 @@ def save_bk_fig(bk_name, data_df_param, days,y_axis_info_param,save_url):
 
 
     # ---------------------------------- 画日MACD线 -----------------------------------------------------
-    df_macd = get_MACD(ave_df)
+    df_MACD = get_MACD(ave_df)
 
-    if len(df_macd):
+    if len(df_MACD):
 
         # 从index中恢复date
-        df_macd = df_macd.sort_values(by='date',ascending=True)
+        df_MACD = df_MACD.sort_values(by='date',ascending=True)
 
-        xtick_macd = range(0,len(df_macd))
+        xtick_MACD = range(0,len(df_MACD))
 
-        ax[1,0].bar(xtick_macd,df_macd.macd)
-        ax[1,0].set_xticks(xtick_macd)
-        ax[1,0].set_xticklabels(df_macd.date,rotation=90,fontsize=3)
+        ax[1,0].bar(xtick_MACD,df_MACD.MACD)
+        ax[1,0].set_xticks(xtick_MACD)
+        ax[1,0].set_xticklabels(df_MACD.date,rotation=90,fontsize=3)
 
         ax[1,0].set_title(U'MACD', fontsize=5)
 

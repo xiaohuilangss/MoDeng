@@ -14,9 +14,9 @@ import matplotlib
 # matplotlib.use('agg')
 from io import BytesIO
 
-
+from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
-from Experiment.RelativeRank.Sub import get_k_data_JQ
+# from Experiment.RelativeRank.Sub import get_k_data_JQ
 
 from SendMsgByQQ.QQGUI import send_qq
 from SendMsgByQQ.SendPicByQQ import send_pic_qq, send_pic_qq_data
@@ -37,16 +37,16 @@ def plot_W_M(df_w, df_m):
     fig, ax = subplots(ncols=1, nrows=4)
 
     ax[0].plot(range(0, len(df_w['date'])), df_w['close'], 'g*--', label='close')
-    ax[1].bar(range(0, len(df_w['date'])), df_w['MACD'],  label='week_macd')
-    ax[1].plot(range(0, len(df_w['date'])), [0 for x in range(0, len(df_w['date']))], 'r--', label='week_macd')
+    ax[1].bar(range(0, len(df_w['date'])), df_w['MACD'],  label='week_MACD')
+    ax[1].plot(range(0, len(df_w['date'])), [0 for x in range(0, len(df_w['date']))], 'r--', label='week_MACD')
 
     ax[2].plot(range(0, len(df_m['date'])), df_m['close'], 'g*--', label='close')
-    ax[3].bar(range(0, len(df_m['date'])), df_m['MACD'],  label='month_macd')
-    ax[3].plot(range(0, len(df_m['date'])), [0 for x in range(0, len(df_m['date']))], 'r--', label='month_macd')
+    ax[3].bar(range(0, len(df_m['date'])), df_m['MACD'],  label='month_MACD')
+    ax[3].plot(range(0, len(df_m['date'])), [0 for x in range(0, len(df_m['date']))], 'r--', label='month_MACD')
 
     return fig, ax
 
-def send_W_M_Macd(stk_code, towho):
+def send_W_M_MACD(stk_code, towho):
     """
 
     :param stk_code:
@@ -58,13 +58,13 @@ def send_W_M_Macd(stk_code, towho):
     # df_now = get_k_data_JQ(stk_code, count=2, end_date=get_current_date_str()).reset_index()
     #
     # if (df_now.tail(1)['close'].values[0]-df_now.head(1)['close'].values[0])/df_now.head(1)['close'].values[0] < 0.03:
-    #     print('函数week_macd_stray_judge：' + stk_code + '涨幅不够！')
+    #     print('函数week_MACD_stray_judge：' + stk_code + '涨幅不够！')
     #     return False
 
     df = get_k_data_JQ(stk_code, count=400, end_date=get_current_date_str()).reset_index()
 
     if len(df) < 350:
-        print('函数week_macd_stray_judge：'+stk_code + '数据不足！')
+        print('函数week_MACD_stray_judge：'+stk_code + '数据不足！')
         return False
 
     # 规整
@@ -115,20 +115,20 @@ def send_W_M_Macd(stk_code, towho):
     plt.close()
 
 
-def week_macd_stray_judge(stk_code, towho, debug_plot=False):
+def week_MACD_stray_judge(stk_code, towho, debug_plot=False):
 
     try:
         # 获取今天的情况，涨幅没有超过3%的不考虑
         df_now = get_k_data_JQ(stk_code, count=2, end_date=get_current_date_str()).reset_index()
 
         if (df_now.tail(1)['close'].values[0]-df_now.head(1)['close'].values[0])/df_now.head(1)['close'].values[0] < -0.05:
-            print('函数week_macd_stray_judge：' + stk_code + '涨幅不够！')
+            print('函数week_MACD_stray_judge：' + stk_code + '涨幅不够！')
             return False, pd.DataFrame()
 
         df = get_k_data_JQ(stk_code, count=400, end_date=get_current_date_str()).reset_index()
 
         if len(df) < 350:
-            print('函数week_macd_stray_judge：'+stk_code + '数据不足！')
+            print('函数week_MACD_stray_judge：'+stk_code + '数据不足！')
             return False, pd.DataFrame()
 
         # 规整
@@ -167,9 +167,9 @@ def week_macd_stray_judge(stk_code, towho, debug_plot=False):
         date_last = df_floor_slice_5.tail(1)['date'].values[0]
 
         # 判断背离
-        macd_5 = df_floor_slice_5.tail(3)['MACD'].values
-        macd_20 = df_floor_slice_20.tail(4)['MACD'].values
-        if (macd_5[1] == np.min(macd_5)) & (macd_20[1] != np.max(macd_20)) & (macd_20[2] != np.max(macd_20)):
+        MACD_5 = df_floor_slice_5.tail(3)['MACD'].values
+        MACD_20 = df_floor_slice_20.tail(4)['MACD'].values
+        if (MACD_5[1] == np.min(MACD_5)) & (MACD_20[1] != np.max(MACD_20)) & (MACD_20[2] != np.max(MACD_20)):
 
             if debug_plot:
                 """ --------------------------------------- 生成图片 -------------------------------------"""
@@ -226,7 +226,7 @@ def checkWeekStrayForAll():
     df_age_filter = df_total[df_total.apply(lambda x: int(str(x['timeToMarket'])[:4]) <= int(get_current_date_str()[:4]) - 4, axis=1)]
 
     # 根据week反转情况进行过滤，保留有反转的单位
-    df_age_filter_stray = list(df_age_filter.reset_index().apply(lambda x: (x['code'], week_macd_stray_judge(x['code'], towho)), axis=1))
+    df_age_filter_stray = list(df_age_filter.reset_index().apply(lambda x: (x['code'], week_MACD_stray_judge(x['code'], towho)), axis=1))
 
     # 过滤掉非反转的情况
     df_age_f2 = list(filter(lambda x: x[1][0], df_age_filter_stray))
@@ -252,7 +252,7 @@ def checkWeekStrayForAll():
     for stk in stk_list:
 
         # 打印周与月信息
-        send_W_M_Macd(stk_code=stk, towho=towho)
+        send_W_M_MACD(stk_code=stk, towho=towho)
 
         # 打印日线信息
         df = get_k_data_JQ(stk, count=400, end_date=get_current_date_str())
@@ -273,14 +273,14 @@ if __name__ == '__main__':
 
     from DataSource.auth_info import *
 
-    # week_macd_stray_judge('603421', '影子')
+    # week_MACD_stray_judge('603421', '影子')
 
 
     checkWeekStrayForAll()
-    send_W_M_Macd('000001', '影子')
+    send_W_M_MACD('000001', '影子')
 
     r = calendar.weekday(2019, 12, 5)
-    # week_macd_stray_judge('300508', '影子')
+    # week_MACD_stray_judge('300508', '影子')
 
     checkWeekStrayForAll()
 

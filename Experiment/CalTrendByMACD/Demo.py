@@ -1,7 +1,7 @@
 # encoding=utf-8
 
 """
-本脚本尝试使用在macd中判断答题趋势
+本脚本尝试使用在MACD中判断答题趋势
 """
 
 import tushare as ts
