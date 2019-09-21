@@ -1,7 +1,7 @@
 # encoding=utf-8
-from Config.Sub import readConfig
+from Config.Sub import dict_stk_list
 from DataSource.Data_Sub import get_k_data_JQ
-from SDK.Gen_Stk_Pic_Sub import gen_Hour_MACD_Pic, gen_Day_Pic, gen_W_M_MACD_Pic, gen_Idx_Pic, gen_Hour_MACD_Pic_wx, \
+from SDK.Gen_Stk_Pic_Sub import gen_Hour_MACD_Pic_wx, \
     gen_Day_Pic_wx, gen_W_M_MACD_Pic_wx, gen_Idx_Pic_wx
 from pylab import *
 
@@ -11,11 +11,11 @@ def get_pic_dict():
     获取图片字典
     :return:
     """
-    dict_stk_list = {
-        'index': ['sh', 'sz', 'cyb'],
-        'buy': readConfig()['buy_stk'],
-        'concerned': readConfig()['concerned_stk']
-    }
+    # dict_stk_list = {
+    #     'index': readConfig()['index_stk'],
+    #     'buy': readConfig()['buy_stk'],
+    #     'concerned': readConfig()['concerned_stk']
+    # }
 
     pic_dict = {}
     for tab in dict_stk_list.keys():
