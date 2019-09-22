@@ -92,6 +92,8 @@ if __name__ == '__main__':
 
     from DataSource.auth_info import *
 
+    concerned_stk_middle_check()
+
     # update_middle_period_hour_data()
     concerned_stk_middle_check()
     end = 0
