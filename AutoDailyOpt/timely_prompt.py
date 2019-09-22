@@ -4,6 +4,7 @@
 本脚本用于定时提示now表中的stk数据
 """
 
+
 """ =========================== 将当前路径及工程的跟目录添加到路径中 ============================ """
 import sys
 import os
@@ -20,6 +21,7 @@ from DataSource.Code2Name import code2name
 import matplotlib
 matplotlib.use('agg')
 
+from DataSource.Code2Name import code2name
 from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, update_middle_period_hour_data
 from Config.AutoGenerateConfigFile import checkConfigFile
 from Config.GlobalSetting import localDBInfo

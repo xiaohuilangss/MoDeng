@@ -8,6 +8,12 @@ def readConfig():
         return json.load(f)
 
 
+dict_stk_list = {
+    'Index': readConfig()['index_stk'],
+    'Buy': readConfig()['buy_stk'],
+    'Concerned': readConfig()['concerned_stk']
+}
+
 if __name__ == '__main__':
 
     r = readConfig()

@@ -39,6 +39,7 @@ def checkConfigFile():
         with open(stk_config_url, 'w') as f:
             json_dict = {
                           "pcr": 1.8,
+                          "index_stk": ["sh", "sz", "cyb"],
                           "concerned_stk": ["000333", "300059"],
                           "buy_stk": ["600256", "603421",  "300243", "300263"],
                           "safe_stk": ["000333",  "002456", "000725", "300508"]
