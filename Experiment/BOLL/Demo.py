@@ -12,7 +12,8 @@ from pylab import *
 
 from AutoDailyOpt.p_diff_ratio_last import RSV_Record
 from Config.GlobalSetting import localDBInfo
-from RelativeRank.Sub import relativeRank, get_k_data_JQ
+from DataSource.Data_Sub import get_k_data_JQ
+from Experiment.RelativeRank.Sub import relativeRank
 from SDK.DBOpt import genDbConn
 from SDK.MyTimeOPT import get_current_date_str
 import pandas as pd
@@ -60,17 +61,18 @@ df.plot('date', ['close', 'wave_near_rank', 'wave_near'], style=['--*', '--*'], 
 避免在迅速下跌时爆仓，在迅速上涨时空仓的情况。
 """
 
-def updateRSVRecord():
-    try:
-        (conn_opt, engine_opt) = genDbConn(localDBInfo,  'stk_opt_info')
-        df = pd.read_sql(con=conn_opt, sql='select * from now')
-
-        # global  RSV_Record
-        if not df.empty:
-            for idx in df.index:
-                RSV_Record[stk_code] = calRSVRank(df.loc[idx, 'stk_code'], 5)
-    except:
-        send_qq('影子2', 'RSV数据更新失败！')
+#
+# def updateRSVRecord():
+#     try:
+#         (conn_opt, engine_opt) = genDbConn(localDBInfo,  'stk_opt_info')
+#         df = pd.read_sql(con=conn_opt, sql='select * from now')
+#
+#         # global  RSV_Record
+#         if not df.empty:
+#             for idx in df.index:
+#                 RSV_Record[stk_code] = calRSVRank(df.loc[idx, 'stk_code'], 5)
+#     except:
+#         send_qq('影子2', 'RSV数据更新失败！')
 
 
 def calRSVRank(stk_code, Mdays, history_length=20):
@@ -93,7 +95,7 @@ def calRSVRank(stk_code, Mdays, history_length=20):
     df['RSV_abs'] = df.apply(lambda x: (x['close_M'+str(M)] - x['low_M'+str(M)+'_min']), axis=1)
     df['RSV_Rank'] = df.apply(lambda x: relativeRank(df['RSV_abs'], x['RSV_abs']), axis=1)
 
-    return df.tail(1)['RSV_Rand'].values[0]
+    return df.tail(1)['RSV_Rank'].values[0]
 
 
 

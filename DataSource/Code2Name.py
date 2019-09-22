@@ -6,6 +6,7 @@
 from Config.AutoGenerateConfigFile import data_dir
 import json
 import tushare as ts
+import os
 
 json_code2name_dir = data_dir + 'code2name.json'
 
@@ -25,9 +26,17 @@ def update_code2name_info():
 
 def read_code2name():
 
-    # 读取json文件
-    with open(json_code2name_dir, 'r') as f:
-        return json.load(f)
+    if os.path.exists(json_code2name_dir):
+
+        # 读取json文件
+        with open(json_code2name_dir, 'r') as f:
+            return json.load(f)
+    else:
+        update_code2name_info()
+
+        # 读取json文件
+        with open(json_code2name_dir, 'r') as f:
+            return json.load(f)
 
 
 dict_code2name = read_code2name()

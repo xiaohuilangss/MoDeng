@@ -14,27 +14,22 @@ rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject
 sys.path.append('..')
 sys.path.append(rootPath)
 
-
+# 对配置文件进行检测
 from Config.AutoGenerateConfigFile import checkConfigFile
-from DataSource.Code2Name import code2name
+checkConfigFile()
 
 import matplotlib
 matplotlib.use('agg')
 
 from DataSource.Code2Name import code2name
 from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, update_middle_period_hour_data
-from Config.AutoGenerateConfigFile import checkConfigFile
-from Config.GlobalSetting import localDBInfo
+
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_MACD, checkWeekStrayForAll
 from Experiment.RelativeRank.Sub import relativeRank, get_k_data_JQ, calRealtimeRankWithGlobal, get_current_price_JQ, \
     get_RT_price, sendHourMACDToQQ, updateConcernStkMData
 from Experiment.Reseau.StdForReseau.Demo1 import getSigleStkReseau
-from Experiment.SafeStkRelaLevel.Demo1 import sendRelaLevel2QQ
-from LSTM.AboutLSTM.Test.TomorrowPredict import printPredict2Public
 from SDK.MyTimeOPT import get_current_date_str
-
-
 
 
 from Config.Sub import readConfig
@@ -217,7 +212,7 @@ def printMainRankForPublic():
     send_qq('大盘上涨概率公示', '\n\n--------------------\n' + note)
 
 
-def JudgePChangeRatio(stk_code, price_diff_ratio, debug=True):
+def JudgePChangeRatio(stk_code, price_diff_ratio, str_gui, debug=True, gui=False):
     """
     判断stk的变化是否达到一定的幅度，以杜绝反复上报
     :param stk_code:
@@ -225,7 +220,11 @@ def JudgePChangeRatio(stk_code, price_diff_ratio, debug=True):
     """
     global price_diff_ratio_last_dic
     if debug:
-        print('函数JudgeSingleStk：进入函数！')
+        str_temp = '函数JudgeSingleStk：进入函数！'
+        if gui:
+            str_gui['msg'] = str_gui['msg'] + str_temp + '\n'
+        else:
+            print('函数JudgeSingleStk：进入函数！')
 
     # 变化1个百分点再报，避免重复报
     if stk_code in p_diff_ratio_last_dic.keys():
@@ -233,24 +232,69 @@ def JudgePChangeRatio(stk_code, price_diff_ratio, debug=True):
 
             p_diff_ratio_last_dic[stk_code] = price_diff_ratio
             if debug:
-                print('函数JudgeSingleStk：' + str(stk_code) + '价格变化幅度达标，允许推送，并更新振幅记忆！' +
-                      '\np_ratio_now:'+str(price_diff_ratio) +
-                      '\np_ratio_last:'+str(p_diff_ratio_last_dic[stk_code]))
+                str_temp = '函数JudgeSingleStk：' + str(stk_code) + '价格变化幅度达标，允许推送，并更新振幅记忆！' +\
+                      '\np_ratio_now:'+str(price_diff_ratio) +\
+                      '\np_ratio_last:'+str(p_diff_ratio_last_dic[stk_code])
+                if gui:
+                    str_gui['msg'] = str_gui['msg'] + str_temp + '\n'
+                else:
+                    print(str_temp)
 
-            return True
+            return True, str_gui
         else:
-            print('函数JudgeSingleStk：' + str(stk_code) + '价格变化幅度不够，不许推送！' +
-                  '\np_ratio_now:' + str(price_diff_ratio) +
-                  '\np_ratio_last:' + str(p_diff_ratio_last_dic[stk_code]))
-            return False
+            str_temp = '函数JudgeSingleStk：' + str(stk_code) + '价格变化幅度不够，不许推送！' +\
+                  '\np_ratio_now:' + str(price_diff_ratio) +\
+                  '\np_ratio_last:' + str(p_diff_ratio_last_dic[stk_code])
+            if gui:
+                str_gui['msg'] = str_gui['msg'] + str_temp + '\n'
+            else:
+                print(str_temp)
+
+            return False, str_gui
     else:
         p_diff_ratio_last_dic[stk_code] = price_diff_ratio
         if debug:
-            print('函数JudgeSingleStk：' + str(stk_code) + '首次运行，允许推送！')
-        return True
+            str_temp = '函数JudgeSingleStk：' + str(stk_code) + '首次运行，允许推送！'
+            if gui:
+                str_gui['msg'] = str_gui['msg'] + str_temp + '\n'
+            else:
+                print(str_temp)
+
+        return True, str_gui
 
 
-def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
+def myPrint(str_gui, str_temp, method='n', towho=''):
+    """
+
+    :param gui:
+    :param str_gui:
+    :param method:
+    :param towho:
+    :return:
+    """
+    if method is 'n':
+        print(str_temp)
+
+    elif method is 'gm':
+        str_gui['msg'] = str_gui['msg'] + str_temp + '\n\n'
+
+    elif method is 'gn':
+        str_gui['note'] = str_gui['note'] + str_temp + '\n\n'
+
+    elif method is 'qq':
+        send_qq(towho, str_temp)
+
+    return str_gui
+
+
+
+
+def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
+
+    str_gui = {
+        'note': '',
+        'msg': ''
+    }
 
     # 获取该stk的实时价格,如果是大盘指数，使用聚宽数据，否则有限使用tushare
     if stk_code in ['sh', 'sz', 'cyb']:
@@ -259,9 +303,9 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
         try:
             current_price = get_RT_price(stk_code, source='ts')
         except:
-            # current_price = get_RT_price(stk_code, source='jq')
-            print(stk_code + '获取实时price失败！')
-            return
+
+            str_gui = myPrint(str_gui, stk_code + '获取实时price失败！', method={True:'gm', False:'n'}[gui])
+            return str_gui
 
     # 获取上次price
     stk_price_last = readLastP(stk_code)
@@ -274,11 +318,20 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
     price_diff_ratio = price_diff/stk_price_last
 
     if debug:
-        print('\n\n' + stk_code + ':\np_now:'+str(current_price) +'\np_last:'+str(stk_price_last)+'\np_change_ratio:'+str(price_diff_ratio))
+        str_gui = myPrint(
+            str_gui,
+            '\n\n' + stk_code + ':\np_now:' + str(current_price) + '\np_last:' + str(
+                stk_price_last) + '\np_change_ratio:' + str(price_diff_ratio),
+            method={True: 'gm', False: 'n'}[gui])
 
     if current_price == 0.0:
-        print(stk_code + 'price==0.0! 返回！')
-        return
+
+        str_gui = myPrint(
+            str_gui,
+            stk_code + 'price==0.0! 返回！',
+            method={True: 'gm', False: 'n'}[gui])
+
+        return str_gui
 
     buy_amount = math.floor((money_each_opt/current_price)/100)*100
 
@@ -301,55 +354,88 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True):
         rank9 = -1
 
     if debug:
-        print(stk_code +
-              ':\np_change:'+str(price_diff * stk_amount_last) +
-              '\nthreshold:'+str(earn_threshold_unit) + \
-              '\nthh_sale:' + str(thh_sale) + \
-              '\nthh_buy:' + str(thh_buy))
+
+        str_gui = myPrint(
+            str_gui,
+            stk_code +
+            ':\np_change:' + str(price_diff * stk_amount_last) +
+            '\nthreshold:' + str(earn_threshold_unit) +
+            '\nthh_sale:' + str(thh_sale) +
+            '\nthh_buy:' + str(thh_buy),
+            method={True: 'gm', False: 'n'}[gui])
 
     if price_diff > thh_sale:
         # if JudgePChangeRatio(stk_code, price_diff_ratio):
-        send_qq(qq,
-                "Reach! S! "+stk_code + code2name(stk_code) +
-                '\nAmount:' + str(stk_amount_last) +
-                '\nP_now:' + str(current_price) +
-                '\nP_last:' + str(stk_price_last) +
-                '\nthreshold_b:' + '%0.2f' % thh_buy +
-                '\nthreshold_s:' + '%0.2f' % thh_sale +
+
+        str_temp = "Reach! S! "+stk_code + code2name(stk_code) +\
+                '\nAmount:' + str(stk_amount_last) +\
+                '\nP_now:' + str(current_price) +\
+                '\nP_last:' + str(stk_price_last) +\
+                '\nthreshold_b:' + '%0.2f' % thh_buy +\
+                '\nthreshold_s:' + '%0.2f' % thh_sale +\
                 '\nM9_rank:' + str('%0.2f' % rank9)
-                )
-        sendHourMACDToQQ(stk_code, qq, source='jq')
+
+        str_gui = myPrint(
+            str_gui,
+            str_temp,
+            method={True: 'gn', False: 'qq'}[gui],
+            towho=qq)
+
+        if not gui:
+            sendHourMACDToQQ(stk_code, qq, source='jq')
+
         saveLastP(stk_code, current_price)
 
     elif price_diff < -thh_buy:
         # if JudgePChangeRatio(stk_code, price_diff_ratio):
-        send_qq(qq,
-                "@Time Reach! B! " + stk_code + code2name(stk_code) +
-                '\nAmount:' + str(buy_amount) +
-                '\nP_now:' + str(current_price) +
-                '\nP_last:' + str(stk_price_last) +
-                '\nthreshold_b:' + '%0.1f' % thh_buy +
-                '\nthreshold_s:' + '%0.1f' % thh_sale +
-                '\nM9_rank:' + str('%0.2f' % rank9))
 
-        sendHourMACDToQQ(stk_code, qq, source='jq')
+        str_temp= "Reach! B! " + stk_code + code2name(stk_code) +\
+                '\nAmount:' + str(buy_amount) +\
+                '\nP_now:' + str(current_price) +\
+                '\nP_last:' + str(stk_price_last) +\
+                '\nthreshold_b:' + '%0.1f' % thh_buy +\
+                '\nthreshold_s:' + '%0.1f' % thh_sale +\
+                '\nM9_rank:' + str('%0.2f' % rank9)
+
+        str_gui = myPrint(
+            str_gui,
+            str_temp,
+            method={True: 'gn', False: 'qq'}[gui],
+            towho=qq)
+
+        if not gui:
+            sendHourMACDToQQ(stk_code, qq, source='jq')
+
         saveLastP(stk_code, current_price)
 
     else:
-        print(stk_code+':未触发任何警戒线！')
+        str_gui = myPrint(
+            str_gui,
+            stk_code + ':未触发任何警戒线！',
+            method={True: 'gm', False: 'n'}[gui])
 
     # 波动检测
-    if JudgePChangeRatio(stk_code, price_diff_ratio):
-        send_qq(qq,
-                "波动推送! " + stk_code + code2name(stk_code) +
-                '\nAmount:' + str(buy_amount) +
-                '\nP_now:' + str(current_price) +
-                '\nP_last:' + str(stk_price_last) +
-                '\nthreshold_b:' + '%0.1f' % thh_buy +
-                '\nthreshold_s:' + '%0.1f' % thh_sale +
-                '\nM9_rank:' + str('%0.2f' % rank9))
+    change_flag, str_gui = JudgePChangeRatio(stk_code, price_diff_ratio, str_gui=str_gui, gui=gui)
+    if change_flag:
 
-        sendHourMACDToQQ(stk_code, qq, source='jq')
+        str_temp = "波动推送! " + stk_code + code2name(stk_code) +\
+                '\nAmount:' + str(buy_amount) +\
+                '\nP_now:' + str(current_price) +\
+                '\nP_last:' + str(stk_price_last) +\
+                '\nthreshold_b:' + '%0.1f' % thh_buy +\
+                '\nthreshold_s:' + '%0.1f' % thh_sale +\
+                '\nM9_rank:' + str('%0.2f' % rank9)
+
+        str_gui = myPrint(
+            str_gui,
+            str_temp,
+            method={True: 'gn', False: 'qq'}[gui],
+            towho=qq)
+
+        if not gui:
+            sendHourMACDToQQ(stk_code, qq, source='jq')
+
+    return str_gui
 
 
 def updateRSVRecord():
@@ -360,7 +446,7 @@ def updateRSVRecord():
         for stk in code_list:
             RSV_Record[stk] = calRSVRank(stk, 5)
 
-    except  Exception as e:
+    except Exception as e:
         send_qq('影子2', 'RSV数据更新失败！\n' + str(e))
 
 
@@ -389,9 +475,15 @@ def calRSVRank(stk_code, Mdays, history_length=400):
 
 def callback():
     towho = '影子2'
-    buy_stk_list = readConfig()['buy_stk']
+    buy_stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
     for stk in buy_stk_list:
         JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho)
+
+def callback_gui():
+    towho = '影子2'
+    buy_stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
+    for stk in buy_stk_list:
+        str_gui = JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho, gui=True)
 
 
 def autoShutdown():

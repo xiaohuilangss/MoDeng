@@ -1,6 +1,9 @@
 # -*- encoding:UTF-8 -*-
+import win32gui
 import wx
 import time
+
+from Experiment.wxpythonGUI.MyCode.IconFlashSub import flash
 
 
 class ClockWindow(wx.Window):
@@ -10,7 +13,7 @@ class ClockWindow(wx.Window):
 
         self.timer = wx.Timer(self)                             # 创建定时器
         self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)       # 绑定一个定时器事件
-        self.timer.Start(1000)                                  # 设定时间间隔
+        self.timer.Start(10000)                                  # 设定时间间隔
 
     def Draw(self, dc):                                         # 绘制当前时间
         t = time.localtime(time.time())
@@ -40,4 +43,6 @@ class MyFrame(wx.Frame):
 app = wx.App()
 frm = MyFrame()
 frm.Show()
+
+flash(frm.GetHandle())
 app.MainLoop()
