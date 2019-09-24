@@ -287,8 +287,6 @@ def myPrint(str_gui, str_temp, method='n', towho=''):
     return str_gui
 
 
-
-
 def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
 
     str_gui = {
@@ -343,13 +341,14 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
         thh_sale = earn_threshold_unit*2*RSV_Record[stk_code]
         thh_buy = earn_threshold_unit * 2 * (1-RSV_Record[stk_code])
     else:
-        RSV_Record[stk_code] = calRSVRank(stk_code, 5)
+        RSV_Record[stk_code] = calRSVRank(stk_code, 5)/100
         thh_sale = 1
         thh_buy = -1
 
     # 计算其离心度分数
     try:
-        rank9, _, _, _ = calRealtimeRankWithGlobal(stk_code=stk_code)
+        # rank9, _, _, _ = calRealtimeRankWithGlobal(stk_code=stk_code)
+        rank9 = -1
     except:
         rank9 = -1
 
@@ -478,6 +477,7 @@ def callback():
     buy_stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
     for stk in buy_stk_list:
         JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho)
+
 
 def callback_gui():
     towho = '影子2'

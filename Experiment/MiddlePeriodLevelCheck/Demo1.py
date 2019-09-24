@@ -18,7 +18,6 @@ import json
 import pandas as pd
 
 
-
 def update_middle_period_hour_data():
     stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
     # stk_list = readConfig()['buy_stk']
@@ -40,7 +39,7 @@ def check_single_stk_middle_level(stk_code, dict):
     :return:
     """
     # 获取当前价格
-    current_price = get_RT_price(stk_code, source='ts')
+    current_price = get_RT_price(stk_code, source='jq')
 
     if stk_code in dict.keys():
         l = relativeRank(dict[stk_code], current_price)

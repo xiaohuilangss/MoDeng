@@ -58,7 +58,10 @@ def ts_code_normalize(code):
 
 def my_pro_bar(stk_code, start, end=get_current_date_str(), adj='qfq', freq='D'):
 
-    df = ts.pro_bar(ts_code=ts_code_normalize(stk_code), start_date=start, end_date=end, adj=adj, freq=freq)
+    if stk_code in ['sh', 'sz', 'cyb']:
+        df = ts.pro_bar(ts_code=ts_code_normalize(stk_code), asset='I', start_date=start, end_date=end, freq=freq)
+    else:
+        df = ts.pro_bar(ts_code=ts_code_normalize(stk_code), start_date=start, end_date=end, adj=adj, freq=freq)
     if freq == 'D':
         df = df.rename(columns={'trade_date': 'date'}).sort_values(by='date', ascending=True)
         df['date'] = df.apply(lambda x: x['date'][:4]+'-'+x['date'][4:6]+'-'+x['date'][6:], axis=1)
