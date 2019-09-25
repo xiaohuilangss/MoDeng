@@ -22,7 +22,8 @@ def get_pic_dict():
         stk_list = dict_stk_list[tab]
         stk_list_pic_dict = {}
 
-        for stk in stk_list:
+        for stk_info in stk_list:
+            stk = stk_info[1]
             df = get_k_data_JQ(stk, 400)
             stk_pic_dict = {
                 'hour': gen_Hour_MACD_Pic_wx(stk),
@@ -31,7 +32,7 @@ def get_pic_dict():
                 'index': gen_Idx_Pic_wx(df, stk_code='')
             }
 
-            stk_list_pic_dict[stk] = stk_pic_dict
+            stk_list_pic_dict[stk] = (stk_info[0], stk_pic_dict)
 
         # 将page中的stk pic存入字典
         pic_dict[tab] = stk_list_pic_dict

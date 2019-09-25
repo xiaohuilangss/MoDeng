@@ -6,6 +6,49 @@
 import jqdatasdk
 import tushare as ts
 from SDK.MyTimeOPT import get_current_date_str
+import jqdatasdk as jq
+
+
+def get_RT_price(stk_code, source='jq'):
+
+    if source == 'jq':
+        # 使用聚宽数据接口替代
+        if stk_code in ['sh', 'sz', 'cyb']:
+            stk_code_normal = {
+                'sh': '000001.XSHG',
+                'sz': '399001.XSHE',
+                'cyb': '399006.XSHE'
+            }[stk_code]
+
+        else:
+            stk_code_normal = jq.normalize_code(stk_code)
+
+        current_price = float(
+            jq.get_price(stk_code_normal, count=1, end_date=get_current_date_str())['close'].values[0])
+
+    elif source == 'ts':
+        # 获取实时价格
+        current_price = float(ts.get_realtime_quotes(stk_code)['price'].values[0])
+
+    return current_price
+
+
+def get_current_price_JQ(stk_code):
+
+    # 使用聚宽数据接口替代
+    if stk_code in ['sh', 'sz', 'cyb']:
+        stk_code_normal = {
+            'sh': '000001.XSHG',
+            'sz': '399001.XSHE',
+            'cyb': '399006.XSHE'
+        }[stk_code]
+
+    else:
+        stk_code_normal = jq.normalize_code(stk_code)
+
+    current_price = float(jq.get_price(stk_code_normal, count=1, end_date=get_current_date_str())['close'].values[0])
+
+    return current_price
 
 
 def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):

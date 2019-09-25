@@ -6,14 +6,9 @@
 import tushare as ts
 import numpy as np
 
-# from RelativeRank.Sub import my_pro_bar, get_k_data_JQ
-from DataSource.Data_Sub import get_k_data_JQ
-from Experiment.RelativeRank.Sub import my_pro_bar
-from SDK.MyTimeOPT import add_date_str, get_current_date_str
 
-df = ts.get_k_data('000001')
-win = 3
-df = df.reset_index()
+from DataSource.Data_Sub import get_k_data_JQ
+from SDK.MyTimeOPT import add_date_str, get_current_date_str
 
 
 def df_win_std(df, win):
@@ -53,6 +48,9 @@ df.plot('date', ['close', 'std_m'], subplots=True)
 """
 
 if __name__ == '__main__':
+    df = ts.get_k_data('000001')
+    win = 3
+    df = df.reset_index()
 
     r = getSigleStkReseau('300508')
     end = 0

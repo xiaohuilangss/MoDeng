@@ -9,9 +9,9 @@ def readConfig():
 
 
 dict_stk_list = {
-    'Index': readConfig()['index_stk'],
-    'Buy': readConfig()['buy_stk'],
-    'Concerned': readConfig()['concerned_stk']
+    'Index': list(enumerate(list(set(readConfig()['index_stk'])))),
+    'Buy': list(enumerate(list(set(readConfig()['buy_stk'])))),
+    'Concerned': list(enumerate(list(set(readConfig()['concerned_stk']))))
 }
 
 if __name__ == '__main__':

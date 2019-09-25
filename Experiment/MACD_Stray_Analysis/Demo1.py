@@ -7,20 +7,14 @@
 import calendar
 import pandas as pd
 import talib
-import numpy as np
-import tushare as ts
-import math
-import matplotlib
-# matplotlib.use('agg')
-from io import BytesIO
+
 
 from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
-# from Experiment.RelativeRank.Sub import get_k_data_JQ
+
 
 from SendMsgByQQ.QQGUI import send_qq
-from SendMsgByQQ.SendPicByQQ import send_pic_qq, send_pic_qq_data
-from PIL import Image
+from SendMsgByQQ.SendPicByQQ import send_pic_qq
 
 from pylab import *
 from SDK.MyTimeOPT import get_current_date_str, add_date_str

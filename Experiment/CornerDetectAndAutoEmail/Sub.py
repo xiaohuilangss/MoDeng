@@ -1,14 +1,12 @@
 # encoding = utf-8
 from email.mime.image import MIMEImage
 
-# matplotlib.use('Agg')
+
 from Config.AutoStkConfig import *
-# from SDK.SDKHeader import *
 import talib
 from talib import MA_Type
 
 import tushare as ts
-import numpy as np
 from SDK.DataPro import normalize
 from SDK.MyTimeOPT import DateStr2Sec
 from SDK.MyTimeOPT import get_current_date_str
