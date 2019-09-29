@@ -154,8 +154,8 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
         thh_buy = earn_threshold_unit * 2 * (1-RSV_Record[stk_code])
     else:
         RSV_Record[stk_code] = calRSVRank(stk_code, 5)/100
-        thh_sale = 1
-        thh_buy = -1
+        thh_sale = earn_threshold_unit*2*RSV_Record[stk_code]
+        thh_buy = earn_threshold_unit * 2 * (1-RSV_Record[stk_code])
 
     # 计算其离心度分数
     try:

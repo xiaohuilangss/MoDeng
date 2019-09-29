@@ -5,20 +5,11 @@ from threading import *
 import wx
 
 # Button definitions
+from AutoDailyOpt.Sub import calRSVRank
 from AutoDailyOpt.p_diff_ratio_last import RSV_Record
 from Config.Sub import readConfig
-from Experiment.BOLL.Demo import calRSVRank
+
 from Experiment.wxpythonGUI.MyCode.Data_Pro_Sub import get_pic_dict
-
-
-def EVT_RESULT(win, func):
-    """
-    绑定时间与响应函数
-    :param win:
-    :param func:
-    :return:
-    """
-    win.Connect(-1, -1, EVT_RESULT_ID, func)
 
 
 def updateRSVRecord():
@@ -43,30 +34,4 @@ class ResultEvent(wx.PyEvent):
         wx.PyEvent.__init__(self)
         self.SetEventType(id)
         self.data = data
-
-
-# Thread class that executes processing
-class WorkerThread(Thread):
-    """Worker Thread Class."""
-    def __init__(self, notify_window):
-        """Init Worker Thread Class."""
-        Thread.__init__(self)
-        self._notify_window = notify_window
-        self._want_abort = 0
-        self.start()
-
-    def run(self):
-
-        # 初始化工作
-        updateRSVRecord()
-
-        # 生成初始化图片
-        r = get_pic_dict()
-        wx.PostEvent(self._notify_window, ResultEvent(id=INIT_CPT_ID, data=r))
-
-
-    def abort(self):
-        """abort worker thread."""
-        # Method for use by main thread to signal an abort
-        self._want_abort = 1
 
