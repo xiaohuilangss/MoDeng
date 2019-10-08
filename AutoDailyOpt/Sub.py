@@ -6,6 +6,7 @@
 import math
 
 from AutoDailyOpt.p_diff_ratio_last import RSV_Record, p_diff_ratio_last_dic
+from Config.AutoGenerateConfigFile import data_dir
 from Config.AutoStkConfig import rootPath
 import json
 import os
@@ -21,7 +22,9 @@ from SendMsgByQQ.QQGUI import send_qq
 """
 F:\MYAI\Code\master\My_Quant\AutoDailyOpt\LocalRecord
 """
-last_p_file_url = rootPath + '\AutoDailyOpt\LocalRecord\last_p.json'
+# last_p_file_url = rootPath + '\AutoDailyOpt\LocalRecord\last_p.json'
+last_p_file_url = data_dir + '\last_p.json'
+
 money_each_opt = 5000
 
 
@@ -99,7 +102,7 @@ def calRSVRank(stk_code, Mdays, history_length=400):
     return df.tail(1)['RSV'].values[0]
 
 
-def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
+def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
 
     str_gui = {
         'note': '',
@@ -178,13 +181,13 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
     if price_diff > thh_sale:
         # if JudgePChangeRatio(stk_code, price_diff_ratio):
 
-        str_temp = "Reach! S! "+stk_code + code2name(stk_code) +\
+        str_temp = "触发卖出网格！可以考虑卖出！ "+stk_code + code2name(stk_code) +\
                 '\nAmount:' + str(stk_amount_last) +\
-                '\nP_now:' + str(current_price) +\
-                '\nP_last:' + str(stk_price_last) +\
-                '\nthreshold_b:' + '%0.2f' % thh_buy +\
-                '\nthreshold_s:' + '%0.2f' % thh_sale +\
-                '\nM9_rank:' + str('%0.2f' % rank9)
+                '\n当前价格:' + str(current_price) +\
+                '\n上次价格:' + str(stk_price_last) +\
+                '\n买入网格大小:' + '%0.2f' % thh_buy +\
+                '\n卖出网格大小:' + '%0.2f' % thh_sale
+                # '\nM9_rank:' + str('%0.2f' % rank9)
 
         str_gui = myPrint(
             str_gui,
@@ -195,18 +198,18 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
         if not gui:
             sendHourMACDToQQ(stk_code, qq, source='jq')
 
+        # 更新本地价格
         saveLastP(stk_code, current_price)
 
     elif price_diff < -thh_buy:
-        # if JudgePChangeRatio(stk_code, price_diff_ratio):
 
-        str_temp= "Reach! B! " + stk_code + code2name(stk_code) +\
+        str_temp = "触发买入网格！可以考虑买入！" + stk_code + code2name(stk_code) +\
                 '\nAmount:' + str(buy_amount) +\
-                '\nP_now:' + str(current_price) +\
-                '\nP_last:' + str(stk_price_last) +\
-                '\nthreshold_b:' + '%0.2f' % thh_buy +\
-                '\nthreshold_s:' + '%0.2f' % thh_sale +\
-                '\nM9_rank:' + str('%0.2f' % rank9)
+                '\n当前价格:' + str(current_price) +\
+                '\n上次价格:' + str(stk_price_last) +\
+                '\n买入网格大小:' + '%0.2f' % thh_buy +\
+                '\n卖出网格大小:' + '%0.2f' % thh_sale
+                # '\nM9_rank:' + str('%0.2f' % rank9)
 
         str_gui = myPrint(
             str_gui,
@@ -231,11 +234,11 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=True, gui=False):
 
         str_temp = "波动推送! " + stk_code + code2name(stk_code) +\
                 '\nAmount:' + str(buy_amount) +\
-                '\nP_now:' + str(current_price) +\
-                '\nP_last:' + str(stk_price_last) +\
-                '\nthreshold_b:' + '%0.2f' % thh_buy +\
-                '\nthreshold_s:' + '%0.2f' % thh_sale +\
-                '\nM9_rank:' + str('%0.2f' % rank9)
+                '\n当前价格:' + str(current_price) +\
+                '\n上次价格:' + str(stk_price_last) +\
+                '\n买入网格大小:' + '%0.2f' % thh_buy +\
+                '\n卖出网格大小:' + '%0.2f' % thh_sale
+                # '\nM9_rank:' + str('%0.2f' % rank9)
 
         str_gui = myPrint(
             str_gui,
@@ -301,6 +304,8 @@ def JudgePChangeRatio(stk_code, price_diff_ratio, str_gui, debug=True, gui=False
 
 
 if __name__ == '__main__':
+    from DataSource.auth_info import *
+    calRSVRank('300183', 5, history_length=400)
     saveLastP('000001', 25)
     
     end = 0

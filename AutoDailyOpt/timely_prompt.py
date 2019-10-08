@@ -362,12 +362,12 @@ def myPrint(str_gui, str_temp, method='n', towho=''):
 #     if price_diff > thh_sale:
 #         # if JudgePChangeRatio(stk_code, price_diff_ratio):
 #
-#         str_temp = "Reach! S! "+stk_code + code2name(stk_code) +\
+#         str_temp = "触发卖出网格！可以考虑卖出！ "+stk_code + code2name(stk_code) +\
 #                 '\nAmount:' + str(stk_amount_last) +\
-#                 '\nP_now:' + str(current_price) +\
-#                 '\nP_last:' + str(stk_price_last) +\
-#                 '\nthreshold_b:' + '%0.2f' % thh_buy +\
-#                 '\nthreshold_s:' + '%0.2f' % thh_sale +\
+#                 '\n当前价格:' + str(current_price) +\
+#                 '\n上次价格:' + str(stk_price_last) +\
+#                 '\n买入网格大小:' + '%0.2f' % thh_buy +\
+#                 '\n卖出网格大小:' + '%0.2f' % thh_sale +\
 #                 '\nM9_rank:' + str('%0.2f' % rank9)
 #
 #         str_gui = myPrint(
@@ -384,12 +384,12 @@ def myPrint(str_gui, str_temp, method='n', towho=''):
 #     elif price_diff < -thh_buy:
 #         # if JudgePChangeRatio(stk_code, price_diff_ratio):
 #
-#         str_temp= "Reach! B! " + stk_code + code2name(stk_code) +\
+#         str_temp= "触发买入网格！可以考虑买入！" + stk_code + code2name(stk_code) +\
 #                 '\nAmount:' + str(buy_amount) +\
-#                 '\nP_now:' + str(current_price) +\
-#                 '\nP_last:' + str(stk_price_last) +\
-#                 '\nthreshold_b:' + '%0.1f' % thh_buy +\
-#                 '\nthreshold_s:' + '%0.1f' % thh_sale +\
+#                 '\n当前价格:' + str(current_price) +\
+#                 '\n上次价格:' + str(stk_price_last) +\
+#                 '\n买入网格大小:' + '%0.1f' % thh_buy +\
+#                 '\n卖出网格大小:' + '%0.1f' % thh_sale +\
 #                 '\nM9_rank:' + str('%0.2f' % rank9)
 #
 #         str_gui = myPrint(
@@ -415,10 +415,10 @@ def myPrint(str_gui, str_temp, method='n', towho=''):
 #
 #         str_temp = "波动推送! " + stk_code + code2name(stk_code) +\
 #                 '\nAmount:' + str(buy_amount) +\
-#                 '\nP_now:' + str(current_price) +\
-#                 '\nP_last:' + str(stk_price_last) +\
-#                 '\nthreshold_b:' + '%0.1f' % thh_buy +\
-#                 '\nthreshold_s:' + '%0.1f' % thh_sale +\
+#                 '\n当前价格:' + str(current_price) +\
+#                 '\n上次价格:' + str(stk_price_last) +\
+#                 '\n买入网格大小:' + '%0.1f' % thh_buy +\
+#                 '\n卖出网格大小:' + '%0.1f' % thh_sale +\
 #                 '\nM9_rank:' + str('%0.2f' % rank9)
 #
 #         str_gui = myPrint(
