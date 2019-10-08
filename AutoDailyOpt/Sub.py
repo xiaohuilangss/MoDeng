@@ -65,6 +65,7 @@ def readLastP(stk_code):
     else:
         with open(last_p_file_url, 'w') as f:
             json.dump(obj={}, fp=f)
+            return -1
 
 
 def saveLastP(stk_code, p):
