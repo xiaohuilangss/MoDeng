@@ -355,15 +355,15 @@ def gen_Idx_Pic(stk_df, stk_code=''):
     sar_tail = sar_tail_origin.copy()
     sar_tail['compare'] = sar_tail_origin.apply(lambda x: x['SAR'] - x['close'], axis=1)
 
+    title_tmp = stk_code + ' ' + code2name(stk_code)
+
     if sar_tail.head(1)['compare'].values[0] * sar_tail.tail(1)['compare'].values[0] < 0:
         if sar_tail.tail(1)['SAR'].values[0] < sar_tail.tail(1)['close'].values[0]:
-            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续价格可能上涨！'
-            plt.title(title_tmp)
+            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数天可能上涨！'
             result_analysis.append(title_tmp)
             set_background_color(bc='b_r')
         else:
-            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续价格可能下跌！'
-            plt.title(title_tmp)
+            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数天可能下跌！'
             result_analysis.append(title_tmp)
             set_background_color(bc='b_g')
 
@@ -406,6 +406,7 @@ def gen_Idx_Pic(stk_df, stk_code=''):
 
     fig.tight_layout()  # 调整整体空白
     plt.subplots_adjust(wspace=0, hspace=0)  # 调整子图间距
+    ax[0].set_title(title_tmp)
 
     return fig, ax, attention, result_analysis
 
