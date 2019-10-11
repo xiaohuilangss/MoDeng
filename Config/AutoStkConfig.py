@@ -5,18 +5,20 @@
 """
 import os
 
+from Config.AutoGenerateConfigFile import checkConfigFile
+
 cubic_test_last_step = 7        # 在曲线拟合时，取最后的几个值进行二次拟合
 
 # 图片存在的路径，如果没有自动创建
-if os.path.exists('C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/'):
-    pic_save_dir_root = 'C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/'
-
-elif os.path.exists('F:/软件代码/MoDeng/TempPicStore/'):
-    pic_save_dir_root = 'F:/软件代码/MoDeng/TempPicStore/'
-
-else:
-    os.makedirs('C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/')
-    pic_save_dir_root = 'C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/'
+# if os.path.exists('C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/'):
+#     pic_save_dir_root = 'C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/'
+#
+# elif os.path.exists('F:/软件代码/MoDeng/TempPicStore/'):
+#     pic_save_dir_root = 'F:/软件代码/MoDeng/TempPicStore/'
+#
+# else:
+#     os.makedirs('C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/')
+#     pic_save_dir_root = 'C:/Users/paul/Desktop/软件代码/MoDeng/TempPicStore/'
 
 plot_current_days_amount = 40   # 画出近期的stk走势情况，该参数指示最近取的天数
 tailLengthForMACD = 150         # 在计算MACD时，因为之用最近的几个数，所以不需要往前延伸太多，以节省计算量
@@ -51,4 +53,7 @@ MDataPWD = os.path.abspath(rootPath + '/RelativeRank/')
 SeaSelectDataPWD = os.path.abspath(rootPath+'/AutoDailyOpt/SeaSelect/')
 
 LastScale = os.path.abspath(rootPath+'/AutoDailyOpt/') + '/LastScale/'
+
+# 检查配置
+checkConfigFile()
 
