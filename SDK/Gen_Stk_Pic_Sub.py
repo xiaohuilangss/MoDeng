@@ -110,8 +110,13 @@ def gen_Hour_MACD_Pic(stk_code, source='jq', title=''):
         list([str(x)[-11:-3] for x in df_30['datetime']]),
         30, rotation=45)
 
-    ax[3].set_xticks(list(range(0, len(df_60['datetime']))))
-    ax[3].set_xticklabels(list([str(x)[-11:-3] for x in df_60['datetime']]), rotation=45)
+    ax[3] = addXticklabel_list(
+        ax[3],
+        list([str(x)[-11:-3] for x in df_60['datetime']]),
+        30, rotation=45)
+
+    # ax[3].set_xticks(list(range(0, len(df_60['datetime']))))
+    # ax[3].set_xticklabels(list([str(x)[-11:-3] for x in df_60['datetime']]), rotation=45)
 
     for ax_sig in ax:
         ax_sig.legend(loc='best')
@@ -163,26 +168,28 @@ def gen_W_M_MACD_Pic(stk_code):
         return False
 
     # 规整
-    df_floor = df.tail(math.floor(len(df) / 20) * 20 - 19)
+    df_floor_origin = df.tail(math.floor(len(df) / 20) * 20 - 19)
+    df_floor = df_floor_origin.copy()
 
     # 增加每周的星期几
-    df_floor['day'] = df_floor.apply(
+    df_floor['day'] = df_floor_origin.apply(
         lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]),
                                    int(x['date'].split('-')[2])), axis=1)
 
-    # 增加每周的星期几
-    df_floor['day'] = df_floor.apply(
-        lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]),
-                                   int(x['date'].split('-')[2])), axis=1)
+    # # 增加每周的星期几
+    # df_floor['day'] = df_floor_origin.apply(
+    #     lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]),
+    #                                int(x['date'].split('-')[2])), axis=1)
 
     # 隔着5个取一个
     if df_floor.tail(1)['day'].values[0] != 4:
-        df_floor_slice_5 = pd.concat([df_floor[df_floor.day == 4], df_floor.tail(1)], axis=0)
+        df_floor_slice_5_origin = pd.concat([df_floor[df_floor.day == 4], df_floor.tail(1)], axis=0)
     else:
-        df_floor_slice_5 = df_floor[df_floor.day == 4]
+        df_floor_slice_5_origin = df_floor[df_floor.day == 4]
 
     # 获取最后的日期
-    date_last = df_floor_slice_5.tail(1)['date'].values[0]
+    date_last = df_floor_slice_5_origin.tail(1)['date'].values[0]
+    df_floor_slice_5 = df_floor_slice_5_origin.copy()
 
     # 计算指标
     df_floor_slice_5['MACD'], df_floor_slice_5['MACDsignal'], df_floor_slice_5['MACDhist'] = talib.MACD(
@@ -191,7 +198,8 @@ def gen_W_M_MACD_Pic(stk_code):
         signalperiod=9)
 
     # 隔着20个取一个（月线）
-    df_floor_slice_20 = df_floor.loc[::20, :]
+    df_floor_slice_20_origin = df_floor.loc[::20, :]
+    df_floor_slice_20 = df_floor_slice_20_origin.copy()
 
     # 计算指标
     df_floor_slice_20['MACD'], df_floor_slice_20['MACDsignal'], df_floor_slice_20['MACDhist'] = talib.MACD(
@@ -338,6 +346,29 @@ def gen_Idx_Pic(stk_df, stk_code=''):
     stk_df = addStkIndexToDf(stk_df).tail(60)
 
     set_background_color(bc='w')
+
+    result_analysis = []
+
+    # 检查SAR
+    attention = False
+    sar_tail_origin = stk_df.tail(2)
+    sar_tail = sar_tail_origin.copy()
+    sar_tail['compare'] = sar_tail_origin.apply(lambda x: x['SAR'] - x['close'], axis=1)
+
+    title_tmp = stk_code + ' ' + code2name(stk_code)
+
+    if sar_tail.head(1)['compare'].values[0] * sar_tail.tail(1)['compare'].values[0] < 0:
+        if sar_tail.tail(1)['SAR'].values[0] < sar_tail.tail(1)['close'].values[0]:
+            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数天可能上涨！'
+            result_analysis.append(title_tmp)
+            set_background_color(bc='b_r')
+        else:
+            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数天可能下跌！'
+            result_analysis.append(title_tmp)
+            set_background_color(bc='b_g')
+
+        attention = True
+
     fig, ax = plt.subplots(nrows=5, ncols=1)
 
     ax[0].plot(range(0, len(stk_df['date'])), stk_df['RSI5'], 'b--', label='RSI5线', linewidth=1)
@@ -375,25 +406,7 @@ def gen_Idx_Pic(stk_df, stk_code=''):
 
     fig.tight_layout()  # 调整整体空白
     plt.subplots_adjust(wspace=0, hspace=0)  # 调整子图间距
-
-    result_analysis = []
-
-    # 检查SAR
-    attention = False
-    sar_tail = stk_df.tail(2)
-    sar_tail['compare'] = sar_tail.apply(lambda x: x['SAR'] - x['close'], axis=1)
-
-    if sar_tail.head(1)['compare'].values[0] * sar_tail.tail(1)['compare'].values[0] < 0:
-        if sar_tail.tail(1)['SAR'].values[0] < sar_tail.tail(1)['close'].values[0]:
-            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续价格可能上涨！'
-            plt.title(title_tmp)
-            result_analysis.append(title_tmp)
-        else:
-            title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续价格可能下跌！'
-            plt.title(title_tmp)
-            result_analysis.append(title_tmp)
-
-        attention = True
+    ax[0].set_title(title_tmp)
 
     return fig, ax, attention, result_analysis
 
