@@ -101,7 +101,7 @@ def predict_tomorrow(
 
 def printPredict2Public():
 
-    towho = u'大盘上涨概率公示'
+    towho = u'影子'
     send_qq(towho, '各位：\n以下是下一个交易日大盘最高价、最低价和收盘价的预测，因为三个价格使用相互独立的模型，所以会出现收盘价低于最低价的情况，以及类似的情形，希望各位注意！' +
                          '\n' +
                          '周一~周五 晚上19：30 计算并发送该消息！\n格式及解释：\n' +
@@ -113,8 +113,10 @@ def printPredict2Public():
         max_min_info = json.load(f)
 
     for stk in ['sh', 'sz', 'cyb']:
-        close_today = ts.get_k_data(stk, start=add_date_str(get_current_date_str(), -5)).tail(1)['close'].values[0]
 
+        today_df = ts.get_k_data(stk).tail(1)
+        send_qq(towho, stk + ' 今天数据：\n' + str(today_df) + '\n')
+        close_today = today_df['close'].values[0]
         r = [(label, '%0.2f' % predict_tomorrow(
             stk,
             label,
@@ -125,7 +127,6 @@ def printPredict2Public():
 
         # 增加与今天收盘价的对比
         r_contrast = [(x[0], x[1], '%0.2f' % ((float(x[1])-close_today)/close_today*100) + '%', x[2]) for x in r]
-
         stk2name = {
             'sh': '上证',
             'sz': '深证',
