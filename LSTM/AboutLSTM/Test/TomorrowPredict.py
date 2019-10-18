@@ -133,7 +133,7 @@ def printPredict2Public():
             'cyb': '创业板'
         }
 
-        send_qq(towho, stk2name[stk] + ':\n' + str(r_contrast))
+        send_qq(towho, stk2name[stk] + '明日预测:\n' + str(r_contrast))
 
 
 def printConcernedPredict2Self():
