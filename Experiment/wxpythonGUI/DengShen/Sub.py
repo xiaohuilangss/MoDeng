@@ -4,9 +4,9 @@ import wx
 import os
 
 
-class DengShen1(wx.Frame):
+class DengShen(wx.Frame):
     def __init__(self, parent, title):
-        super(DengShen1, self).__init__(parent, title=title, size=(700, 500))
+        super(DengShen, self).__init__(parent, title=title, size=(700, 500))
 
         panel = wx.Panel(self)
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
@@ -38,6 +38,8 @@ class DengShen1(wx.Frame):
         print("Maximum length reached")
 
 
-app = wx.App()
-DengShen1(None, '灯神')
-app.MainLoop()
+if __name__ == '__main__':
+
+    app = wx.App()
+    DengShen(None, '灯神')
+    app.MainLoop()
