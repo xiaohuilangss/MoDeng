@@ -7,7 +7,7 @@
 import matplotlib
 
 from Config.GlobalSetting import g_total_stk_info_mysql
-from SDK.StkSub import getNameByStkCode
+from HuiCe.Sub import getNameByStkCode
 import time
 
 

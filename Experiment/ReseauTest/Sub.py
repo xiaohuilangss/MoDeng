@@ -1,8 +1,7 @@
 # encoding=utf-8
 import numpy as np
-import time
 
-from SDK.StkSub import calExchangeFee
+from HuiCe.Sub import calExchangeFee
 
 
 def BS_opt(stk_code, price, amount, opt, record_info, debug=False):

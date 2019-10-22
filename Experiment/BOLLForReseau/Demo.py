@@ -10,30 +10,18 @@ import tushare as ts
 import talib
 from pylab import *
 
+from DataSource.Data_Sub import my_pro_bar
 from Experiment.Constraint.Constraint import calBSReseau
-from SDK.MyTimeOPT import minus_date_str
-from SDK.StkSub import BS_opt, plotOPResult
+from SDK.MyTimeOPT import minus_date_str, get_current_date_str
+from HuiCe.Sub import BS_opt, plotOPResult
 
-stk_code = '300508'
+# 登录datasource
+from DataSource.auth_info import *
+stk_code = '000001'
 
 df = ts.get_k_data(stk_code, start='2017-01-12', end='2019-05-26')
 
 
-closed = df['close'].values
-df['upper'], df['middle'], df['lower'] = talib.BBANDS(closed, timeperiod=10,
-                                                        # number of non-biased standard deviations from the mean
-                                                        nbdevup=2,
-                                                        nbdevdn=2,
-                                                        # Moving average type: simple moving average here
-                                                        matype=0)
-
-df = df.dropna(how='any', axis=0)
-
-"""
-画图语句
-df.plot('date', ['upper', 'lower', 'high', 'low'], style=['-^', '-^', '*', '*'])
-
-"""
 record_info = {
     'floor_last': 0,
     'money_remain': 20000,

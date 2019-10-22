@@ -8,7 +8,7 @@ import pickle
 
 from CornerDetectAndAutoEmail.AveMaxMinDetect.Global import h_l_pot_info_url
 from Config.GlobalSetting import g_total_stk_info_mysql
-from SDK.StkSub import getNameByStkCode
+from HuiCe.Sub import getNameByStkCode
 from SendMsgByQQ.QQGUI import send_qq
 import os
 """

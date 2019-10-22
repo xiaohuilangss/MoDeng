@@ -14,7 +14,7 @@ sys.path.append(rootPath)
 # from Config.GlobalSetting import g_total_stk_info_mysql
 from SDK.DBOpt import genDbConn
 from SDK.MyTimeOPT import get_current_datetime_str
-from SDK.StkSub import getNameByStkCode
+from HuiCe.Sub import getNameByStkCode
 import pandas as pd
 
 """

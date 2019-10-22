@@ -11,7 +11,7 @@ from Config.AutoStkConfig import rootPath
 import json
 import os
 
-from Config.Sub import readConfig
+from Config.Sub import readConfig, writeConfig
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_current_price_JQ, get_RT_price, get_k_data_JQ
 from Experiment.RelativeRank.Sub import sendHourMACDToQQ
@@ -98,9 +98,21 @@ def calRSVRank(stk_code, Mdays, history_length=400):
         else:
             df.loc[idx, 'RSV'] = (df.loc[idx, 'close_M'+str(M)] - df.loc[idx, 'low_M'+str(M)])/(df.loc[idx, 'high_M'+str(M)] - df.loc[idx, 'low_M'+str(M)])
 
-    # df['RSV'] = df.apply(lambda x: (x['close_M'+str(M)] - x['low_M'+str(M)])/(x['high_M'+str(M)] - x['low_M'+str(M)]), axis=1)
-
     return df.tail(1)['RSV'].values[0]
+
+
+def getMinReseauSize():
+    """
+    从配置文件中获取网格的最小宽度，如果没有该字段，则设置默认为2%
+    :return:
+    """
+    r = readConfig()
+    if 'minReseau' in r.keys():
+        return r['minReseau']
+    else:
+
+        writeConfig('minReseau', 0.02)
+        return 0.02
 
 
 def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
@@ -127,9 +139,24 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
         saveLastP(stk_code, current_price)
         stk_price_last = current_price
 
-    # 实时计算价差
+    # 实时计算价差，用于“波动提示”和“最小网格限制”
     price_diff = current_price - stk_price_last
     price_diff_ratio = price_diff/stk_price_last
+
+    # 判断波动是否满足“最小网格限制”
+    config_json = readConfig()
+    if not ('minReseau' in config_json.keys()):
+        writeConfig('minReseau', 0.02)
+        min_reseau = 0.02
+    else:
+        min_reseau = config_json['minReseau']
+
+    if min_reseau > math.fabs(price_diff_ratio):
+        str_gui = myPrint(
+            str_gui,
+            stk_code + '波动未达到最小网格宽度，返回！',
+            method={True: 'gm', False: 'n'}[gui])
+        return str_gui
 
     if debug:
         str_gui = myPrint(
@@ -138,6 +165,7 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
                 stk_price_last) + '\np_change_ratio:' + str(price_diff_ratio),
             method={True: 'gm', False: 'n'}[gui])
 
+    # 排除获取的价格为0的情况，此种情况可能是stop或者时间未到
     if current_price == 0.0:
 
         str_gui = myPrint(
@@ -161,13 +189,6 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
         thh_sale = earn_threshold_unit*2*RSV_Record[stk_code]
         thh_buy = earn_threshold_unit * 2 * (1-RSV_Record[stk_code])
 
-    # 计算其离心度分数
-    try:
-        # rank9, _, _, _ = calRealtimeRankWithGlobal(stk_code=stk_code)
-        rank9 = -1
-    except:
-        rank9 = -1
-
     if debug:
 
         str_gui = myPrint(
@@ -180,7 +201,6 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
             method={True: 'gm', False: 'n'}[gui])
 
     if price_diff > thh_sale:
-        # if JudgePChangeRatio(stk_code, price_diff_ratio):
 
         str_temp = "触发卖出网格！可以考虑卖出！ "+stk_code + code2name(stk_code) +\
                 '\nAmount:' + str(stk_amount_last) +\
@@ -188,7 +208,6 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
                 '\n上次价格:' + str(stk_price_last) +\
                 '\n买入网格大小:' + '%0.2f' % thh_buy +\
                 '\n卖出网格大小:' + '%0.2f' % thh_sale
-                # '\nM9_rank:' + str('%0.2f' % rank9)
 
         str_gui = myPrint(
             str_gui,
@@ -210,7 +229,6 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
                 '\n上次价格:' + str(stk_price_last) +\
                 '\n买入网格大小:' + '%0.2f' % thh_buy +\
                 '\n卖出网格大小:' + '%0.2f' % thh_sale
-                # '\nM9_rank:' + str('%0.2f' % rank9)
 
         str_gui = myPrint(
             str_gui,
@@ -239,7 +257,6 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
                 '\n上次价格:' + str(stk_price_last) +\
                 '\n买入网格大小:' + '%0.2f' % thh_buy +\
                 '\n卖出网格大小:' + '%0.2f' % thh_sale
-                # '\nM9_rank:' + str('%0.2f' % rank9)
 
         str_gui = myPrint(
             str_gui,
@@ -308,5 +325,5 @@ if __name__ == '__main__':
     from DataSource.auth_info import *
     calRSVRank('300183', 5, history_length=400)
     saveLastP('000001', 25)
-    
+
     end = 0

@@ -21,7 +21,7 @@ from SDK.PickleSaveSub import loadP
 
 
 # 定义适应度函数
-from SDK.StkSub import BS_opt
+from HuiCe.Sub import BS_opt
 
 
 def fitness(w, df):
