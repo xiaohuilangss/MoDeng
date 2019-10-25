@@ -2,12 +2,33 @@
 
 魔灯，一款开源的量化投资软件！
 
-有意参与开发者可加入交流群695751148，进行代码层次的交流！
-微信公众号：投资里的数据分析
 
+
+1、项目介绍：
+------------
+https://mp.weixin.qq.com/s/hSAvV4gVM8jjkutiIS_eJg
+
+
+
+2、主要原理：
+------------
+https://mp.weixin.qq.com/s/orsdUo_2ZMhRIGN6YjPWnQ
+
+
+
+3、启动运行：
+------------
 当前程序入口文件：
 \MoDeng\Experiment\wxpythonGUI\MyCode\Sub.py
 
 运行该文件来启动程序！
 
-其他问题请到QQ群实时反馈！
+
+
+4、联系我们
+------------
+
+QQ群：695751148
+微信公众号：投资里的数据分析
+
+
