@@ -95,7 +95,7 @@ def save_bk_fig(bk_name, data_df_param, days,y_axis_info_param,save_url):
 
         xtick_MACD = range(0,len(df_MACD))
 
-        ax[1,0].bar(xtick_MACD,df_MACD.MACD)
+        ax[1,0].bar(xtick_MACD, df_MACD.MACD)
         ax[1,0].set_xticks(xtick_MACD)
         ax[1,0].set_xticklabels(df_MACD.date,rotation=90,fontsize=3)
 
