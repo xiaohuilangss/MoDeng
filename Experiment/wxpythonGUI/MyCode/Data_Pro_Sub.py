@@ -1,8 +1,8 @@
 # encoding=utf-8
 from Config.Sub import dict_stk_list
 from DataSource.Data_Sub import get_k_data_JQ
-from SDK.Gen_Stk_Pic_Sub import gen_Hour_MACD_Pic_wx, \
-    gen_Day_Pic_wx, gen_W_M_MACD_Pic_wx, gen_Idx_Pic_wx
+from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_wx, \
+    gen_day_pic_wx, gen_w_m_macd_pic_wx, gen_idx_pic_wx, gen_hour_index_pic_wx
 from pylab import *
 
 
@@ -24,17 +24,18 @@ def get_pic_dict():
             df = get_k_data_JQ(stk, 400)
 
             # 其他指标
-            r_tuple_index_pic = gen_Idx_Pic_wx(df, stk_code=stk)
+            r_tuple_index_pic = gen_idx_pic_wx(df, stk_code=stk)
             result_analysis_list = result_analysis_list + r_tuple_index_pic[1]
 
             # 日线分析结果汇总
-            r_tuple_day_pic = gen_Day_Pic_wx(df, stk_code=stk)
+            r_tuple_day_pic = gen_day_pic_wx(df, stk_code=stk)
             result_analysis_list = result_analysis_list + r_tuple_day_pic[1]
 
             stk_pic_dict = {
-                'hour': gen_Hour_MACD_Pic_wx(stk),
+                'hour': gen_hour_macd_pic_wx(stk),
+                'hour_index': gen_hour_index_pic_wx(stk),
                 'day': r_tuple_day_pic[0],
-                'wm': gen_W_M_MACD_Pic_wx(stk),
+                'wm': gen_w_m_macd_pic_wx(stk),
                 'index': r_tuple_index_pic[0]
             }
 
