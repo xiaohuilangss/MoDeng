@@ -7,6 +7,7 @@ from Config.AutoGenerateConfigFile import data_dir
 import json
 import tushare as ts
 import os
+import re
 
 json_code2name_dir = data_dir + 'code2name.json'
 
@@ -55,7 +56,19 @@ def code2name(code):
         return '未知名字'
 
 
+def name2code(name):
+    n2c_list = [(v, k) for k, v in dict_code2name.items()]
+    n2c_dict = dict(n2c_list)
+    return n2c_dict.get(name, '未知代码')
+
+
+def get_all_stk_name():
+    return [v for k, v in dict_code2name.items()]
+
+
 if __name__ == '__main__':
+
+    r = get_all_stk_name()
     update_code2name_info()
     code2name = read_code2name()
 

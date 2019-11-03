@@ -111,3 +111,9 @@ def my_pro_bar(stk_code, start, end=get_current_date_str(), adj='qfq', freq='D')
     elif 'min' in freq:
         df = df.rename(columns={'trade_time': 'time'}).sort_values(by='time', ascending=True)
     return df
+
+
+if __name__ == '__main__':
+    df = my_pro_bar('300183', start='2019-01-01')
+    df.plot('date', ['close'])
+    end = 0
