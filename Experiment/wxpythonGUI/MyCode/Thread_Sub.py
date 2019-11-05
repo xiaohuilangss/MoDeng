@@ -403,11 +403,17 @@ def on_timer_pic(win, debug=False):
     # wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data=note_middle_rank))
 
     # 拐点检测
+    window_flash_flag = False
     for stk in list(set(readConfig()['buy_stk'] + readConfig()['concerned_stk'] + readConfig()['index_stk'])):
         hour_idx_str = check_single_stk_hour_idx_wx(stk, source='jq')
         if len(hour_idx_str):
-            wx.PostEvent(win, ResultEvent(id=NOTE_UPDATE_ID_A, data=change_font_color(hour_idx_str)))
-            wx.PostEvent(win, ResultEvent(id=FLASH_WINDOW_ID, data=None))
+            window_flash_flag = True
+            for str_tmp in hour_idx_str:
+                wx.PostEvent(win, ResultEvent(id=NOTE_UPDATE_ID_A, data=change_font_color(str_tmp)))
+
+    # 窗口闪烁
+    if window_flash_flag:
+        wx.PostEvent(win, ResultEvent(id=FLASH_WINDOW_ID, data=None))
 
     wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data=note_sar_inflection_point))
 
