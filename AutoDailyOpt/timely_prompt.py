@@ -29,12 +29,12 @@ from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPic
 from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_MACD, checkWeekStrayForAll
 from Experiment.RelativeRank.Sub import relativeRank, get_k_data_JQ, calRealtimeRankWithGlobal, get_current_price_JQ, \
     get_RT_price, sendHourMACDToQQ, updateConcernStkMData
-from Experiment.Reseau.StdForReseau.Sub import getSigleStkReseau
+from Experiment.Reseau.StdForReseau.Sub import get_single_stk_reseau
 from SDK.MyTimeOPT import get_current_date_str
 
 
-from Config.Sub import readConfig
-from AutoDailyOpt.Sub import readLastP, saveLastP, JudgeSingleStk, calRSVRank
+from Config.Sub import read_config
+from AutoDailyOpt.Sub import readLastP, saveLastP, JudgeSingleStk, cal_rsv_rank
 from AutoDailyOpt.p_diff_ratio_last import p_diff_ratio_last_dic, RSV_Record
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.combining import OrTrigger
@@ -114,7 +114,7 @@ def sendConcernedStkPicToSelf_V2():
     """
     towho = '影子2'
     send_qq(towho, '以下是已入的stk的形势图：')
-    code_list = readConfig()['buy_stk']
+    code_list = read_config()['buy_stk']
 
     for x in code_list + ['sh', 'sz', 'cyb']:
 
@@ -145,7 +145,7 @@ def sendConcernedStkPicToSelf_T():
     towho = '影子2'
     send_qq(towho, '以下是已入的stk的形势图：')
 
-    stk_buy = readConfig()['buy_stk']
+    stk_buy = read_config()['buy_stk']
 
     for x in stk_buy + ['sh', 'sz', 'cyb']:
 
@@ -285,11 +285,11 @@ def myPrint(str_gui, str_temp, method='n', towho=''):
 
 def updateRSVRecord():
     try:
-        code_list = readConfig()['buy_stk']
+        code_list = read_config()['buy_stk']
 
         # global  RSV_Record
         for stk in code_list:
-            RSV_Record[stk] = calRSVRank(stk, 5)
+            RSV_Record[stk] = cal_rsv_rank(stk, 5)
 
     except Exception as e:
         send_qq('影子2', 'RSV数据更新失败！\n' + str(e))
@@ -297,14 +297,14 @@ def updateRSVRecord():
 
 def callback():
     towho = '影子2'
-    buy_stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
+    buy_stk_list = read_config()['buy_stk'] + read_config()['concerned_stk']
     for stk in buy_stk_list:
         JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho)
 
 
 def callback_gui():
     towho = '影子2'
-    buy_stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
+    buy_stk_list = read_config()['buy_stk'] + read_config()['concerned_stk']
     for stk in buy_stk_list:
         str_gui = JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho, gui=True)
 

@@ -5,7 +5,7 @@
 将关心的和持仓的stk的中等长度的小时数据保存到json文件中
 """
 from Config.AutoGenerateConfigFile import data_dir
-from Config.Sub import readConfig
+from Config.Sub import read_config
 
 
 # 获取stk列表
@@ -19,7 +19,7 @@ import pandas as pd
 
 
 def update_middle_period_hour_data():
-    stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
+    stk_list = read_config()['buy_stk'] + read_config()['concerned_stk']
     # stk_list = readConfig()['buy_stk']
 
     # 获取stk的小时数据

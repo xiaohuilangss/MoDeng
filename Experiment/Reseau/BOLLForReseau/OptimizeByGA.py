@@ -12,7 +12,7 @@ from pylab import *
 
 from Experiment.Constraint.Constraint import calBSReseau
 from SDK.MyTimeOPT import minus_date_str
-from HuiCe.Sub import BS_opt
+from HuiCe.Sub import bs_opt
 
 stk_code = '300580'
 
@@ -80,7 +80,7 @@ for idx in df.index:
 
     # 向上运行，触发S操作
     if df.loc[idx, 'close'] - record_info['price_last'] > record_info['S_Reseau']:
-        record_info = BS_opt(
+        record_info = bs_opt(
             stk_code=stk_code,
             price=df.loc[idx, 'close'],
             amount=300,
@@ -90,7 +90,7 @@ for idx in df.index:
             date=date_now)
 
     elif df.loc[idx, 'close'] - record_info['price_last'] < -record_info['B_Reseau']:
-        record_info = BS_opt(
+        record_info = bs_opt(
             stk_code=stk_code,
             price=df.loc[idx, 'close'],
             amount=400,

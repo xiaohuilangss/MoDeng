@@ -7,10 +7,11 @@ import wx
 import numpy as np
 import pandas as pd
 
-from AutoDailyOpt.Sub import calRSVRank, JudgeSingleStk
+from AutoDailyOpt.Debug_Sub import debug_print_txt
+from AutoDailyOpt.Sub import cal_rsv_rank, JudgeSingleStk
 from AutoDailyOpt.p_diff_ratio_last import RSV_Record, MACD_min_last
 from Config.AutoGenerateConfigFile import data_dir
-from Config.Sub import readConfig, dict_stk_list
+from Config.Sub import read_config, dict_stk_list
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.CornerDetectAndAutoEmail.Sub import addStkIndexToDf
@@ -101,7 +102,7 @@ def timer_update_pic(kind):
             if kind is 'h':
                 r_dic[page][stk] = (stk_info[0], gen_hour_macd_pic_wx(stk))
             elif kind is 'h_idx':
-                r_dic[page][stk] = (stk_info[0], gen_hour_index_pic_wx(stk))
+                r_dic[page][stk] = (stk_info[0], gen_hour_index_pic_wx(stk, debug=True))
             elif kind is 'd':
                 r_dic[page][stk] = (stk_info[0], gen_day_pic_wx(stk))
             elif kind is 'wm':
@@ -113,7 +114,7 @@ def timer_update_pic(kind):
     return r_dic
 
 
-def check_single_stk_hour_idx_wx(stk_code, source='jq'):
+def check_single_stk_hour_idx_wx(stk_code, source='jq', debug=False):
     """
     打印常用指标
     """
@@ -132,7 +133,12 @@ def check_single_stk_hour_idx_wx(stk_code, source='jq'):
     'upper', 'middle', 'lower' 
     'MOM'
     """
+    # 删除volume为空值的情况！
+    stk_df = stk_df.loc[stk_df.apply(lambda x: not (int(x['volume']) == 0), axis=1), :]
+
+    # 计算index
     stk_df = addStkIndexToDf(stk_df).tail(60)
+
     result_analysis = []
 
     # 检查SAR
@@ -148,6 +154,20 @@ def check_single_stk_hour_idx_wx(stk_code, source='jq'):
         else:
             title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数小时可能下跌！'
             result_analysis.append(title_tmp)
+
+    # 打印过程日志
+    if debug:
+
+        txt_name = 'hour_index'
+
+        # 打印时间
+        debug_print_txt(txt_name, stk_code, '时间：' + get_current_datetime_str() + '\n\n')
+
+        # 打印原始数据
+        debug_print_txt(txt_name, stk_code, stk_df.to_string() + '\n\n')
+
+        # 打印结果
+        debug_print_txt(txt_name, stk_code, '结果：\n' + str(result_analysis) + '\n\n')
 
     return result_analysis
 
@@ -219,7 +239,7 @@ def is_time_h_macd_update(last_upt_t):
     :param: last_upt_t 上次更新时间
     :return:
     """
-    t_pot = [1000, 1030, 1100, 1130, 1330, 1400, 1430, 1500]
+    t_pot = [930, 1000, 1030, 1100, 1130, 1330, 1400, 1430, 1500]
     t = get_t_now()
 
     r_judge = [(t > x) & (last_upt_t < x) for x in t_pot]
@@ -257,11 +277,11 @@ def check_stk_list_middle_level(stk_list):
 
 def update_rsv_record(self):
     try:
-        code_list = list(set(readConfig()['buy_stk'] + readConfig()['concerned_stk'] + readConfig()['index_stk']))
+        code_list = list(set(read_config()['buy_stk'] + read_config()['concerned_stk'] + read_config()['index_stk']))
 
         # global  RSV_Record
         for stk in code_list:
-            RSV_Record[stk] = calRSVRank(stk, 5)/100
+            RSV_Record[stk] = cal_rsv_rank(stk, 5) / 100
 
     except Exception as e:
         print(str(e))
@@ -286,7 +306,7 @@ def on_timer_ctrl(win, debug=False):
 
         return
 
-    buy_stk_list = list(set(readConfig()['buy_stk'] + readConfig()['index_stk']))
+    buy_stk_list = list(set(read_config()['buy_stk'] + read_config()['index_stk']))
 
     if debug:
         print('OnTimerCtrl_4')
@@ -296,7 +316,7 @@ def on_timer_ctrl(win, debug=False):
 
     # 对stk进行检查
     for stk in buy_stk_list:
-        str_gui = JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq='', gui=True)
+        str_gui = JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq='', gui=True, debug=True)
 
         if len(str_gui['note']):
             note_list.append(str_gui['note'])
@@ -404,8 +424,8 @@ def on_timer_pic(win, debug=False):
 
     # 拐点检测
     window_flash_flag = False
-    for stk in list(set(readConfig()['buy_stk'] + readConfig()['concerned_stk'] + readConfig()['index_stk'])):
-        hour_idx_str = check_single_stk_hour_idx_wx(stk, source='jq')
+    for stk in list(set(read_config()['buy_stk'] + read_config()['concerned_stk'] + read_config()['index_stk'])):
+        hour_idx_str = check_single_stk_hour_idx_wx(stk, source='jq', debug=True)
         if len(hour_idx_str):
             window_flash_flag = True
             for str_tmp in hour_idx_str:

@@ -13,7 +13,7 @@ from pylab import *
 from DataSource.Data_Sub import my_pro_bar
 from Experiment.Constraint.Constraint import calBSReseau
 from SDK.MyTimeOPT import minus_date_str, get_current_date_str
-from HuiCe.Sub import BS_opt, plotOPResult
+from HuiCe.Sub import bs_opt, plot_op_result
 
 # 登录datasource
 from DataSource.auth_info import *
@@ -72,7 +72,7 @@ for idx in df.index:
 
     # 向上运行，触发S操作
     if df.loc[idx, 'close'] - record_info['price_last'] > record_info['S_Reseau']:
-        record_info = BS_opt(
+        record_info = bs_opt(
             stk_code=stk_code,
             price=df.loc[idx, 'close'],
             amount=300,
@@ -82,7 +82,7 @@ for idx in df.index:
             date=date_now)
 
     elif df.loc[idx, 'close'] - record_info['price_last'] < -record_info['B_Reseau']:
-        record_info = BS_opt(
+        record_info = bs_opt(
             stk_code=stk_code,
             price=df.loc[idx, 'close'],
             amount=400,
@@ -107,6 +107,6 @@ for idx in df.index:
     df.loc[idx, 'S_Reseau'] = record_info['S_Reseau']
 
 
-plotOPResult(df)
+plot_op_result(df)
 
 end = 0
