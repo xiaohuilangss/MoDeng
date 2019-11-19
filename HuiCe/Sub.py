@@ -287,10 +287,10 @@ def cal_today_ochl(df_m):
 	l = np.min(array)
 
 	return {
-		'o': o,
-		'c': c,
-		'h': h,
-		'l': l
+		'open': o,
+		'close': c,
+		'high': h,
+		'low': l
 	}
 
 

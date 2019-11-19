@@ -34,7 +34,7 @@ from SDK.MyTimeOPT import get_current_date_str
 
 
 from Config.Sub import read_config
-from AutoDailyOpt.Sub import readLastP, saveLastP, JudgeSingleStk, cal_rsv_rank
+from AutoDailyOpt.Sub import readLastP, saveLastP, judge_single_stk, cal_rsv_rank
 from AutoDailyOpt.p_diff_ratio_last import p_diff_ratio_last_dic, RSV_Record
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.combining import OrTrigger
@@ -299,14 +299,14 @@ def callback():
     towho = '影子2'
     buy_stk_list = read_config()['buy_stk'] + read_config()['concerned_stk']
     for stk in buy_stk_list:
-        JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho)
+        judge_single_stk(stk_code=stk, stk_amount_last=400, qq=towho)
 
 
 def callback_gui():
     towho = '影子2'
     buy_stk_list = read_config()['buy_stk'] + read_config()['concerned_stk']
     for stk in buy_stk_list:
-        str_gui = JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq=towho, gui=True)
+        str_gui = judge_single_stk(stk_code=stk, stk_amount_last=400, qq=towho, gui=True)
 
 
 def autoShutdown():

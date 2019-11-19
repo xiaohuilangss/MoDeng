@@ -19,7 +19,7 @@ def df_win_std(df, win):
 	return df
 
 
-def get_single_stk_reseau_sub(df):
+def get_single_stk_reseau_sub(df, slow=6, quick=3):
 	"""
 
 	:param df:
@@ -48,15 +48,6 @@ def get_single_stk_reseau(stk_code):
 		# df = my_pro_bar(stk_code=stk_code, start=add_date_str(get_current_date_str(), -30))
 		df = get_k_data_JQ(stk_code=stk_code, start_date=add_date_str(get_current_date_str(), -30),
 						   end_date=get_current_date_str())
-
-	# df = df.reset_index()
-	#
-	# df = df_win_std(df, 3)
-	# df = df_win_std(df, 6)
-	#
-	# df['std_m'] = df.apply(lambda x: np.mean([x['std_3'], x['std_6']]), axis=1)
-
-	# return df.tail(1)['std_m'].values[0]
 
 	return get_single_stk_reseau_sub(df)
 

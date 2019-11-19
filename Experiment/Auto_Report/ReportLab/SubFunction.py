@@ -8,7 +8,7 @@ import numpy as np
 
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ
-from Experiment.CornerDetectAndAutoEmail.Sub import addStkIndexToDf
+from Experiment.CornerDetectAndAutoEmail.Sub import add_stk_index_to_df
 from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
 from SDK.MyTimeOPT import s2t, Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
@@ -406,7 +406,7 @@ def rpl_stk_page(canvas_para, stk_code):
     df_stk = df_stk.sort_values(by='date', ascending=True)
 
     # 加入各种指标
-    df_stk = addStkIndexToDf(df_stk)
+    df_stk = add_stk_index_to_df(df_stk)
 
     # 去除空值，截取最新数据
     df_stk = df_stk.dropna(axis=0, how='any').tail(40)
@@ -497,7 +497,7 @@ def rpl_stk_hour_page(canvas_para, stk_code):
     df_stk = df_stk.sort_values(by='date', ascending=True)
 
     # 加入各种指标
-    df_stk = addStkIndexToDf(df_stk)
+    df_stk = add_stk_index_to_df(df_stk)
 
     # 去除空值，截取最新数据
     df_stk = df_stk.dropna(axis=0, how='any').tail(40)

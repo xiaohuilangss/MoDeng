@@ -203,7 +203,7 @@ def genStkIdxPic(stk_df, stk_code, current_date, root_save_dir, pic_name='stk_id
     'upper', 'middle', 'lower' 
     'MOM'
     """
-    stk_df = addStkIndexToDf(stk_df).tail(60)
+    stk_df = add_stk_index_to_df(stk_df).tail(60)
 
     fig, ax = plt.subplots(nrows=5, ncols=1)
 
@@ -262,7 +262,7 @@ def genStkIdxPicForQQ(stk_df, stk_code=''):
     'upper', 'middle', 'lower' 
     'MOM'
     """
-    stk_df = addStkIndexToDf(stk_df).tail(60)
+    stk_df = add_stk_index_to_df(stk_df).tail(60)
 
     fig, ax = plt.subplots(nrows=5, ncols=1)
 
@@ -485,7 +485,7 @@ def callback():
     end=0
 
 
-def addStkIndexToDf(stk_df):
+def add_stk_index_to_df(stk_df):
     """
     向含有“收盘价（close）”的df中添加相关stk指标
 
@@ -546,7 +546,7 @@ def genSingleStkTrainData(stk_K_df, M_int, stk_code, stk_name):
     stk_df = sh_index.sort_values(by='date', ascending=True)
 
     # 添加指标
-    stk_df = addStkIndexToDf(stk_df)
+    stk_df = add_stk_index_to_df(stk_df)
 
     # 计算收盘价均线，根据均线计算拐点
     stk_df['M'+str(M_int)] = stk_df['close'].rolling(window=M_int, center=True).mean()

@@ -8,13 +8,13 @@ import numpy as np
 import pandas as pd
 
 from AutoDailyOpt.Debug_Sub import debug_print_txt
-from AutoDailyOpt.Sub import cal_rsv_rank, JudgeSingleStk
+from AutoDailyOpt.Sub import cal_rsv_rank, judge_single_stk
 from AutoDailyOpt.p_diff_ratio_last import RSV_Record, MACD_min_last
 from Config.AutoGenerateConfigFile import data_dir
 from Config.Sub import read_config, dict_stk_list
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ
-from Experiment.CornerDetectAndAutoEmail.Sub import addStkIndexToDf
+from Experiment.CornerDetectAndAutoEmail.Sub import add_stk_index_to_df
 from Experiment.MiddlePeriodLevelCheck.Demo1 import update_middle_period_hour_data, check_single_stk_middle_level
 
 from Experiment.wxpythonGUI.MyCode.Data_Pro_Sub import get_pic_dict
@@ -137,7 +137,7 @@ def check_single_stk_hour_idx_wx(stk_code, source='jq', debug=False):
     stk_df = stk_df.loc[stk_df.apply(lambda x: not (int(x['volume']) == 0), axis=1), :]
 
     # 计算index
-    stk_df = addStkIndexToDf(stk_df).tail(60)
+    stk_df = add_stk_index_to_df(stk_df).tail(60)
 
     result_analysis = []
 
@@ -239,7 +239,7 @@ def is_time_h_macd_update(last_upt_t):
     :param: last_upt_t 上次更新时间
     :return:
     """
-    t_pot = [930, 1000, 1030, 1100, 1130, 1330, 1400, 1430, 1500]
+    t_pot = [935, 1005, 1035, 1105, 1135, 1335, 1405, 1435, 1505]
     t = get_t_now()
 
     r_judge = [(t > x) & (last_upt_t < x) for x in t_pot]
@@ -316,7 +316,7 @@ def on_timer_ctrl(win, debug=False):
 
     # 对stk进行检查
     for stk in buy_stk_list:
-        str_gui = JudgeSingleStk(stk_code=stk, stk_amount_last=400, qq='', gui=True, debug=True)
+        str_gui = judge_single_stk(stk_code=stk, stk_amount_last=400, qq='', gui=True, debug=True)
 
         if len(str_gui['note']):
             note_list.append(str_gui['note'])

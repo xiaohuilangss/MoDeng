@@ -133,7 +133,28 @@ def getMinReseauSize():
 		return 0.02
 
 
-def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
+def judge_single_stk_sub(reseau, rsv, current_price, stk_price_last, min_reseau, sar_diff):
+
+	# 实时计算价差，用于“波动提示”和“最小网格限制”
+	price_diff = current_price - stk_price_last
+	price_diff_ratio = price_diff/stk_price_last
+
+	# 调节 buy 和 sale 的threshold
+	thh_sale = reseau*2*rsv
+	thh_buy = reseau * 2 * (1-rsv)
+
+	# if (min_reseau > math.fabs(thh_sale / stk_price_last)) | (min_reseau > math.fabs(thh_buy / stk_price_last)):
+	if ((rsv < 0.3) | (rsv > 0.7)) | (math.fabs((current_price - stk_price_last)/stk_price_last) < 0.013):
+		return 0, '未触及reseau'
+	elif (price_diff > thh_sale) & (sar_diff >= 0):
+		return 1, 'time to sale'
+	elif (price_diff < -thh_buy) & (sar_diff <= 0):
+		return 2, 'time to buy'
+	else:
+		return -1, 'no opt'
+
+
+def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 
 	# 变量声明
 	str_gui = {
@@ -228,13 +249,16 @@ def JudgeSingleStk(stk_code, stk_amount_last,  qq, debug=False, gui=False):
 		min_reseau = config_json['minReseau']
 
 	if (min_reseau > math.fabs(thh_sale/stk_price_last)) | (min_reseau > math.fabs(thh_buy/stk_price_last)):
+
+		str_tmp = stk_code + ' ' + code2name(stk_code) + ':\n'\
+			+ 'buy相对宽度：%0.3f \n' % (thh_buy/stk_price_last) +\
+			  'sale相对宽度：%0.3f\n' % (thh_sale/stk_price_last) +\
+			  '设定波动阈值：%0.3f\n' % min_reseau +\
+			  '波动未达到最小网格宽度，返回！'
+
 		str_gui = myPrint(
 			str_gui,
-			stk_code + ' ' + code2name(stk_code) + ':\n'
-			+ 'buy相对宽度：%0.3f \n' % (thh_buy/stk_price_last) +
-			  'sale相对宽度：%0.3f\n' % (thh_sale/stk_price_last) +
-			  '设定波动阈值：%0.3f\n' % min_reseau +
-			  '波动未达到最小网格宽度，返回！',
+			str_tmp,
 			method={True: 'gm', False: 'n'}[gui])
 		return str_gui
 
