@@ -1,6 +1,8 @@
 import multiprocessing
 import time
 
+from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_wx, gen_hour_macd_values
+
 """
 1、新建单一进程
 
@@ -67,13 +69,15 @@ def func(msg):
 
 
 if __name__ == "__main__":
+    from DataSource.auth_info import *
+    r = gen_hour_macd_pic_wx(gen_hour_macd_values('000001'))
+    get_k_data_JQ(stk, count=120,
+                  end_date=add_date_str(get_current_date_str(), 1), freq='30m')
+    
     pool = multiprocessing.Pool(processes=4)
     result = []
-    # for i in range(10):
-    #     msg = "hello %d" % i
-    #     result.append(pool.apply_async(func, (msg, )))
-    
-    
+
+    r = pool.apply_async(gen_hour_macd_pic_wx, (gen_hour_macd_values('000001'), ))
     pool.close()
     pool.join()
     for res in result:

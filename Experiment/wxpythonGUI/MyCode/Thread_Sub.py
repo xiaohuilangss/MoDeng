@@ -1,5 +1,6 @@
 # encoding=utf-8
 import json
+import multiprocessing
 import time
 import copy
 import os
@@ -24,7 +25,7 @@ from Global_Value.file_dir import opt_record_file_url
 from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_wx, gen_day_pic_wx, gen_w_m_macd_pic_wx, gen_idx_pic_wx, \
     gen_hour_macd_values, gen_hour_index_pic_wx, set_background_color
 from SDK.MyTimeOPT import get_current_datetime_str, add_date_str, get_current_date_str
-from DataSource.auth_info import *
+# from DataSource.auth_info import *
 
 # 定义事件id
 INIT_CPT_ID = wx.NewIdRef(count=1)
@@ -76,8 +77,12 @@ def change_font_color(msg_str):
     else:
         return msg_str
 
+# def gen_single_pic(kind, ):
 
-def timer_update_pic(kind):
+
+def timer_update_pic(kind, pool):
+    
+    
 
     """
     在计时器中调用，用于更新小时图片
@@ -91,25 +96,62 @@ def timer_update_pic(kind):
     返回的图片应该 执行page和行号，便于更新！
     以多层字典的方式返回结果，第一层区分page，第二层区分行号！
     """
+
     r_dic = {
         'Index': {},
         'Buy': {},
         'Concerned': {}
     }
     dict_stk_hour = copy.deepcopy(dict_stk_list)
+    
+    # 在外部下载需要的数据，防止多进程中重复连接聚宽
     for page in dict_stk_hour.keys():
         for stk_info in dict_stk_list[page]:
             stk = stk_info[1]
             if kind is 'h':
-                r_dic[page][stk] = (stk_info[0], gen_hour_macd_pic_wx(stk))
+                r_dic[page][stk+'_d'] = gen_hour_macd_values(stk)
             elif kind is 'h_idx':
-                r_dic[page][stk] = (stk_info[0], gen_hour_index_pic_wx(stk, debug=True))
+                r_dic[page][stk+'_d'] = get_k_data_JQ(stk, count=120,
+                              end_date=add_date_str(get_current_date_str(), 1), freq='30m')
             elif kind is 'd':
-                r_dic[page][stk] = (stk_info[0], gen_day_pic_wx(stk))
+                r_dic[page][stk+'_d'] = get_k_data_JQ(stk, 400)
             elif kind is 'wm':
-                r_dic[page][stk] = (stk_info[0], gen_w_m_macd_pic_wx(stk))
+                r_dic[page][stk+'_d'] = get_k_data_JQ(stk, count=400, end_date=get_current_date_str()).reset_index()
             elif kind is 'idx':
-                r_dic[page][stk] = (stk_info[0], gen_idx_pic_wx(stk))
+                r_dic[page][stk+'_d'] = get_k_data_JQ(stk, 400)
+
+    for page in dict_stk_hour.keys():
+        for stk_info in dict_stk_list[page]:
+            stk = stk_info[1]
+            if kind is 'h':
+                # result.append((page, stk_info, pool.apply_async(gen_hour_macd_pic_wx, (stk,))))
+                # r_dic[page][stk] = (stk_info[0], gen_hour_macd_pic_wx(stk))
+                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_hour_macd_pic_wx, (r_dic[page][stk+'_d'],)))
+            elif kind is 'h_idx':
+                # result.append((page, stk_info, pool.apply_async(gen_hour_index_pic_wx, (stk,True,))))
+                # r_dic[page][stk] = (stk_info[0], gen_hour_index_pic_wx(stk, debug=True))
+                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_hour_index_pic_wx, (r_dic[page][stk+'_d'],True,)))
+            elif kind is 'd':
+                # result.append((page, stk_info, pool.apply_async(gen_day_pic_wx, (stk,))))
+                # r_dic[page][stk] = (stk_info[0], gen_day_pic_wx(stk))
+                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_day_pic_wx, (r_dic[page][stk+'_d'],)))
+            elif kind is 'wm':
+                # result.append((page, stk_info, pool.apply_async(gen_w_m_macd_pic_wx, (stk,))))
+                # r_dic[page][stk] = (stk_info[0], gen_w_m_macd_pic_wx(stk))
+                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_w_m_macd_pic_wx, (r_dic[page][stk+'_d'],)))
+            elif kind is 'idx':
+                # result.append((page, stk_info, pool.apply_async(gen_idx_pic_wx, (stk,))))
+                # r_dic[page][stk] = (stk_info[0], gen_idx_pic_wx(stk))
+                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_idx_pic_wx, (r_dic[page][stk+'_d'],)))
+
+    pool.close()
+    pool.join()
+    
+    # 取值汇总
+    for page in dict_stk_hour.keys():
+        for stk_info in dict_stk_list[page]:
+            stk = stk_info[1]
+            r_dic[page][stk] = (stk_info[0], r_dic[page][stk+'_p'][1].get())
 
     # 汇总返回
     return r_dic
@@ -131,7 +173,7 @@ def check_single_stk_hour_idx_wx(stk_code, source='jq', debug=False):
     'RSI5', 'RSI12', 'RSI30'
     'SAR'
     'slowk', 'slowd'
-    'upper', 'middle', 'lower' 
+    'upper', 'middle', 'lower'
     'MOM'
     """
     # 删除volume为空值的情况！
@@ -448,3 +490,31 @@ class ResultEvent(wx.PyEvent):
         self.SetEventType(id)
         self.data = data
 
+
+if __name__ == '__main__':
+    
+    # from DataSource.auth_info import *
+    #
+    # r = gen_hour_macd_pic_wx(gen_hour_macd_values('000001'), True,)
+    #
+    # r = gen_hour_index_pic_wx(get_k_data_JQ('000001', count=120,end_date=add_date_str(get_current_date_str(), 1), freq='30m'),True)
+    #
+    # r = gen_day_pic_wx(get_k_data_JQ('000001', 400))
+    #
+    # r = gen_w_m_macd_pic_wx(get_k_data_JQ('000001', count=400, end_date=get_current_date_str()).reset_index(),)
+    #
+    # r = gen_idx_pic_wx(get_k_data_JQ('000001', 400),)
+    # import multiprocessing
+    #
+    #
+    # p = multiprocessing.Process(target=gen_hour_macd_pic_wx, args=(gen_hour_macd_values('000001'), True, ))
+    # p.start()
+    # p.join()
+    # r = p.get()
+    
+    pool = multiprocessing.Pool(processes=6)
+    from DataSource.auth_info import *
+    r = pool.map(gen_hour_macd_pic_wx, (gen_hour_macd_values('000001'), True, ))
+    r = timer_update_pic('h', pool)
+    
+    end = 0
