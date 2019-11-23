@@ -13,12 +13,16 @@ from Config.AutoStkConfig import rootPath
 import json
 import os
 import pandas as pd
+import numpy as np
 
 from Config.Sub import read_config, write_config
 from DataSource.Code2Name import code2name
-from DataSource.Data_Sub import get_current_price_JQ, get_RT_price, get_k_data_JQ
+from DataSource.Data_Sub import get_current_price_JQ, get_k_data_JQ
 from Experiment.RelativeRank.Sub import sendHourMACDToQQ
 from Experiment.Reseau.StdForReseau.Sub import get_single_stk_reseau
+from Global_Value.file_dir import json_file_url, opt_record, opt_record_file_url
+from Global_Value.thread_lock import opt_record_lock, opt_lock
+
 from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str
 from SendMsgByQQ.QQGUI import send_qq
 
@@ -26,15 +30,9 @@ from SendMsgByQQ.QQGUI import send_qq
 F:\MYAI\Code\master\My_Quant\AutoDailyOpt\LocalRecord
 """
 # last_p_file_url = rootPath + '\AutoDailyOpt\LocalRecord\last_p.json'
-last_p_file_url = data_dir + '\last_p.json'
-
+# json_file_url = data_dir + '\last_p.json'
+# opt_record_file_url = data_dir + '\opt_record.json'
 money_each_opt = 5000
-
-# 操作记录变量写入锁
-opt_lock = threading.Lock()
-
-# 全局变量，记录操作细节
-opt_record = []
 
 
 def myPrint(str_gui, str_temp, method='n', towho=''):
@@ -61,10 +59,48 @@ def myPrint(str_gui, str_temp, method='n', towho=''):
 	return str_gui
 
 
+def read_opt_json(stk_code, json_file_url_):
+	
+	if opt_record_lock.acquire():
+
+		try:
+			if os.path.exists(json_file_url_):
+				with open(json_file_url_, 'r') as f:
+					json_p = json.load(f)
+				if stk_code in json_p.keys():
+					return json_p[stk_code]
+				else:
+					return {}
+			else:
+				return {}
+		except Exception as e:
+			pass
+		finally:
+			opt_record_lock.release()
+
+	
+def set_opt_json_threshold_satisfied_flag(json_file_url, stk_code, value=True):
+	if os.path.exists(json_file_url):
+		with open(json_file_url, 'r') as f:
+			json_p = json.load(f)
+			
+		if stk_code in json_p.keys():
+			json_p[stk_code]['threshold_satisfied_flag'] = value
+			
+			# 将数据写入
+			with open(json_file_url, 'w') as f:
+				json.dump(json_p, f)
+			return 0
+		else:
+			return 1
+	else:
+		return 2
+
+
 def readLastP(stk_code):
 
-	if os.path.exists(last_p_file_url):
-		with open(last_p_file_url, 'r') as f:
+	if os.path.exists(json_file_url):
+		with open(json_file_url, 'r') as f:
 			json_p = json.load(f)
 
 		if stk_code in json_p.keys():
@@ -72,18 +108,18 @@ def readLastP(stk_code):
 		else:
 			return -1
 	else:
-		with open(last_p_file_url, 'w') as f:
+		with open(json_file_url, 'w') as f:
 			json.dump(obj={}, fp=f)
 			return -1
 
 
 def saveLastP(stk_code, p):
-	with open(last_p_file_url, 'r') as f:
+	with open(json_file_url, 'r') as f:
 		json_p = json.load(f)
 
 	json_p[stk_code] = p
 
-	with open(last_p_file_url, 'w') as f:
+	with open(json_file_url, 'w') as f:
 		json.dump(obj=json_p, fp=f)
 
 	print('函数 saveLastP：' + stk_code + '历史price发生修改！修正为'+str(p))
@@ -133,67 +169,92 @@ def getMinReseauSize():
 		return 0.02
 
 
-def judge_single_stk_sub(reseau, rsv, current_price, stk_price_last, min_reseau, sar_diff):
+def judge_single_stk_sub(reseau, rsv, current_price, stk_price_last, min_reseau, sar_diff, sar_diff_day):
 
 	# 实时计算价差，用于“波动提示”和“最小网格限制”
 	price_diff = current_price - stk_price_last
 	price_diff_ratio = price_diff/stk_price_last
 
-	# 调节 buy 和 sale 的threshold
+	# 调节 buy 和 sale 的 threshold
 	thh_sale = reseau*2*rsv
 	thh_buy = reseau * 2 * (1-rsv)
 
 	# if (min_reseau > math.fabs(thh_sale / stk_price_last)) | (min_reseau > math.fabs(thh_buy / stk_price_last)):
-	if ((rsv < 0.3) | (rsv > 0.7)) | (math.fabs((current_price - stk_price_last)/stk_price_last) < 0.013):
+	# if ((rsv < 0.3) | (rsv > 0.7)) | (math.fabs((current_price - stk_price_last)/stk_price_last) < 0.013):
+	# 	return 0, '未触及reseau'
+	# elif (price_diff > thh_sale) & (sar_diff >= 0) & (sar_diff_day >= 0):
+	# 	return 1, 'time to sale'
+	# elif (price_diff < -thh_buy) & (sar_diff <= 0) & (sar_diff_day <= 0):
+	# 	return 2, 'time to buy'
+	# else:
+	# 	return -1, 'no opt'
+	
+	if math.fabs((current_price - stk_price_last)/stk_price_last) < min_reseau:
 		return 0, '未触及reseau'
-	elif (price_diff > thh_sale) & (sar_diff >= 0):
+	elif (sar_diff >= 0) & (sar_diff_day >= 0) & ((current_price - stk_price_last)/stk_price_last > min_reseau):
 		return 1, 'time to sale'
-	elif (price_diff < -thh_buy) & (sar_diff <= 0):
+	elif (sar_diff <= 0) & (sar_diff_day <= 0) & ((current_price - stk_price_last)/stk_price_last < -min_reseau):
 		return 2, 'time to buy'
 	else:
 		return -1, 'no opt'
 
 
 def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
+	"""
+	
+	:param stk_code:
+	:param stk_amount_last:
+	:param qq:
+	:param debug:
+	:param gui:
+	:return:
+	"""
 
-	# 变量声明
+	""" 变量声明 """
 	str_gui = {
 		'note': '',
 		'msg': ''
 	}
 
-	# 'n':无操作，'b', 's'
+	""" 'n':无操作，'b', 's' """
 	opt_now = 'n'
 
-	# 获取该stk的实时价格,如果是大盘指数，使用聚宽数据，否则有限使用tushare
-	if stk_code in ['sh', 'sz', 'cyb']:
+	""" ==== 获取该stk的实时价格,如果是大盘指数，使用聚宽数据，否则有限使用tushare ==== """
+	try:
 		current_price = get_current_price_JQ(stk_code)
-	else:
-		try:
-			current_price = get_RT_price(stk_code, source='ts')
-		except:
+	except:
+		str_gui = myPrint(str_gui, stk_code + '获取实时price失败！', method={True: 'gm', False: 'n'}[gui])
+		return str_gui
 
-			str_gui = myPrint(str_gui, stk_code + '获取实时price失败！', method={True:'gm', False:'n'}[gui])
-			return str_gui
+	""" ==================== 获取上次price ==================== """
+	opt_json_stk = read_opt_json(stk_code, opt_record_file_url)
+	
+	# 如果没有相应的json文件，不进行判断，直接返回
+	if opt_json_stk == {}:
+		print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
+		return str_gui
+	
+	# 读取上次p和b操作中的最小p，备用
+	last_p = opt_json_stk['last_p']
+	b_p_min = np.min([x['p'] for x in opt_json_stk['b_opt']])
+	
+	# stk_price_last = readLastP(stk_code)
+	# if stk_price_last < 0:
+	# 	saveLastP(stk_code, current_price)
+	# 	stk_price_last = current_price
 
-	# 获取上次price
-	stk_price_last = readLastP(stk_code)
-	if stk_price_last < 0:
-		saveLastP(stk_code, current_price)
-		stk_price_last = current_price
-
-	# 实时计算价差，用于“波动提示”和“最小网格限制”
-	price_diff = current_price - stk_price_last
-	price_diff_ratio = price_diff/stk_price_last
+	""" =========== 实时计算价差，用于“波动提示”和“最小网格限制” ======== """
+	# price_diff = current_price - last_p
+	# price_diff_ratio = price_diff/last_p
 
 	if debug:
 		str_gui = myPrint(
 			str_gui,
 			'\n\n' + stk_code + ':\np_now:' + str(current_price) + '\np_last:' + str(
-				stk_price_last) + '\np_change_ratio:' + str(price_diff_ratio),
+				last_p) + '\np_change_ratio:' + str(price_diff_ratio),
 			method={True: 'gm', False: 'n'}[gui])
 
-	# 排除获取的价格为0的情况，此种情况可能是stop或者时间未到
+	""" ========== 排除获取的价格为0的情况，此种情况可能是stop或者时间未到 ========== """
 	if current_price == 0.0:
 
 		str_gui = myPrint(
@@ -205,10 +266,10 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 
 	buy_amount = math.floor((money_each_opt/current_price)/100)*100
 
-	# 实时计算网格大小
+	""" 实时计算网格大小 """
 	earn_threshold_unit = get_single_stk_reseau(stk_code)
 
-	# 调节 buy 和 sale 的threshold
+	""" 调节 buy 和 sale 的threshold """
 	if stk_code in RSV_Record.keys():
 		thh_sale = earn_threshold_unit*2*RSV_Record[stk_code]
 		thh_buy = earn_threshold_unit * 2 * (1-RSV_Record[stk_code])
@@ -217,7 +278,7 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		thh_sale = earn_threshold_unit*2*RSV_Record[stk_code]
 		thh_buy = earn_threshold_unit * 2 * (1-RSV_Record[stk_code])
 
-	# 将操作日志保存到全局变量中
+	""" 将操作日志保存到全局变量中 """
 	if opt_lock.acquire():
 		try:
 			opt_record.append({
@@ -225,7 +286,7 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 				'p_now': current_price,
 				'sale_reseau': thh_sale,
 				'buy_reseau': thh_buy,
-				'p_last': stk_price_last,
+				'p_last': last_p,
 				# 'opt': opt,
 				'date_time': get_current_datetime_str()
 			})
@@ -240,7 +301,8 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		print('函数 JudgeSingleStk:' + stk_code + '定时处理完成后，操作记录为：\n')
 		pprint(opt_record)
 
-	# 判断波动是否满足“最小网格限制”
+	""" ==================== 判断波动是否满足“最小网格限制” ================= """
+	"""
 	config_json = read_config()
 	if not ('minReseau' in config_json.keys()):
 		write_config('minReseau', 0.02)
@@ -248,11 +310,11 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 	else:
 		min_reseau = config_json['minReseau']
 
-	if (min_reseau > math.fabs(thh_sale/stk_price_last)) | (min_reseau > math.fabs(thh_buy/stk_price_last)):
+	if (min_reseau > math.fabs(thh_sale/last_p)) | (min_reseau > math.fabs(thh_buy/last_p)):
 
 		str_tmp = stk_code + ' ' + code2name(stk_code) + ':\n'\
-			+ 'buy相对宽度：%0.3f \n' % (thh_buy/stk_price_last) +\
-			  'sale相对宽度：%0.3f\n' % (thh_sale/stk_price_last) +\
+			+ 'buy相对宽度：%0.3f \n' % (thh_buy/last_p) +\
+			  'sale相对宽度：%0.3f\n' % (thh_sale/last_p) +\
 			  '设定波动阈值：%0.3f\n' % min_reseau +\
 			  '波动未达到最小网格宽度，返回！'
 
@@ -261,7 +323,7 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 			str_tmp,
 			method={True: 'gm', False: 'n'}[gui])
 		return str_gui
-
+	
 	if debug:
 
 		str_gui = myPrint(
@@ -272,15 +334,19 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 			'\nthh_sale:' + str(thh_sale) +
 			'\nthh_buy:' + str(thh_buy),
 			method={True: 'gm', False: 'n'}[gui])
+	"""
+	
+	""" ============================= 判断是否超过阈值,进行bs操作 ============================== """
+	pcr = read_config()['pcr']
+	if (current_price - b_p_min > thh_sale) & ((current_price - b_p_min)/b_p_min >= pcr):
 
-	if price_diff > thh_sale:
-
-		str_temp = "触发卖出网格！可以考虑卖出！ "+stk_code + code2name(stk_code) +\
+		str_temp = "触发卖出网格！可以考虑卖出！ " + stk_code + code2name(stk_code) +\
 				'\nAmount:' + str(stk_amount_last) +\
 				'\n当前价格:' + str(current_price) +\
-				'\n上次价格:' + str(stk_price_last) +\
-				'\n买入网格大小:' + '%0.2f' % thh_buy +\
-				'\n卖出网格大小:' + '%0.2f' % thh_sale
+				'\n上次买入价格:' + str(b_p_min) +\
+				'\n买入网格大小:' + '%0.3f' % thh_buy +\
+				'\n卖出网格大小:' + '%0.3f' % thh_sale +\
+				'\n最小操作幅度:' + '%0.3f' % pcr
 
 		str_gui = myPrint(
 			str_gui,
@@ -296,14 +362,15 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 
 		opt='s'
 
-	elif price_diff < -thh_buy:
+	elif (current_price - last_p < -thh_buy) & ((current_price - last_p)/b_p_min <= -pcr):
 
 		str_temp = "触发买入网格！可以考虑买入！" + stk_code + code2name(stk_code) +\
 				'\nAmount:' + str(buy_amount) +\
 				'\n当前价格:' + str(current_price) +\
-				'\n上次价格:' + str(stk_price_last) +\
+				'\n上次价格:' + str(last_p) +\
 				'\n买入网格大小:' + '%0.2f' % thh_buy +\
-				'\n卖出网格大小:' + '%0.2f' % thh_sale
+				'\n卖出网格大小:' + '%0.2f' % thh_sale +\
+				'\n最小操作幅度:' + '%0.3f' % pcr
 
 		str_gui = myPrint(
 			str_gui,
@@ -326,14 +393,14 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 
 		opt = 'n'
 
-	# 波动检测
-	change_flag, str_gui = JudgePChangeRatio(stk_code, price_diff_ratio, str_gui=str_gui, gui=gui)
+	""" ========================== 波动检测 =========================== """
+	change_flag, str_gui = judge_p_change_ratio(stk_code, (current_price-last_p)/last_p, str_gui=str_gui, gui=gui)
 	if change_flag:
 
 		str_temp = "波动推送! " + stk_code + code2name(stk_code) +\
 				'\nAmount:' + str(buy_amount) +\
 				'\n当前价格:' + str(current_price) +\
-				'\n上次价格:' + str(stk_price_last) +\
+				'\n上次价格:' + str(last_p) +\
 				'\n买入网格大小:' + '%0.2f' % thh_buy +\
 				'\n卖出网格大小:' + '%0.2f' % thh_sale
 
@@ -346,12 +413,10 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		if not gui:
 			sendHourMACDToQQ(stk_code, qq, source='jq')
 
-
-
 	return str_gui
 
 
-def JudgePChangeRatio(stk_code, price_diff_ratio, str_gui, debug=True, gui=False):
+def judge_p_change_ratio(stk_code, price_diff_ratio, str_gui, debug=True, gui=False):
 	"""
 	判断stk的变化是否达到一定的幅度，以杜绝反复上报
 	:param stk_code:
@@ -403,6 +468,11 @@ def JudgePChangeRatio(stk_code, price_diff_ratio, str_gui, debug=True, gui=False
 
 
 if __name__ == '__main__':
+	
+	r = read_opt_json('000333', opt_record_file_url)['threshold_satisfied_flag']
+	
+	r = set_opt_json_threshold_satisfied_flag(opt_record_file_url, '000333', value=False)
+	
 	from DataSource.auth_info import *
 	cal_rsv_rank('300183', 5, history_length=400)
 	saveLastP('000001', 25)

@@ -6,10 +6,8 @@
 import os
 import json
 
-config_path = 'c:/MoDeng/'
-data_source_url = config_path+'data_source.json'
-stk_config_url = config_path+'stk_config.json'
-data_dir = config_path + 'data/'
+from Global_Value.file_dir import config_path, data_source_url, data_dir, stk_config_url
+
 
 def checkConfigFile():
 

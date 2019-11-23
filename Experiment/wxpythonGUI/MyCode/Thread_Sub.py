@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from AutoDailyOpt.Debug_Sub import debug_print_txt
-from AutoDailyOpt.Sub import cal_rsv_rank, judge_single_stk
+from AutoDailyOpt.Sub import cal_rsv_rank, judge_single_stk, read_opt_json
 from AutoDailyOpt.p_diff_ratio_last import RSV_Record, MACD_min_last
 from Config.AutoGenerateConfigFile import data_dir
 from Config.Sub import read_config, dict_stk_list
@@ -20,6 +20,7 @@ from Experiment.MiddlePeriodLevelCheck.Demo1 import update_middle_period_hour_da
 from Experiment.wxpythonGUI.MyCode.Data_Pro_Sub import get_pic_dict
 from Experiment.wxpythonGUI.MyCode.note_string import note_init_pic, \
     note_day_analysis, note_sar_inflection_point
+from Global_Value.file_dir import opt_record_file_url
 from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_wx, gen_day_pic_wx, gen_w_m_macd_pic_wx, gen_idx_pic_wx, \
     gen_hour_macd_values, gen_hour_index_pic_wx, set_background_color
 from SDK.MyTimeOPT import get_current_datetime_str, add_date_str, get_current_date_str
@@ -415,16 +416,15 @@ def on_timer_pic(win, debug=False):
     wx.PostEvent(win, ResultEvent(id=HOUR_UPDATE_ID, data=pic_dict))
     wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='小时图片更新完成！\n'))
 
-    # 中期水平检测
-    # wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='开始“中期水平检测”...！\n'))
-    # df_level = check_stk_list_middle_level(list(set(readConfig()['buy_stk'] + readConfig()['concerned_stk'])))
-    # wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='“中期水平检测”完成！\n'))
-    # wx.PostEvent(win, ResultEvent(id=NOTE_UPDATE_ID_A, data=str(df_level) + '\n\n'))
-    # wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data=note_middle_rank))
-
     # 拐点检测
     window_flash_flag = False
     for stk in list(set(read_config()['buy_stk'] + read_config()['concerned_stk'] + read_config()['index_stk'])):
+    
+        # 阈值条件不满足，该stk直接pass
+        if not read_opt_json(stk, opt_record_file_url)['threshold_satisfied_flag']:
+            wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data=code2name(stk) + '阈值条件不满足，不进行拐点检测\n'))
+            continue
+        
         hour_idx_str = check_single_stk_hour_idx_wx(stk, source='jq', debug=True)
         if len(hour_idx_str):
             window_flash_flag = True
@@ -437,14 +437,6 @@ def on_timer_pic(win, debug=False):
 
     wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data=note_sar_inflection_point))
 
-
-# def updateRSVRecord():
-#     try:
-#         code_list = list(set(readConfig()['buy_stk'] + readConfig()['concerned_stk'] + readConfig()['index_stk']))
-#
-#         # global  RSV_Record
-#         for stk in code_list:
-#             RSV_Record[stk] = calRSVRank(stk, 5)
 
 class ResultEvent(wx.PyEvent):
     """
