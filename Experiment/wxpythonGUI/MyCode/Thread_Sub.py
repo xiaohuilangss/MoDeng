@@ -4,6 +4,8 @@ import multiprocessing
 import time
 import copy
 import os
+from queue import Queue
+
 import wx
 import numpy as np
 import pandas as pd
@@ -21,9 +23,9 @@ from Experiment.MiddlePeriodLevelCheck.Demo1 import update_middle_period_hour_da
 from Experiment.wxpythonGUI.MyCode.Data_Pro_Sub import get_pic_dict
 from Experiment.wxpythonGUI.MyCode.note_string import note_init_pic, \
     note_day_analysis, note_sar_inflection_point
-from Global_Value.file_dir import opt_record_file_url
+from Global_Value.file_dir import opt_record_file_url, hist_pic_dir
 from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_wx, gen_day_pic_wx, gen_w_m_macd_pic_wx, gen_idx_pic_wx, \
-    gen_hour_macd_values, gen_hour_index_pic_wx, set_background_color
+    gen_hour_macd_values, gen_hour_index_pic_wx, set_background_color, gen_hour_macd_pic_local
 from SDK.MyTimeOPT import get_current_datetime_str, add_date_str, get_current_date_str
 # from DataSource.auth_info import *
 
@@ -124,13 +126,16 @@ def timer_update_pic(kind, pool):
         for stk_info in dict_stk_list[page]:
             stk = stk_info[1]
             if kind is 'h':
-                # result.append((page, stk_info, pool.apply_async(gen_hour_macd_pic_wx, (stk,))))
-                # r_dic[page][stk] = (stk_info[0], gen_hour_macd_pic_wx(stk))
-                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_hour_macd_pic_wx, (r_dic[page][stk+'_d'],)))
+                save_dir = hist_pic_dir + get_current_date_str() + '/' + stk + 'h/'
+                if not os.path.exists(save_dir):
+                    os.makedirs(save_dir)
+                file_name = get_current_datetime_str()[-8:-4].replace(':', '')
+                pool.apply_async(gen_hour_macd_pic_local, (r_dic[page][stk + '_d'], 'jq', '', save_dir + file_name,))
+                r_dic[page][stk+'url'] = save_dir + file_name
             elif kind is 'h_idx':
                 # result.append((page, stk_info, pool.apply_async(gen_hour_index_pic_wx, (stk,True,))))
                 # r_dic[page][stk] = (stk_info[0], gen_hour_index_pic_wx(stk, debug=True))
-                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_hour_index_pic_wx, (r_dic[page][stk+'_d'],True,)))
+                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_hour_index_pic_wx, (r_dic[page][stk+'_d'], True,)))
             elif kind is 'd':
                 # result.append((page, stk_info, pool.apply_async(gen_day_pic_wx, (stk,))))
                 # r_dic[page][stk] = (stk_info[0], gen_day_pic_wx(stk))
@@ -151,7 +156,7 @@ def timer_update_pic(kind, pool):
     for page in dict_stk_hour.keys():
         for stk_info in dict_stk_list[page]:
             stk = stk_info[1]
-            r_dic[page][stk] = (stk_info[0], r_dic[page][stk+'_p'][1].get())
+            r_dic[page][stk] = (stk_info[0], wx.Image(r_dic[page][stk+'url'], wx.BITMAP_TYPE_PNG))
 
     # 汇总返回
     return r_dic
@@ -511,10 +516,17 @@ if __name__ == '__main__':
     # p.start()
     # p.join()
     # r = p.get()
-    
+
+    #
+    # # q = Queue()
+    # p = multiprocessing.Process(target=gen_hour_macd_pic_local, args=(gen_hour_macd_values('000001'), True,))
+    # p.start()
+    # p.join()
+    #
+    # end = 0
+    app = wx.App()
     pool = multiprocessing.Pool(processes=6)
     from DataSource.auth_info import *
-    r = pool.map(gen_hour_macd_pic_wx, (gen_hour_macd_values('000001'), True, ))
     r = timer_update_pic('h', pool)
     
     end = 0
