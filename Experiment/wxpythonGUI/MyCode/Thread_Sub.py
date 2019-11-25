@@ -1,11 +1,10 @@
 # encoding=utf-8
-import json
+
 import multiprocessing
+import pprint
 import time
 import copy
 import os
-from queue import Queue
-
 import wx
 import numpy as np
 import pandas as pd
@@ -20,18 +19,20 @@ from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.CornerDetectAndAutoEmail.Sub import add_stk_index_to_df
 from Experiment.MiddlePeriodLevelCheck.Demo1 import update_middle_period_hour_data, check_single_stk_middle_level
 
-from Experiment.wxpythonGUI.MyCode.Data_Pro_Sub import get_pic_dict
+from Experiment.wxpythonGUI.MyCode.Data_Pro_Sub import day_analysis_dict
 from Experiment.wxpythonGUI.MyCode.note_string import note_init_pic, \
     note_day_analysis, note_sar_inflection_point
 from Global_Value.file_dir import opt_record_file_url, hist_pic_dir
-from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_wx, gen_day_pic_wx, gen_w_m_macd_pic_wx, gen_idx_pic_wx, \
-    gen_hour_macd_values, gen_hour_index_pic_wx, set_background_color, gen_hour_macd_pic_local
+from SDK.Gen_Stk_Pic_Sub import \
+    gen_hour_macd_values,  set_background_color, gen_hour_macd_pic_local, \
+    gen_hour_index_pic_local, gen_day_pic_local, gen_w_m_macd_pic_local, gen_idx_pic_local
 from SDK.MyTimeOPT import get_current_datetime_str, add_date_str, get_current_date_str
-# from DataSource.auth_info import *
+
 
 # 定义事件id
 INIT_CPT_ID = wx.NewIdRef(count=1)
 HOUR_UPDATE_ID = wx.NewIdRef(count=1)
+DAY_UPDATE_ID = wx.NewIdRef(count=1)
 
 MSG_UPDATE_ID_A = wx.NewIdRef(count=1)
 MSG_UPDATE_ID_S = wx.NewIdRef(count=1)
@@ -42,6 +43,9 @@ NOTE_UPDATE_ID_S = wx.NewIdRef(count=1)
 LAST_TIME_UPDATE_ID = wx.NewIdRef(count=1)
 
 FLASH_WINDOW_ID = wx.NewIdRef(count=1)
+
+# 多线程
+pool = multiprocessing.Pool(processes=7)
 
 
 def get_t_now():
@@ -82,14 +86,13 @@ def change_font_color(msg_str):
 # def gen_single_pic(kind, ):
 
 
-def timer_update_pic(kind, pool):
+def gen_kind_pic_for_wx(kind, pool):
     
-    
-
     """
     在计时器中调用，用于更新小时图片
     :param kind:
     h:小时
+    h_idx:小时idx
     d:天
     wm:周、月
     idx: 指数
@@ -106,7 +109,7 @@ def timer_update_pic(kind, pool):
     }
     dict_stk_hour = copy.deepcopy(dict_stk_list)
     
-    # 在外部下载需要的数据，防止多进程中重复连接聚宽
+    """ 在外部下载需要的数据，防止多进程中重复连接聚宽 """
     for page in dict_stk_hour.keys():
         for stk_info in dict_stk_list[page]:
             stk = stk_info[1]
@@ -122,32 +125,30 @@ def timer_update_pic(kind, pool):
             elif kind is 'idx':
                 r_dic[page][stk+'_d'] = get_k_data_JQ(stk, 400)
 
+    """ 生成pic """
     for page in dict_stk_hour.keys():
         for stk_info in dict_stk_list[page]:
             stk = stk_info[1]
+            
+            # 保存路径
+            save_dir = hist_pic_dir + get_current_date_str() + '/' + stk + kind + '/'
+            file_name = get_current_datetime_str()[:-3].replace(':', '').replace(' ', '').replace('-', '') + '.png'
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+                
             if kind is 'h':
-                save_dir = hist_pic_dir + get_current_date_str() + '/' + stk + 'h/'
-                if not os.path.exists(save_dir):
-                    os.makedirs(save_dir)
-                file_name = get_current_datetime_str()[-8:-4].replace(':', '')
                 pool.apply_async(gen_hour_macd_pic_local, (r_dic[page][stk + '_d'], 'jq', '', save_dir + file_name,))
-                r_dic[page][stk+'url'] = save_dir + file_name
             elif kind is 'h_idx':
-                # result.append((page, stk_info, pool.apply_async(gen_hour_index_pic_wx, (stk,True,))))
-                # r_dic[page][stk] = (stk_info[0], gen_hour_index_pic_wx(stk, debug=True))
-                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_hour_index_pic_wx, (r_dic[page][stk+'_d'], True,)))
+                pool.apply_async(gen_hour_index_pic_local, (r_dic[page][stk + '_d'], save_dir + file_name,))
             elif kind is 'd':
-                # result.append((page, stk_info, pool.apply_async(gen_day_pic_wx, (stk,))))
-                # r_dic[page][stk] = (stk_info[0], gen_day_pic_wx(stk))
-                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_day_pic_wx, (r_dic[page][stk+'_d'],)))
+                pool.apply_async(gen_day_pic_local, (r_dic[page][stk + '_d'], '', save_dir + file_name))
             elif kind is 'wm':
-                # result.append((page, stk_info, pool.apply_async(gen_w_m_macd_pic_wx, (stk,))))
-                # r_dic[page][stk] = (stk_info[0], gen_w_m_macd_pic_wx(stk))
-                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_w_m_macd_pic_wx, (r_dic[page][stk+'_d'],)))
+                pool.apply_async(gen_w_m_macd_pic_local, (r_dic[page][stk + '_d'], save_dir + file_name))
             elif kind is 'idx':
-                # result.append((page, stk_info, pool.apply_async(gen_idx_pic_wx, (stk,))))
-                # r_dic[page][stk] = (stk_info[0], gen_idx_pic_wx(stk))
-                r_dic[page][stk+'_p'] = (stk_info[0], pool.apply_async(gen_idx_pic_wx, (r_dic[page][stk+'_d'],)))
+                pool.apply_async(gen_idx_pic_local, (r_dic[page][stk + '_d'], '', save_dir + file_name))
+
+            # 在字典中保存图片路径
+            r_dic[page][stk + 'url'] = save_dir + file_name
 
     pool.close()
     pool.join()
@@ -406,10 +407,26 @@ def timer_work_thread(win, debug=False):
     wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='正在初始化图片...\n'))
     wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data=note_init_pic))
 
-    # 更新图片及打印分析结果
-    r = get_pic_dict()
+    # 打印分析结果
+    r = day_analysis_dict()
     wx.PostEvent(win, ResultEvent(id=INIT_CPT_ID, data=r[0]))
-    wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='图片初始化完成！\n'))
+    wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='日线数据完成！\n'))
+    
+    # 贴hour图
+    wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='开始打印小时图片...\n'))
+    pic_dict = {'h_macd': gen_kind_pic_for_wx('h', pool), 'h_idx': gen_kind_pic_for_wx('h_idx', pool)}
+    wx.PostEvent(win, ResultEvent(id=HOUR_UPDATE_ID, data=pic_dict))
+    wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='小时图片打印完成！\n'))
+
+	# 贴day图
+    wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='开始打印日线图片...\n'))
+    pic_dict = {
+	    'day_macd': gen_kind_pic_for_wx('d', pool),
+	    'day_idx': gen_kind_pic_for_wx('idx', pool),
+	    'wm': gen_kind_pic_for_wx('wm', pool)
+    }
+    wx.PostEvent(win, ResultEvent(id=DAY_UPDATE_ID, data=pic_dict))
+    wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='日线图片打印完成！\n'))
 
     # 向提示框打印日线判断提示
     wx.PostEvent(win, ResultEvent(
@@ -441,7 +458,7 @@ def timer_work_thread(win, debug=False):
         time.sleep(15)
 
 
-def on_timer_pic(win, debug=False):
+def on_timer_pic(win, pool, debug=False):
     """
     图片定时器响应函数
     :return:
@@ -459,7 +476,7 @@ def on_timer_pic(win, debug=False):
 
     # 生成更新的图片
     wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='开始更新小时图片...\n'))
-    pic_dict = {'h_macd': timer_update_pic('h'), 'h_idx': timer_update_pic('h_idx')}
+    pic_dict = {'h_macd': gen_kind_pic_for_wx('h', pool), 'h_idx': gen_kind_pic_for_wx('h_idx', pool)}
     wx.PostEvent(win, ResultEvent(id=HOUR_UPDATE_ID, data=pic_dict))
     wx.PostEvent(win, ResultEvent(id=MSG_UPDATE_ID_A, data='小时图片更新完成！\n'))
 
@@ -525,8 +542,10 @@ if __name__ == '__main__':
     #
     # end = 0
     app = wx.App()
-    pool = multiprocessing.Pool(processes=6)
+    pool = multiprocessing.Pool(processes=7)
     from DataSource.auth_info import *
-    r = timer_update_pic('h', pool)
+    r = gen_kind_pic_for_wx('idx', pool)
+    
+    pprint.pprint(r)
     
     end = 0
