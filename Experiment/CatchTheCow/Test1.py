@@ -56,7 +56,7 @@ def sendBillBoardPic2QQ():
 
 if __name__ == '__main__':
 
-    from JQData_Test.auth_info import *
+    # from JQData_Test.auth_info import *
 
     sendBillBoardPic2QQ()
 

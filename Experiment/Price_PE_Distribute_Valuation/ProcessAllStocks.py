@@ -1,6 +1,6 @@
 # encoding=utf-8
 from CornerDetectAndAutoEmail.TestForDailyInfo import dailyStkInfoEmail, dailyStkInfoEmail_input
-# from JQData_Test.auth_info import *
+
 import pandas as pd
 
 from SDK.MyTimeOPT import convert_str_to_date

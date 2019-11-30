@@ -235,7 +235,7 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		return str_gui
 	
 	# 读取上次p和b操作中的最小p，备用
-	last_p = opt_json_stk['last_p']
+	last_p = opt_json_stk['p_last']
 	b_p_min = np.min([x['p'] for x in opt_json_stk['b_opt']])
 	
 	# stk_price_last = readLastP(stk_code)
@@ -244,14 +244,13 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 	# 	stk_price_last = current_price
 
 	""" =========== 实时计算价差，用于“波动提示”和“最小网格限制” ======== """
-	# price_diff = current_price - last_p
-	# price_diff_ratio = price_diff/last_p
+	
 
 	if debug:
 		str_gui = myPrint(
 			str_gui,
 			'\n\n' + stk_code + ':\np_now:' + str(current_price) + '\np_last:' + str(
-				last_p) + '\np_change_ratio:' + str(price_diff_ratio),
+				last_p) + '\np_change_ratio:' + '',
 			method={True: 'gm', False: 'n'}[gui])
 
 	""" ========== 排除获取的价格为0的情况，此种情况可能是stop或者时间未到 ========== """
