@@ -9,7 +9,6 @@ import tushare as ts
 import os
 import re
 
-json_code2name_dir = data_dir + 'code2name.json'
 
 
 def update_code2name_info():
@@ -39,6 +38,9 @@ def read_code2name():
         with open(json_code2name_dir, 'r') as f:
             return json.load(f)
 
+
+json_code2name_dir = data_dir + 'code2name.json'
+# update_code2name_info()
 
 dict_code2name = read_code2name()
 

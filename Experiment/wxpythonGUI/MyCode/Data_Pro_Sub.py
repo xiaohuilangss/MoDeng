@@ -1,9 +1,12 @@
 # encoding=utf-8
+
+from DataSource.auth_info import jq_login
 from Config.Sub import dict_stk_list
 from DataSource.Data_Sub import get_k_data_JQ
 from SDK.Gen_Stk_Pic_Sub import \
     gen_day_pic_wx, gen_idx_pic_wx
 import jqdatasdk as jq
+
 
 
 def day_analysis_dict_pipe():
