@@ -234,18 +234,15 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
 		return str_gui
 	
+	if len(opt_json_stk['b_opt']) == 0:
+		print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
+		return str_gui
+	
 	# 读取上次p和b操作中的最小p，备用
 	last_p = opt_json_stk['p_last']
 	b_p_min = np.min([x['p'] for x in opt_json_stk['b_opt']])
 	
-	# stk_price_last = readLastP(stk_code)
-	# if stk_price_last < 0:
-	# 	saveLastP(stk_code, current_price)
-	# 	stk_price_last = current_price
-
 	""" =========== 实时计算价差，用于“波动提示”和“最小网格限制” ======== """
-	
-
 	if debug:
 		str_gui = myPrint(
 			str_gui,
@@ -356,11 +353,6 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		if not gui:
 			sendHourMACDToQQ(stk_code, qq, source='jq')
 
-		# 更新本地价格
-		saveLastP(stk_code, current_price)
-
-		opt='s'
-
 	elif (current_price - last_p < -thh_buy) & ((current_price - last_p)/b_p_min <= -pcr):
 
 		str_temp = "触发买入网格！可以考虑买入！" + stk_code + code2name(stk_code) +\
@@ -379,10 +371,6 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 
 		if not gui:
 			sendHourMACDToQQ(stk_code, qq, source='jq')
-
-		saveLastP(stk_code, current_price)
-
-		opt = 'b'
 
 	else:
 		str_gui = myPrint(

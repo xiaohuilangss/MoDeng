@@ -1,12 +1,11 @@
 # encoding=utf-8
-
+from AutoDailyOpt.Debug_Sub import debug_print_txt
 from DataSource.auth_info import jq_login
 from Config.Sub import dict_stk_list
 from DataSource.Data_Sub import get_k_data_JQ
 from SDK.Gen_Stk_Pic_Sub import \
     gen_day_pic_wx, gen_idx_pic_wx
 import jqdatasdk as jq
-
 
 
 def day_analysis_dict_pipe():
@@ -34,6 +33,8 @@ def day_analysis_dict_pipe():
             result_analysis_list = result_analysis_list + r_tuple_day_pic[1]
 
     jq.logout()
+    
+    debug_print_txt('hour_analysis', 'total_stk', str(result_analysis_list) + '\n')
 
     return result_analysis_list
 
@@ -75,7 +76,8 @@ def day_analysis_dict():
 
         # 将page中的stk pic存入字典
         # pic_dict[tab] = stk_list_pic_dict
-
+    debug_print_txt('day_analysis', 'total_stk', str(result_analysis_list) + '\n')
+    
     return pic_dict, result_analysis_list
 
 
