@@ -7,6 +7,7 @@ import math
 import threading
 from pprint import pprint
 
+from AutoDailyOpt.Debug_Sub import debug_print_txt
 from AutoDailyOpt.p_diff_ratio_last import RSV_Record, p_diff_ratio_last_dic
 from Config.AutoGenerateConfigFile import data_dir
 from Config.AutoStkConfig import rootPath
@@ -225,22 +226,33 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 	except:
 		str_gui = myPrint(str_gui, stk_code + '获取实时price失败！', method={True: 'gm', False: 'n'}[gui])
 		return str_gui
+	
+	debug_print_txt('stk_judge', stk_code, 'realtime_p:' + str(current_price), debug)
 
 	""" ==================== 获取上次price ==================== """
 	opt_json_stk = read_opt_json(stk_code, opt_record_file_url)
 	
 	# 如果没有相应的json文件，不进行判断，直接返回
 	if opt_json_stk == {}:
+		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！', debug)
+		
 		print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
 		return str_gui
 	
 	if len(opt_json_stk['b_opt']) == 0:
+		
+		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！',
+		                debug)
+		
 		print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
 		return str_gui
 	
 	# 读取上次p和b操作中的最小p，备用
 	last_p = opt_json_stk['p_last']
 	b_p_min = np.min([x['p'] for x in opt_json_stk['b_opt']])
+	
+	debug_print_txt('stk_judge', stk_code, '上次p：' + str(last_p) + '  最小p：' + str(b_p_min),
+	                debug)
 	
 	""" =========== 实时计算价差，用于“波动提示”和“最小网格限制” ======== """
 	if debug:
@@ -273,7 +285,10 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		RSV_Record[stk_code] = cal_rsv_rank(stk_code, 5) / 100
 		thh_sale = earn_threshold_unit*2*RSV_Record[stk_code]
 		thh_buy = earn_threshold_unit * 2 * (1-RSV_Record[stk_code])
-
+	
+	debug_print_txt('stk_judge', stk_code, 'thh_sale:' + str(thh_sale) + ' thh_buy:' + str(thh_buy),
+	                debug)
+	
 	""" 将操作日志保存到全局变量中 """
 	if opt_lock.acquire():
 		try:
@@ -343,6 +358,9 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 				'\n买入网格大小:' + '%0.3f' % thh_buy +\
 				'\n卖出网格大小:' + '%0.3f' % thh_sale +\
 				'\n最小操作幅度:' + '%0.3f' % pcr
+		
+		debug_print_txt('stk_judge', stk_code, str_temp,
+		                debug)
 
 		str_gui = myPrint(
 			str_gui,
@@ -362,6 +380,9 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 				'\n买入网格大小:' + '%0.2f' % thh_buy +\
 				'\n卖出网格大小:' + '%0.2f' % thh_sale +\
 				'\n最小操作幅度:' + '%0.3f' % pcr
+		
+		debug_print_txt('stk_judge', stk_code, str_temp,
+		                debug)
 
 		str_gui = myPrint(
 			str_gui,
@@ -377,28 +398,29 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 			str_gui,
 			stk_code + ':未触发任何警戒线！',
 			method={True: 'gm', False: 'n'}[gui])
-
-		opt = 'n'
-
+		
+		debug_print_txt('stk_judge', stk_code, stk_code + ':未触发任何警戒线！',
+		                debug)
+		
 	""" ========================== 波动检测 =========================== """
-	change_flag, str_gui = judge_p_change_ratio(stk_code, (current_price-last_p)/last_p, str_gui=str_gui, gui=gui)
-	if change_flag:
+	# change_flag, str_gui = judge_p_change_ratio(stk_code, (current_price-last_p)/last_p, str_gui=str_gui, gui=gui)
+	# if change_flag:
+	#
+	# 	str_temp = "波动推送! " + stk_code + code2name(stk_code) +\
+	# 			'\nAmount:' + str(buy_amount) +\
+	# 			'\n当前价格:' + str(current_price) +\
+	# 			'\n上次价格:' + str(last_p) +\
+	# 			'\n买入网格大小:' + '%0.2f' % thh_buy +\
+	# 			'\n卖出网格大小:' + '%0.2f' % thh_sale
+	#
+	# 	str_gui = myPrint(
+	# 		str_gui,
+	# 		str_temp,
+	# 		method={True: 'gn', False: 'qq'}[gui],
+	# 		towho=qq)
 
-		str_temp = "波动推送! " + stk_code + code2name(stk_code) +\
-				'\nAmount:' + str(buy_amount) +\
-				'\n当前价格:' + str(current_price) +\
-				'\n上次价格:' + str(last_p) +\
-				'\n买入网格大小:' + '%0.2f' % thh_buy +\
-				'\n卖出网格大小:' + '%0.2f' % thh_sale
-
-		str_gui = myPrint(
-			str_gui,
-			str_temp,
-			method={True: 'gn', False: 'qq'}[gui],
-			towho=qq)
-
-		if not gui:
-			sendHourMACDToQQ(stk_code, qq, source='jq')
+		# if not gui:
+		# 	sendHourMACDToQQ(stk_code, qq, source='jq')
 
 	return str_gui
 
