@@ -10,12 +10,11 @@ from Experiment.MACD_Stray_Analysis.Demo1 import cal_stk_p_level
 from Experiment.RelativeRank.Sub import get_k_data_JQ
 from SDK.MyTimeOPT import add_date_str, get_current_date_str
 
-import pandas as pd
 from pylab import *
 
 from HuiCe.Sub import code2name_dict
-from SendMsgByQQ.QQGUI import send_qq
-from SendMsgByQQ.SendPicByQQ import send_pic_qq
+from SDK.SendMsgByQQ.QQGUI import send_qq
+from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
 
 
 

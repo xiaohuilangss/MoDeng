@@ -9,7 +9,7 @@ import pickle
 from CornerDetectAndAutoEmail.AveMaxMinDetect.Global import h_l_pot_info_url
 from Config.GlobalSetting import g_total_stk_info_mysql
 from HuiCe.Sub import get_name_by_stk_code
-from SendMsgByQQ.QQGUI import send_qq
+from SDK.SendMsgByQQ.QQGUI import send_qq
 import os
 """
 存储最高点和最低点的数据

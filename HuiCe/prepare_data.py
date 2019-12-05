@@ -1,13 +1,9 @@
 # encoding=utf-8
-from AutoDailyOpt.Sub import cal_rsv_rank_sub
 from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.CornerDetectAndAutoEmail.Sub import add_stk_index_to_df
-from Experiment.Reseau.StdForReseau.Sub import get_single_stk_reseau_sub
-from HuiCe.Sub import cal_today_ochl
 from SDK.shelfSub import shelveP
 
 if __name__ == '__main__':
-	from DataSource.auth_info import *
 	stk_code = '000001'
 
 	# 准备数据

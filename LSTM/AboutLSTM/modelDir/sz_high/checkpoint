@@ -1,2 +1,0 @@
-model_checkpoint_path: "sz_high.ckpt"
-all_model_checkpoint_paths: "sz_high.ckpt"
