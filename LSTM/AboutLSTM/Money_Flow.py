@@ -1,5 +1,4 @@
 # encoding=utf-8
-from JQData_Test.auth_info import *
 import numpy as np
 import pandas as pd
 

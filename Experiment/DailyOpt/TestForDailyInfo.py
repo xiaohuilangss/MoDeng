@@ -7,7 +7,7 @@
 import matplotlib
 
 from Config.GlobalSetting import g_total_stk_info_mysql
-from SDK.StkSub import getNameByStkCode
+from HuiCe.Sub import get_name_by_stk_code
 import time
 
 matplotlib.use('Agg')
@@ -55,11 +55,11 @@ def dailyStkInfoEmail():
 
         # 构造html
         H_str = H_str + gen_H_Unit(stk_code=stk,
-                                   stk_name=getNameByStkCode(g_total_stk_info_mysql, stk),
+                                   stk_name=get_name_by_stk_code(g_total_stk_info_mysql, stk),
                                    pic_dir=pic_dir_stk.replace(pic_save_dir_root, ''))\
                     + gen_H_Unit(stk_code=stk,
-                                   stk_name=getNameByStkCode(g_total_stk_info_mysql, stk),
-                                   pic_dir=pic_dir_index.replace(pic_save_dir_root, ''))
+                                 stk_name=get_name_by_stk_code(g_total_stk_info_mysql, stk),
+                                 pic_dir=pic_dir_index.replace(pic_save_dir_root, ''))
 
         print('完成'+str(stk) + '  的邮件内容！')
 

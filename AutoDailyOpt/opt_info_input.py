@@ -14,7 +14,7 @@ sys.path.append(rootPath)
 # from Config.GlobalSetting import g_total_stk_info_mysql
 from SDK.DBOpt import genDbConn
 from SDK.MyTimeOPT import get_current_datetime_str
-from SDK.StkSub import getNameByStkCode
+from HuiCe.Sub import get_name_by_stk_code
 import pandas as pd
 
 """
@@ -99,23 +99,23 @@ while True:
 
     if len(input_split) == 4:       # 插入命令
 
-        sql_str_no_reap = 'insert into ' +\
-            table_history + ' (stk_code, stk_name, amount, price, opt, input_time, reap_flag) values(' + \
+        sql_str_no_reap = 'insert into ' + \
+                          table_history + ' (stk_code, stk_name, amount, price, opt, input_time, reap_flag) values(' + \
             "'" + input_split[0] + "'" + ',' + \
-            "'" + getNameByStkCode(g_total_stk_info_mysql, input_split[0]) + "'" + ',' + \
-            str(input_split[2]) + ',' + \
-            str(input_split[3]) + ',' + \
+            "'" + get_name_by_stk_code(g_total_stk_info_mysql, input_split[0]) + "'" + ',' + \
+                          str(input_split[2]) + ',' + \
+                          str(input_split[3]) + ',' + \
             "'" + str(input_split[1]) + "'" + ',' + \
             "'" + get_current_datetime_str() + "'" + ',' + \
             "false" + \
             ');'
 
-        sql_str_reap = 'insert into ' +\
-            table_history + ' (stk_code, stk_name, amount, price, opt, input_time, reap_flag) values(' + \
+        sql_str_reap = 'insert into ' + \
+                       table_history + ' (stk_code, stk_name, amount, price, opt, input_time, reap_flag) values(' + \
             "'" + input_split[0] + "'" + ',' + \
-            "'" + getNameByStkCode(g_total_stk_info_mysql, input_split[0]) + "'" + ',' + \
-            str(input_split[2]) + ',' + \
-            str(input_split[3]) + ',' + \
+            "'" + get_name_by_stk_code(g_total_stk_info_mysql, input_split[0]) + "'" + ',' + \
+                       str(input_split[2]) + ',' + \
+                       str(input_split[3]) + ',' + \
             "'" + str(input_split[1]) + "'" + ',' + \
             "'" + get_current_datetime_str() + "'" + ',' + \
             "true" + \

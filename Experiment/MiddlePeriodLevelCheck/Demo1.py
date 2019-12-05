@@ -2,16 +2,16 @@
 
 """
 
-将关心的和持仓的股票的中等长度的小时数据保存到json文件中
+将关心的和持仓的stk的中等长度的小时数据保存到json文件中
 """
 from Config.AutoGenerateConfigFile import data_dir
-from Config.Sub import readConfig
+from Config.Sub import read_config
 
 
-# 获取股票列表
+# 获取stk列表
 from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.RelativeRank.Sub import get_RT_price, relativeRank, checkHourMACD_callback
-from Experiment.SafeStkRelaLevel.Demo1 import calRelaPLevel, sendPLevel2QQ
+# from Experiment.SafeStkRelaLevel.Demo1 import calRelaPLevel, sendPLevel2QQ
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from SendMsgByQQ.QQGUI import send_qq
 import json
@@ -19,10 +19,10 @@ import pandas as pd
 
 
 def update_middle_period_hour_data():
-    stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
+    stk_list = read_config()['buy_stk'] + read_config()['concerned_stk']
     # stk_list = readConfig()['buy_stk']
 
-    # 获取股票的小时数据
+    # 获取stk的小时数据
     result = {}
     for stk in stk_list:
         df_hour = get_k_data_JQ(stk, count=None, start_date=add_date_str(get_current_date_str(), -60), freq='60m')
@@ -55,45 +55,10 @@ def check_single_stk_middle_level(stk_code, dict):
     return l
 
 
-def check_stklist_middle_level(stk_list, towho):
-    """
-    检测一系列stk的中期水平
-    :param stk_list:
-    :param threshold:
-    :return:
-    """
-
-    # 读取历史小时数据
-    with open(data_dir+'middlePeriodHourData.json', 'r') as f:
-        dict = json.load(f)
-
-    # for stk in stk_list:
-    #     if check_single_stk_middle_level(stk, dict) < threshold:
-    #         send_qq(towho, stk + '低于历史' + str(1-threshold)*100 + '%的时刻！')
-
-    r = [(x, (1-check_single_stk_middle_level(x, dict)/100)) for x in list(set(stk_list))]
-    r_df = pd.DataFrame(data=r, columns=['code', 'level'])
-
-    sendPLevel2QQ(r_df, towho)
-
-
-def concerned_stk_middle_check():
-    towho='影子2'
-
-    stk_list = readConfig()['buy_stk'] + readConfig()['concerned_stk']
-    check_stklist_middle_level(stk_list, towho)
-
-    # 检查小时MACD
-    checkHourMACD_callback()
-
-
 if __name__ == '__main__':
 
     from DataSource.auth_info import *
 
-    concerned_stk_middle_check()
 
-    # update_middle_period_hour_data()
-    concerned_stk_middle_check()
     end = 0
 

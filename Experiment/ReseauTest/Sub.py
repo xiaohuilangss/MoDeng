@@ -1,8 +1,7 @@
 # encoding=utf-8
 import numpy as np
-import time
 
-from SDK.StkSub import calExchangeFee
+from HuiCe.Sub import cal_exchange_fee
 
 
 def BS_opt(stk_code, price, amount, opt, record_info, debug=False):
@@ -15,7 +14,7 @@ def BS_opt(stk_code, price, amount, opt, record_info, debug=False):
     """
     if opt == 'buy':
 
-        fee = calExchangeFee(stk_code=stk_code, stk_amount=amount, stk_price=price, buy=True)
+        fee = cal_exchange_fee(stk_code=stk_code, stk_amount=amount, stk_price=price, buy=True)
         totalcost = price*amount + fee
 
         if record_info['money_remain'] >= totalcost:
@@ -31,7 +30,7 @@ def BS_opt(stk_code, price, amount, opt, record_info, debug=False):
 
         if record_info['amount_remain'] >= amount:
             record_info['amount_remain'] = record_info['amount_remain'] - amount
-            record_info['money_remain'] = record_info['money_remain'] + price*amount - calExchangeFee(stk_code=stk_code, stk_amount=amount, stk_price=price, buy=False)
+            record_info['money_remain'] = record_info['money_remain'] + price * amount - cal_exchange_fee(stk_code=stk_code, stk_amount=amount, stk_price=price, buy=False)
             record_info['BS_last'] = 'sale'
             record_info['price_last'] = price
         else:

@@ -7,6 +7,8 @@ from pylab import *
 from Config.AutoStkConfig import rootPath
 from LSTM.AboutLSTM.Config import N_STEPS, feature_cols, HIDDEN_SIZE, NUM_LAYERS
 from LSTM.AboutLSTM.Test.Sub import lstm_model
+import pickle
+import os
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus'] = False
@@ -20,7 +22,7 @@ matplotlib.rcParams['axes.unicode_minus'] = False
 
 if __name__ == '__main__':
 
-    stk_code = '300508'
+    stk_code = 'cyb'
     label = 'high'
 
     # 准备数据
@@ -56,8 +58,8 @@ if __name__ == '__main__':
         with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
             max_min_info = json.load(f)
 
-        p_max = max_min_info[stk_code][0]
-        p_min = max_min_info[stk_code][1]
+        p_max = max_min_info[stk_code]['p_max']
+        p_min = max_min_info[stk_code]['p_min']
 
         result = [(p_min+x[0]*(p_max-p_min), p_min+x[1]*(p_max-p_min)) for x in result]
 

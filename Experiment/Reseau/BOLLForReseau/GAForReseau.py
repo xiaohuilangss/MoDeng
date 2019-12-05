@@ -21,7 +21,7 @@ from SDK.PickleSaveSub import loadP
 
 
 # 定义适应度函数
-from SDK.StkSub import BS_opt
+from HuiCe.Sub import bs_opt
 
 
 def fitness(w, df):
@@ -78,7 +78,7 @@ def fitness(w, df):
 
         # 向上运行，触发S操作
         if df.loc[idx, 'close'] - record_info['price_last'] > record_info['S_Reseau']:
-            record_info = BS_opt(
+            record_info = bs_opt(
                 stk_code=stk_code,
                 price=df.loc[idx, 'close'],
                 amount=300,
@@ -88,7 +88,7 @@ def fitness(w, df):
                 date=date_now)
 
         elif df.loc[idx, 'close'] - record_info['price_last'] < -record_info['B_Reseau']:
-            record_info = BS_opt(
+            record_info = bs_opt(
                 stk_code=stk_code,
                 price=df.loc[idx, 'close'],
                 amount=400,

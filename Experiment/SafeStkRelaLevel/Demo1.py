@@ -6,16 +6,14 @@
 from Config.Sub import readConfig
 # from MACD_Stray_Analysis.Demo1 import calStkPlevel
 # from RelativeRank.Sub import get_k_data_JQ
-from Experiment.MACD_Stray_Analysis.Demo1 import calStkPlevel
+from Experiment.MACD_Stray_Analysis.Demo1 import cal_stk_p_level
 from Experiment.RelativeRank.Sub import get_k_data_JQ
 from SDK.MyTimeOPT import add_date_str, get_current_date_str
 
-import numpy as np
 import pandas as pd
-import matplotlib
 from pylab import *
 
-from SDK.StkSub import code2name_dict
+from HuiCe.Sub import code2name_dict
 from SendMsgByQQ.QQGUI import send_qq
 from SendMsgByQQ.SendPicByQQ import send_pic_qq
 
@@ -65,7 +63,7 @@ def calRelaPLevel(stk_list, period, towho):
     """
 
     r = [
-        (x, calStkPlevel(np.array(get_k_data_JQ(stk_code=x, start_date=add_date_str(get_current_date_str(), period))['close']))['total_last'])
+        (x, cal_stk_p_level(np.array(get_k_data_JQ(stk_code=x, start_date=add_date_str(get_current_date_str(), period))['close']))['total_last'])
         for x in stk_list]
     r_df = pd.DataFrame(data=r, columns=['code', 'level'])
 

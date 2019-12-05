@@ -7,7 +7,6 @@ from Config.AutoStkConfig import rootPath
 from Experiment.RelativeRank.Sub import relativeRank
 from LSTM.AboutLSTM.Config import feature_cols, N_STEPS, HIDDEN_SIZE, NUM_LAYERS
 from LSTM.AboutLSTM.Test.Sub import lstm_model
-# from RelativeRank.Sub import relativeRank
 import tensorflow as tf
 from pylab import *
 
@@ -99,15 +98,48 @@ def predict_tomorrow(
         return -1
 
 
-def printPredict2Public():
+def predict_tomorrow_index(tc, debug=False):
 
-    towho = u'影子'
-    send_qq(towho, '各位：\n以下是下一个交易日大盘最高价、最低价和收盘价的预测，因为三个价格使用相互独立的模型，所以会出现收盘价低于最低价的情况，以及类似的情形，希望各位注意！' +
-                         '\n' +
-                         '周一~周五 晚上19：30 计算并发送该消息！\n格式及解释：\n' +
-            "('high', '2989.57','0.11%')" + '\n' +
-            '最高价, 2989.57, 相对于上一个收盘价的涨跌率 0.11, 训练时误差 0.852\n后面以此类推...'
-            )
+    with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+        max_min_info = json.load(f)
+
+    stk2name = {
+        'sh': '上证',
+        'sz': '深证',
+        'cyb': '创业板'
+    }
+
+    for stk in ['sh', 'sz', 'cyb']:
+
+        today_df = ts.get_k_data(stk).tail(1)
+
+        tc.AppendText(stk2name.get(stk) + ' 今天数据：\n' + str(today_df)
+                      .replace('volume', '成交量')
+                      .replace('date', '日期')
+                      .replace('open', '开盘价')
+                      .replace('high', '最高点')
+                      .replace('low', '最低点')
+                      .replace('close', '收盘价') + '\n\n')
+
+        close_today = today_df['close'].values[0]
+        r = [(label, '%0.2f' % predict_tomorrow(
+            stk,
+            label,
+            N_STEPS=N_STEPS,
+            feature_cols=feature_cols,
+            HIDDEN_SIZE=HIDDEN_SIZE,
+            NUM_LAYERS=NUM_LAYERS), max_min_info[stk][label + '_acc']) for label in ['high', 'low', 'close']]
+
+        # 增加与今天收盘价的对比
+        r_contrast = [(x[0], x[1], '%0.2f' % ((float(x[1])-close_today)/close_today*100) + '%') for x in r]
+
+        tc.AppendText(stk2name[stk] + '明日预测:\n' + str(r_contrast)
+                      .replace('high', '最高点')
+                      .replace('low', '最低点')
+                      .replace('close', '收盘价') + '\n\n')
+
+
+def printPredict2Public():
 
     with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
         max_min_info = json.load(f)
@@ -115,7 +147,8 @@ def printPredict2Public():
     for stk in ['sh', 'sz', 'cyb']:
 
         today_df = ts.get_k_data(stk).tail(1)
-        send_qq(towho, stk + ' 今天数据：\n' + str(today_df) + '\n')
+        # send_qq(towho, stk + ' 今天数据：\n' + str(today_df) + '\n')
+        print(stk + ' 今天数据：\n' + str(today_df) + '\n')
         close_today = today_df['close'].values[0]
         r = [(label, '%0.2f' % predict_tomorrow(
             stk,
@@ -132,8 +165,8 @@ def printPredict2Public():
             'sz': '深证',
             'cyb': '创业板'
         }
-
-        send_qq(towho, stk2name[stk] + '明日预测:\n' + str(r_contrast))
+        print(stk2name[stk] + '明日预测:\n' + str(r_contrast))
+        # send_qq(towho, stk2name[stk] + '明日预测:\n' + str(r_contrast))
 
 
 def printConcernedPredict2Self():
@@ -159,6 +192,8 @@ def printConcernedPredict2Self():
         #     'sz': '深证',
         #     'cyb': '创业板'
         # }
+
+        print(stk + ':\n' + str(r_contrast))
 
         send_qq(towho, stk + ':\n' + str(r_contrast))
 

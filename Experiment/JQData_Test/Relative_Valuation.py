@@ -1,9 +1,9 @@
 # encoding=utf-8
 
-from JQData_Test.auth_info import *
+
 import pandas as pd
 
-from RelativeRank.Sub import get_k_data_JQ
+
 from SDK.MyTimeOPT import convert_str_to_date
 
 """

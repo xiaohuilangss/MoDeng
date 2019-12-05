@@ -6,10 +6,8 @@
 import os
 import json
 
-config_path = 'c:/MoDeng/'
-data_source_url = config_path+'data_source.json'
-stk_config_url = config_path+'stk_config.json'
-data_dir = config_path + 'data/'
+from Global_Value.file_dir import config_path, data_source_url, data_dir, stk_config_url
+
 
 def checkConfigFile():
 
@@ -58,8 +56,8 @@ def checkConfigFile():
             'https://www.joinquant.com/user/login/index?type=register\n' +
             '2、在data_source.json文件中“TS_token”填写tushare数据的token，字符串格式。没有聚宽数据的账号可以在此免费网址注册：\n' +
             'https://tushare.pro/register?reg=125290\n' +
-            '3、在stk_config.json文件中的 buy_stk 字段中填写当前您持仓的股票代码，软件会在交易时间段定时分析相关股票。\n'+
-            '4、在stk_config.json文件中的 concerned_stk 字段中填写当前您未购买但是感兴趣的股票，没有可不填。\n' +
+            '3、在stk_config.json文件中的 buy_stk 字段中填写当前您持仓的stk代码，软件会在交易时间段定时分析相关stk。\n'+
+            '4、在stk_config.json文件中的 concerned_stk 字段中填写当前您未购买但是感兴趣的stk，没有可不填。\n' +
             '请完善配置文件后重试！'
         )
 

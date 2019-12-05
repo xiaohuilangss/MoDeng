@@ -1,10 +1,10 @@
 # encoding = utf-8
 import tushare as ts
 
-from CornerDetectAndAutoEmail.Sub import genSingleStkTrainData
+from Experiment.CornerDetectAndAutoEmail.Sub import genSingleStkTrainData
 from LSTM.AboutLSTM.Config import feature_cols, M_INT, N_STEPS, N_INPUTS, HIDDEN_SIZE, NUM_LAYERS, label_col
-from LSTM.AboutLSTM.Test.Sub import lstm_model
-from SDK.CNN_Data_Prepare import gaussian_normalize
+from LSTM.AboutLSTM.Test.Sub import lstm_model, gaussian_normalize
+
 import tensorflow as tf
 import os
 import numpy as np

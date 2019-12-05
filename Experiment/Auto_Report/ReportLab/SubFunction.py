@@ -1,7 +1,16 @@
 # encoding = utf-8
+import math
 
-from SDK.SDKHeader import *
-from Config.GlobalSetting import stk_basic
+import datetime
+import talib
+import tushare as ts
+import numpy as np
+
+from DataSource.Code2Name import code2name
+from DataSource.Data_Sub import get_k_data_JQ
+from Experiment.CornerDetectAndAutoEmail.Sub import add_stk_index_to_df
+from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
+from SDK.MyTimeOPT import s2t, Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
 from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend
@@ -91,7 +100,7 @@ def ExtractPointFromDf_DateX(df_origin, date_col, y_col, timeAxis='day'):
 
     # 按时间排序，并删除空值
     df_origin = df_origin.sort_values(by=date_col, ascending=True)
-    df_origin = df_origin[True - df_origin[y_col].isnull()]
+    df_origin = df_origin[~df_origin[y_col].isnull()]
 
     # if len(df_origin) == 0:
     #     print('函数 ExtractPointFromDf_DateX：删除空值后，dataframe为空！入参df中不含指定列')
@@ -111,7 +120,7 @@ def ExtractPointFromDf_DateX(df_origin, date_col, y_col, timeAxis='day'):
         df_origin['time'] = df_origin.apply(lambda x: x[date_col], axis=1)
 
     elif timeAxis == 'month':
-        df_origin['time'] = df_origin.apply(lambda x:DateStr2Sec(stdMonthDate2ISO(str(x[date_col]))),axis=1)
+        df_origin['time'] = df_origin.apply(lambda x: DateStr2Sec(stdMonthDate2ISO(str(x[date_col]))),axis=1)
 
     # 单独取出相应两列，准备转成point格式
     df_part = df_origin.loc[:, ['time', y_col]]
@@ -126,12 +135,6 @@ def addAcTemp(canvas_param, opc_df_today,pos_x, pos_y, width, height):
 
     total_df = opc_df_today
 
-    #  取出
-    # “室外天气”、
-    # “冷却侧供水温度”、
-    # “冷却侧回水温度”、
-    # “冷冻侧供水温度”、
-    # “冷冻侧回水温度”
     total_df_OAT = total_df[total_df.browse_name == 'OA-T']
 
     total_df_CSSWT = total_df[total_df.browse_name == 'CS-SWT']
@@ -213,7 +216,8 @@ def addAcTemp(canvas_param, opc_df_today,pos_x, pos_y, width, height):
     renderPDF.draw(drawing=drawing, canvas=c, x=pos_x, y=pos_y)
 
 
-def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, timeAxis='day', y_min_zero=False):
+def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, time_axis='day', y_min_zero=False,
+                 line_width=1.5, marker_size=5):
     """
     函数功能：生成Drawing之用
     :return:
@@ -222,8 +226,7 @@ def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, ti
     drawing = Drawing(width=width, height=height)
 
     lp = LinePlot()
-    # lp.x = 50
-    # lp.y = 50
+
     lp.height = height
     lp.width = width
     lp.data = data
@@ -237,8 +240,8 @@ def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, ti
 
     for i in range(0, len(data)):
         lp.lines[i].name = data_note[i]
-        lp.lines[i].symbol = makeMarker('FilledCircle', size=0.5)
-        lp.lines[i].strokeWidth = 0.2
+        lp.lines[i].symbol = makeMarker('FilledCircle', size=marker_size)
+        lp.lines[i].strokeWidth = line_width
         lp.lines[i].strokeColor = barFillColors[i]
 
     # lp.lineLabelFormat = '%2.0f'
@@ -250,7 +253,7 @@ def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, ti
     lp.xValueAxis.valueMin = x_min
     lp.xValueAxis.valueMax = x_max
 
-    if timeAxis=='day':
+    if time_axis == 'day':
         step = int(((x_max - x_min) / (60 * 60 * 24)) / 30) + 1
 
         lp.xValueAxis.valueSteps = [n for n in range(int(x_min), int(x_max), 60 * 60 * 24 * step)]
@@ -264,7 +267,7 @@ def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, ti
         # lp.yValueAxis.valueMax = 50
         # lp.yValueAxis.valueSteps = [1, 2, 3, 5, 6]
 
-    elif timeAxis=='quarter':
+    elif time_axis == 'quarter':
 
         step = int(((x_max - x_min)/0.25) / 30) + 1
 
@@ -277,7 +280,7 @@ def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, ti
         if y_min_zero:
             lp.yValueAxis.valueMin = 0
 
-    elif timeAxis=='year':
+    elif time_axis == 'year':
 
         lp.xValueAxis.valueSteps = [n for n in range(int(x_min), int(x_max), 1)]
         lp.xValueAxis.labelTextFormat = lambda x: str(x)
@@ -288,7 +291,7 @@ def genLPDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25, ti
         if y_min_zero:
             lp.yValueAxis.valueMin = 0
 
-    elif timeAxis=='month':
+    elif time_axis == 'month':
 
         lp.xValueAxis.valueSteps = list(map(lambda x:x[0],data[0]))
         lp.xValueAxis.labelTextFormat = lambda x: str(Sec2Datetime(x))[0:7]
@@ -367,116 +370,181 @@ def genBarDrawing(data, data_note, width=letter[0]*0.8, height=letter[1]*0.25):
     return drawing
 
 
-def RPL_Bk_Page(canvas_para, bk_name):
+def rpl_stk_page(canvas_para, stk_code):
     """
     函数功能：在pdf中增加bk信息，篇幅为一整页，或者更多，以页为单位
-    :param bk_name:
+    :param stk_code:
     :param days:        用于指示近期的期限，比如近30天
     :return:
     """
 
+    # 插入字符串，用以表明stk代码及名称
+    canvas_para.setFont("song", 10)
+    if stk_code in ['sh', 'sz', 'cyb']:
+        stk_name = stk_code
+
+    else:
+        stk_name = code2name(stk_code)
+
+    # 打印stk代码和名字
+    canvas_para.drawString(20, letter[1] - 10, stk_code + ' ' + stk_name + ' ' + '日线数据')
+
+    # 准备数据
+    df_stk = ts.get_hist_data(stk_code)
+    df_stk['date'] = df_stk.index
+    df_stk = df_stk.reset_index(drop=True)
+
+    close = ExtractPointFromDf_DateX(df_stk, 'date', 'close')
+
+    data = [tuple(close)]
+    data_name = ['close']
+
+    drawing_ave = genLPDrawing(data=data, data_note=data_name, height=letter[1]*0.1, line_width=0.5, marker_size=2)
+    renderPDF.draw(drawing=drawing_ave, canvas=canvas_para, x=10, y=letter[1] * 0.85)
+
+    # 按时间降序排序，方便计算MACD
+    df_stk = df_stk.sort_values(by='date', ascending=True)
+
+    # 加入各种指标
+    df_stk = add_stk_index_to_df(df_stk)
+
+    # 去除空值，截取最新数据
+    df_stk = df_stk.dropna(axis=0, how='any').tail(40)
+
+    close = ExtractPointFromDf_DateX(df_stk, 'date', 'close')
+    sar = ExtractPointFromDf_DateX(df_stk, 'date', 'SAR')
+
+    MACD = ExtractPointFromDf_DateX(df_stk, 'date', 'MACD')
+
+    data = [tuple(close), tuple(sar)]
+    data_name = ['close', 'sar']
+
+    drawing_ave = genLPDrawing(data=data, data_note=data_name, height=letter[1]*0.1, line_width=1.5, marker_size=5)
+    renderPDF.draw(drawing=drawing_ave, canvas=canvas_para, x=10, y=letter[1] * 0.7)
+
+    drawing_MACD = genBarDrawing(data=MACD, data_note=['MACD'], height=letter[1]*0.1)
+    renderPDF.draw(drawing=drawing_MACD, canvas=canvas_para, x=10, y=letter[1]*0.5)
+
+    # 整理kdj信息
+    slowk = ExtractPointFromDf_DateX(df_stk, 'date', 'slowk')
+    slowd = ExtractPointFromDf_DateX(df_stk, 'date', 'slowd')
+    data_kdj = [tuple(slowk), tuple(slowd)]
+    data_kdj_note = ['k', 'd']
+
+    drawing_kdj = genLPDrawing(data=data_kdj, data_note=data_kdj_note, height=letter[1]*0.1)
+    renderPDF.draw(drawing=drawing_kdj, canvas=canvas_para, x=10, y=letter[1] * 0.4)
+
+    # 画图RSI信息
+    RSI5 = ExtractPointFromDf_DateX(df_stk, 'date', 'RSI5')
+    RSI12 = ExtractPointFromDf_DateX(df_stk, 'date', 'RSI12')
+    RSI30 = ExtractPointFromDf_DateX(df_stk, 'date', 'RSI30')
+
+    data_RSI = [tuple(RSI5), tuple(RSI12), tuple(RSI30)]
+    data_RSI_note = ['RSI5', 'RSI12', 'RSI30']
+
+    drawing_RSI = genLPDrawing(data=data_RSI, data_note=data_RSI_note, height=letter[1]*0.1)
+    renderPDF.draw(drawing=drawing_RSI, canvas=canvas_para, x=10, y=letter[1] * 0.25)
+
+    # 画图布林线
+    upper = ExtractPointFromDf_DateX(df_stk, 'date', 'upper')
+    middle = ExtractPointFromDf_DateX(df_stk, 'date', 'middle')
+    lower = ExtractPointFromDf_DateX(df_stk, 'date', 'lower')
+
+    data_BOLL = [tuple(upper), tuple(middle), tuple(lower)]
+    data_BOLL_note = ['上线', '中线', '下线']
+
+    drawing_BOLL = genLPDrawing(data=data_BOLL, data_note=data_BOLL_note, height=letter[1]*0.1)
+    renderPDF.draw(drawing=drawing_BOLL, canvas=canvas_para, x=10, y=letter[1] * 0.1)
+
+    canvas_para.showPage()
+
+    return canvas_para
+
+
+def rpl_stk_hour_page(canvas_para, stk_code):
+    """
+    函数功能：在pdf中增加bk信息，篇幅为一整页，或者更多，以页为单位
+    :param stk_code:
+    :param days:        用于指示近期的期限，比如近30天
+    :return:
+    """
 
     # 插入字符串，用以表明stk代码及名称
     canvas_para.setFont("song", 10)
-    if bk_name in ['sh','sz','cyb']:
-        stk_name = bk_name
+    if stk_code in ['sh', 'sz', 'cyb']:
+        stk_name = stk_code
 
     else:
-        stk_name = stk_basic[stk_basic.index==bk_name]['name'].values[0]
+        stk_name = code2name(stk_code)
 
-    canvas_para.drawString(20, letter[1] - 10, bk_name + stk_name)
+    # 打印stk代码和名字
+    canvas_para.drawString(20, letter[1] - 10, stk_code + ' ' + stk_name + ' ' + '小时数据')
 
+    # 准备数据
+    df_stk = get_k_data_JQ(stk_code, start_date=add_date_str(get_current_date_str(), -200), freq='30m')
+    df_stk['date'] = df_stk.reset_index().index
+    df_stk = df_stk.reset_index(drop=True)
 
+    close = ExtractPointFromDf_DateX(df_stk, 'date', 'close', timeAxis='year')
 
-    sh_index = ts.get_hist_data(bk_name)
-    sh_index['date'] = sh_index.index
-    sh_index = sh_index.reset_index(drop=True)
+    data = [tuple(close)]
+    data_name = ['close']
 
+    drawing_ave = genLPDrawing(data=data, data_note=data_name, height=letter[1]*0.1, line_width=0.5, marker_size=2, time_axis='year')
+    renderPDF.draw(drawing=drawing_ave, canvas=canvas_para, x=10, y=letter[1] * 0.85)
 
     # 按时间降序排序，方便计算MACD
-    sh_index = sh_index.sort_values(by='date',ascending=True)
+    df_stk = df_stk.sort_values(by='date', ascending=True)
 
-    # 在原始df中增加MACD信息
-    sh_index['MACD'],sh_index['MACDsignal'],sh_index['MACDhist'] = talib.MACD(sh_index.close,
-                                fastperiod=12, slowperiod=26, signalperiod=9)
+    # 加入各种指标
+    df_stk = add_stk_index_to_df(df_stk)
 
-    # 在原始数据中增加kdj信息
-    sh_index['slowk'], sh_index['slowd'] = talib.STOCH(sh_index.high,
-                                                       sh_index.low,
-                                                       sh_index.close,
-                                                       fastk_period=9,
-                                                       slowk_period=3,
-                                                       slowk_matype=0,
-                                                       slowd_period=3,
-                                                       slowd_matype=0)
+    # 去除空值，截取最新数据
+    df_stk = df_stk.dropna(axis=0, how='any').tail(40)
 
+    close = ExtractPointFromDf_DateX(df_stk, 'date', 'close', timeAxis='year')
+    sar = ExtractPointFromDf_DateX(df_stk, 'date', 'SAR', timeAxis='year')
 
-    # 添加rsi信息
-    sh_index['RSI5'] = talib.RSI(sh_index.close, timeperiod=5)
-    sh_index['RSI12'] = talib.RSI(sh_index.close, timeperiod=12)
-    sh_index['RSI30'] = talib.RSI(sh_index.close, timeperiod=30)
+    MACD = ExtractPointFromDf_DateX(df_stk, 'date', 'MACD', timeAxis='year')
 
+    data = [tuple(close), tuple(sar)]
+    data_name = ['close', 'sar']
 
-    # 在原始数据中加入布林线
-    sh_index['upper'], sh_index['middle'], sh_index['lower'] = talib.BBANDS(
-        sh_index.close,
-        timeperiod=20,
-        # number of non-biased standard deviations from the mean
-        nbdevup=2,
-        nbdevdn=2,
-        # Moving average type: simple moving average here
-        matype=0)
+    drawing_ave = genLPDrawing(data=data, data_note=data_name, height=letter[1]*0.1, line_width=1.5, marker_size=5, time_axis='year')
+    renderPDF.draw(drawing=drawing_ave, canvas=canvas_para, x=10, y=letter[1] * 0.7)
 
-
-    sh_index = sh_index.dropna(axis=0,how='any')
-
-    close = ExtractPointFromDf_DateX(sh_index, 'date', 'close')
-    m5 = ExtractPointFromDf_DateX(sh_index, 'date', 'ma5')
-    m10 = ExtractPointFromDf_DateX(sh_index, 'date', 'ma10')
-    m20 = ExtractPointFromDf_DateX(sh_index, 'date', 'ma20')
-
-    MACD = ExtractPointFromDf_DateX(sh_index, 'date', 'MACD')
-
-    data = [tuple(close),tuple(m5),tuple(m10),tuple(m20)]
-    data_name = ['close','m5','m10','m20']
-
-    drawing_ave = genLPDrawing(data=data, data_note=data_name,height=letter[1]*0.15)
-    renderPDF.draw(drawing=drawing_ave, canvas=canvas_para, x=10, y=letter[1] * 0.8)
-
-    drawing_MACD = genBarDrawing(data=MACD, data_note=['MACD'])
-    renderPDF.draw(drawing=drawing_MACD, canvas=canvas_para, x=10, y=letter[1]*0.6)
-
+    drawing_MACD = genBarDrawing(data=MACD, data_note=['MACD'], height=letter[1]*0.1)
+    renderPDF.draw(drawing=drawing_MACD, canvas=canvas_para, x=10, y=letter[1]*0.5)
 
     # 整理kdj信息
-    slowk = ExtractPointFromDf_DateX(sh_index, 'date', 'slowk')
-    slowd = ExtractPointFromDf_DateX(sh_index, 'date', 'slowd')
-    data_kdj = [tuple(slowk),tuple(slowd)]
-    data_kdj_note = ['k','d']
+    slowk = ExtractPointFromDf_DateX(df_stk, 'date', 'slowk', timeAxis='year')
+    slowd = ExtractPointFromDf_DateX(df_stk, 'date', 'slowd', timeAxis='year')
+    data_kdj = [tuple(slowk), tuple(slowd)]
+    data_kdj_note = ['k', 'd']
 
-    drawing_kdj = genLPDrawing(data=data_kdj, data_note=data_kdj_note,height=letter[1]*0.1)
-    renderPDF.draw(drawing=drawing_kdj, canvas=canvas_para, x=10, y=letter[1] * 0.5)
+    drawing_kdj = genLPDrawing(data=data_kdj, data_note=data_kdj_note, height=letter[1]*0.1, time_axis='year')
+    renderPDF.draw(drawing=drawing_kdj, canvas=canvas_para, x=10, y=letter[1] * 0.4)
 
     # 画图RSI信息
-    RSI5 = ExtractPointFromDf_DateX(sh_index, 'date', 'RSI5')
-    RSI12 = ExtractPointFromDf_DateX(sh_index, 'date', 'RSI12')
-    RSI30 = ExtractPointFromDf_DateX(sh_index, 'date', 'RSI30')
+    RSI5 = ExtractPointFromDf_DateX(df_stk, 'date', 'RSI5', timeAxis='year')
+    RSI12 = ExtractPointFromDf_DateX(df_stk, 'date', 'RSI12', timeAxis='year')
+    RSI30 = ExtractPointFromDf_DateX(df_stk, 'date', 'RSI30', timeAxis='year')
 
-    data_RSI = [tuple(RSI5),tuple(RSI12),tuple(RSI30)]
-    data_RSI_note = ['RSI5','RSI12','RSI30']
+    data_RSI = [tuple(RSI5), tuple(RSI12), tuple(RSI30)]
+    data_RSI_note = ['RSI5', 'RSI12', 'RSI30']
 
-    drawing_RSI = genLPDrawing(data=data_RSI, data_note=data_RSI_note,height=letter[1]*0.1)
-    renderPDF.draw(drawing=drawing_RSI, canvas=canvas_para, x=10, y=letter[1] * 0.3)
-
+    drawing_RSI = genLPDrawing(data=data_RSI, data_note=data_RSI_note, height=letter[1]*0.1, time_axis='year')
+    renderPDF.draw(drawing=drawing_RSI, canvas=canvas_para, x=10, y=letter[1] * 0.25)
 
     # 画图布林线
-    upper = ExtractPointFromDf_DateX(sh_index, 'date', 'upper')
-    middle = ExtractPointFromDf_DateX(sh_index, 'date', 'middle')
-    lower = ExtractPointFromDf_DateX(sh_index, 'date', 'lower')
+    upper = ExtractPointFromDf_DateX(df_stk, 'date', 'upper', timeAxis='year')
+    middle = ExtractPointFromDf_DateX(df_stk, 'date', 'middle', timeAxis='year')
+    lower = ExtractPointFromDf_DateX(df_stk, 'date', 'lower', timeAxis='year')
 
-    data_BOLL = [tuple(upper),tuple(middle),tuple(lower)]
-    data_BOLL_note = ['上线','中线','下线']
+    data_BOLL = [tuple(upper), tuple(middle), tuple(lower)]
+    data_BOLL_note = ['上线', '中线', '下线']
 
-    drawing_BOLL = genLPDrawing(data=data_BOLL, data_note=data_BOLL_note,height=letter[1]*0.1)
+    drawing_BOLL = genLPDrawing(data=data_BOLL, data_note=data_BOLL_note, height=letter[1]*0.1, time_axis='year')
     renderPDF.draw(drawing=drawing_BOLL, canvas=canvas_para, x=10, y=letter[1] * 0.1)
 
     canvas_para.showPage()
@@ -500,7 +568,7 @@ def addMoneySupplyPage(canvas_para):
 
 
     # 画货币供应量
-    money_supply = ts.get_money_supply().replace('--',nan)
+    money_supply = ts.get_money_supply().replace('--', np.nan)
     money_supply['date'] = money_supply.apply(lambda x: stdMonthDate2ISO(x['month']), axis=1)
 
     # 画货币量曲线图
@@ -545,7 +613,7 @@ def addReserveBaseRatePage(canvas_para):
     c.line(10, letter[1] - 24, letter[0] - 10, letter[1] - 24)
 
     # 画银行准备金基率
-    df_rbr = ts.get_rrr().replace('--', nan)
+    df_rbr = ts.get_rrr().replace('--', np.nan)
     # df_rbr['date'] = df_rbr.apply(lambda x: stdMonthDate2ISO(x['month']), axis=1)
 
     # 提取相关数据
@@ -585,7 +653,7 @@ def addQuarterGDPPage(canvas_para):
 
     gdp_pull_drawing = genLPDrawing([tuple(gdp_yoy),tuple(pi_yoy),tuple(si_yoy),tuple(ti_yoy)],
                                     data_note=['GDP同比增长率','第一产业增长率','第二产业增长率','第三产业增长率'],
-                                    timeAxis='quarter')
+                                    time_axis='quarter')
 
     renderPDF.draw(drawing=gdp_pull_drawing, canvas=c, x=10, y=letter[1] * 0.6)
 
@@ -610,8 +678,7 @@ def addDemandsForGDPPage(canvas_para):
     asset_for = ExtractPointFromDf_DateX(df_origin=gdp_for, date_col='year', y_col='asset_for', timeAxis='year')
     goods_for = ExtractPointFromDf_DateX(df_origin=gdp_for, date_col='year', y_col='goods_for', timeAxis='year')
 
-
-    gdp_for_drawing = genLPDrawing([tuple(end_for), tuple(asset_for), tuple(goods_for)], ['最终消费支出贡献率', '资本形成总额贡献率', '货物和服务净出口贡献率'], timeAxis='year')
+    gdp_for_drawing = genLPDrawing([tuple(end_for), tuple(asset_for), tuple(goods_for)], ['最终消费支出贡献率', '资本形成总额贡献率', '货物和服务净出口贡献率'], time_axis='year')
 
     renderPDF.draw(drawing=gdp_for_drawing, canvas=c, x=10, y=letter[1] * 0.6)
 
@@ -620,7 +687,7 @@ def addDemandsForGDPPage(canvas_para):
     goods_rate = ExtractPointFromDf_DateX(df_origin=gdp_for, date_col='year', y_col='goods_rate', timeAxis='year')
 
 
-    gdp_for_drawing = genLPDrawing([tuple(for_rate), tuple(asset_rate), tuple(goods_rate)], ['最终消费支出拉动(百分点)', '资本形成总额拉动(百分点)', '货物和服务净出口拉动(百分点)'], timeAxis='year')
+    gdp_for_drawing = genLPDrawing([tuple(for_rate), tuple(asset_rate), tuple(goods_rate)], ['最终消费支出拉动(百分点)', '资本形成总额拉动(百分点)', '货物和服务净出口拉动(百分点)'], time_axis='year')
 
     renderPDF.draw(drawing=gdp_for_drawing, canvas=c, x=10, y=letter[1] * 0.2)
 
@@ -650,7 +717,7 @@ def addGDPPullPage(canvas_para):
 
     gdp_pull_drawing = genLPDrawing([tuple(gdp_yoy),tuple(pi),tuple(si),tuple(industry),tuple(ti)],
                                     data_note=['GDP同比增长率','第一产业拉动率','第二产业拉动率','工业拉动率','第三产业拉动率'],
-                                    timeAxis='year')
+                                    time_axis='year')
 
     renderPDF.draw(drawing=gdp_pull_drawing, canvas=c, x=10, y=letter[1] * 0.6)
 
@@ -669,15 +736,14 @@ def addCPIPage(canvas_para, length):
     c = canvas_para
 
     cpi_df = ts.get_cpi()
-    cpi_df['month'] = cpi_df.apply(lambda x:stdMonthDate(x['month']), axis=1)
-    cpi_df = cpi_df.sort_values(by='month',ascending=False).head(length).sort_values(by='month',ascending=True)
+    cpi_df['month'] = cpi_df.apply(lambda x: stdMonthDate(x['month']), axis=1)
+    cpi_df = cpi_df.sort_values(by='month', ascending=False).head(length).sort_values(by='month', ascending=True)
 
     cpi = ExtractPointFromDf_DateX(df_origin=cpi_df, date_col='month', y_col='cpi', timeAxis='month')
 
-
     gdp_pull_drawing = genLPDrawing([tuple(cpi)],
                                     data_note=['CPI增长率'],
-                                    timeAxis='month')
+                                    time_axis='month')
 
     renderPDF.draw(drawing=gdp_pull_drawing, canvas=c, x=10, y=letter[1] * 0.6)
 
@@ -707,12 +773,12 @@ def addPPIPage(canvas_para, length):
 
 
     ppi_industry_drawing = genLPDrawing([tuple(ppiip), tuple(ppi), tuple(qm), tuple(rmi), tuple(pi)],
-                                    data_note=['工业品出厂价格指数',
+                                        data_note=['工业品出厂价格指数',
                                                '生产资料价格指数',
                                                '采掘工业价格指数',
                                                '原材料工业价格指数',
                                                '加工工业价格指数'],
-                                    timeAxis='month')
+                                        time_axis='month')
 
     renderPDF.draw(drawing=ppi_industry_drawing, canvas=c, x=10, y=letter[1] * 0.6)
 
@@ -729,7 +795,7 @@ def addPPIPage(canvas_para, length):
                                                '衣着类价格指数',
                                                '一般日用品价格指数',
                                                '耐用消费品价格指数'],
-                                    timeAxis='month')
+                                    time_axis='month')
 
     renderPDF.draw(drawing=ppi_life_drawing, canvas=c, x=10, y=letter[1] * 0.2)
 
@@ -765,16 +831,16 @@ def addShiborPage(canvas_para,year_start='2006',year_end=str(datetime.datetime.n
     M9 = ExtractPointFromDf_DateX(df_origin=df_shibor, date_col='date', y_col='9M',timeAxis='datetime')
     Y1 = ExtractPointFromDf_DateX(df_origin=df_shibor, date_col='date', y_col='1Y',timeAxis='datetime')
 
-    shibor_drawing = genLPDrawing([tuple(ON)],data_note=['隔夜拆放利率'],timeAxis='day',height=letter[1]*0.1)
+    shibor_drawing = genLPDrawing([tuple(ON)], data_note=['隔夜拆放利率'], time_axis='day', height=letter[1] * 0.1)
     renderPDF.draw(drawing=shibor_drawing, canvas=c, x=10, y=letter[1] * 0.85)
 
-    shibor_drawing = genLPDrawing([tuple(W1)],data_note=['1周拆放利率'],timeAxis='day',height=letter[1]*0.1)
+    shibor_drawing = genLPDrawing([tuple(W1)], data_note=['1周拆放利率'], time_axis='day', height=letter[1] * 0.1)
     renderPDF.draw(drawing=shibor_drawing, canvas=c, x=10, y=letter[1] * 0.7)
 
-    shibor_drawing = genLPDrawing([tuple(W2)],data_note=['2周拆放利率'],timeAxis='day',height=letter[1]*0.1)
+    shibor_drawing = genLPDrawing([tuple(W2)], data_note=['2周拆放利率'], time_axis='day', height=letter[1] * 0.1)
     renderPDF.draw(drawing=shibor_drawing, canvas=c, x=10, y=letter[1] * 0.55)
 
-    shibor_drawing = genLPDrawing([tuple(M1)],data_note=['1月拆放利率'],timeAxis='day',height=letter[1]*0.1)
+    shibor_drawing = genLPDrawing([tuple(M1)], data_note=['1月拆放利率'], time_axis='day', height=letter[1] * 0.1)
     renderPDF.draw(drawing=shibor_drawing, canvas=c, x=10, y=letter[1] * 0.4)
 
     shibor_drawing = genLPDrawing([tuple(M3),
@@ -782,12 +848,12 @@ def addShiborPage(canvas_para,year_start='2006',year_end=str(datetime.datetime.n
                                      tuple(M9),
                                      tuple(Y1)],
 
-                                    data_note=['3月拆放利率',
+                                  data_note=['3月拆放利率',
                                                '6月拆放利率',
                                                '9月拆放利率',
                                                '1年拆放利率'],
 
-                                    timeAxis='day',height=letter[1]*0.25)
+                                  time_axis='day', height=letter[1] * 0.25)
 
     renderPDF.draw(drawing=shibor_drawing, canvas=c, x=10, y=letter[1] * 0.1)
 
@@ -814,7 +880,7 @@ def addLprPage(canvas_para,year_start='2013',year_end=str(datetime.datetime.now(
     df_Lpr = pd.concat(df_Lpr_list, axis=0).sort_values(by='date', ascending=True).drop_duplicates(subset='1Y',keep='first')
 
     Y1 = ExtractPointFromDf_DateX(df_origin=df_Lpr, date_col='date', y_col='1Y', timeAxis='datetime')
-    lpr_drawing = genLPDrawing([tuple(Y1)], data_note=['1年贷款基础利率'], timeAxis='day', height=letter[1] * 0.3, y_min_zero=True)
+    lpr_drawing = genLPDrawing([tuple(Y1)], data_note=['1年贷款基础利率'], time_axis='day', height=letter[1] * 0.3, y_min_zero=True)
     renderPDF.draw(drawing=lpr_drawing, canvas=c, x=10, y=letter[1] * 0.6)
 
     # 画均值贷款利率

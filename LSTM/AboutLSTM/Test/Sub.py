@@ -1,5 +1,27 @@
 # encoding = utf-8
 import tensorflow as tf
+import numpy as np
+import pandas as pd
+
+def gaussian_normalize(value_param):
+
+    """
+    将数据进行高斯归一化,返回类型为np.array()
+    :param value_param:
+    :return:
+    """
+
+    if isinstance(value_param, pd.Series):
+        value_temp = np.array(value_param)
+    elif isinstance(value_param, np.ndarray):
+        value_temp = value_param
+    elif isinstance(value_param, list):
+        value_temp = np.array(value_param)
+    else:
+        print("函数 gaussian_normalize：不识别的入参类型！")
+        return value_param
+
+    return (value_temp - np.mean(value_temp))/np.cov(value_temp)
 
 
 def lstm_model(n_steps, n_inputs, HIDDEN_SIZE, NUM_LAYERS):

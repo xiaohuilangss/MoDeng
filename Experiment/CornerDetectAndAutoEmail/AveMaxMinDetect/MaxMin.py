@@ -8,7 +8,7 @@ import pickle
 
 from CornerDetectAndAutoEmail.AveMaxMinDetect.Global import h_l_pot_info_url
 from Config.GlobalSetting import g_total_stk_info_mysql
-from SDK.StkSub import getNameByStkCode
+from HuiCe.Sub import get_name_by_stk_code
 from SendMsgByQQ.QQGUI import send_qq
 import os
 """
@@ -175,9 +175,9 @@ def judgeAndSendMsg():
         for sts in ['year_status', 'half_year_status', 'month_status']:
             if (df_H_L_Pot.loc[idx, sts] != u'正常') & (df_H_L_Pot.loc[idx, sts] != df_H_L_Pot.loc[idx, sts + '_last']):
                 send_qq(u'影子',
-                        'stk:' + getNameByStkCode(g_total_stk_info_mysql, df_H_L_Pot.loc[idx, 'stk']) + '\n' +
+                        'stk:' + get_name_by_stk_code(g_total_stk_info_mysql, df_H_L_Pot.loc[idx, 'stk']) + '\n' +
                         '当前价格：' + str(df_H_L_Pot.loc[idx, 'current_price']) + '\n' +
-                        '事件： “' + df_H_L_Pot.loc[idx, sts + '_last'] +'” --> “'+df_H_L_Pot.loc[idx, sts]+'”'+
+                        '事件： “' + df_H_L_Pot.loc[idx, sts + '_last'] +'” --> “' + df_H_L_Pot.loc[idx, sts] +'”' +
                         '\n\n')
 
                 df_H_L_Pot.loc[idx, sts + '_last'] = df_H_L_Pot.loc[idx, sts]
