@@ -21,7 +21,7 @@ https://mp.weixin.qq.com/s/orsdUo_2ZMhRIGN6YjPWnQ
 3、启动运行：
 ------------
 当前程序入口文件：
-\MoDeng\Experiment\wxpythonGUI\MyCode\Sub.py
+\MoDeng\modeng.py
 
 运行该文件来启动程序！
 
