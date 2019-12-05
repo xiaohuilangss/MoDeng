@@ -227,32 +227,38 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		str_gui = myPrint(str_gui, stk_code + '获取实时price失败！', method={True: 'gm', False: 'n'}[gui])
 		return str_gui
 	
-	debug_print_txt('stk_judge', stk_code, 'realtime_p:' + str(current_price), debug)
+	debug_print_txt('stk_judge', stk_code, 'realtime_p:' + str(current_price) + '\n', debug)
 
 	""" ==================== 获取上次price ==================== """
 	opt_json_stk = read_opt_json(stk_code, opt_record_file_url)
 	
 	# 如果没有相应的json文件，不进行判断，直接返回
 	if opt_json_stk == {}:
-		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！', debug)
+		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！\n', debug)
 		
-		print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
+		# print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
 		return str_gui
 	
 	if len(opt_json_stk['b_opt']) == 0:
 		
-		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！',
+		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！\n',
 		                debug)
 		
-		print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
+		# print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
 		return str_gui
 	
 	# 读取上次p和b操作中的最小p，备用
 	last_p = opt_json_stk['p_last']
 	b_p_min = np.min([x['p'] for x in opt_json_stk['b_opt']])
 	
-	debug_print_txt('stk_judge', stk_code, '上次p：' + str(last_p) + '  最小p：' + str(b_p_min),
+	debug_print_txt('stk_judge', stk_code,
+	                '\n上次p：' + str(last_p) +
+	                '\n最小p：' + str(b_p_min) +
+	                '\nb_change_ratio:' + '%0.2f' % (100.0*(current_price-last_p)/last_p) + '%' +
+	                '\ns_change_ratio:' + '%0.2f' % (100.0*(current_price-b_p_min)/b_p_min) + '%',
 	                debug)
+	
+	
 	
 	""" =========== 实时计算价差，用于“波动提示”和“最小网格限制” ======== """
 	if debug:
@@ -309,8 +315,9 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 			opt_lock.release()
 
 	if debug:
-		print('函数 JudgeSingleStk:' + stk_code + '定时处理完成后，操作记录为：\n')
-		pprint(opt_record)
+		# print('函数 JudgeSingleStk:' + stk_code + '定时处理完成后，操作记录为：\n')
+		# pprint(opt_record)
+		pass
 
 	""" ==================== 判断波动是否满足“最小网格限制” ================= """
 	"""

@@ -226,27 +226,35 @@ def get_res_sub(r_dic):
 	return r_dic
 
 
-def print_analysis_to_win(r_dic, win, debug=False):
-	
-	flash_flag = False
+def print_analysis_to_win(r_dic, win, flash_flag, debug=False):
 	
 	for page in dict_stk_list.keys():
 		for stk_info in dict_stk_list[page]:
 			analysis_result = r_dic[page][stk_info[1] + '_res']
 			
-			if not pd.isnull(analysis_result):
-				flash_flag = True
-				if isinstance(analysis_result, str):
+			if isinstance(analysis_result, str):
+				
+				# 非空说明有情况，闪烁提示
+				if not pd.isnull(analysis_result):
 					win.on_update_note_tc_a(change_font_color(analysis_result + '\n'))
-				elif isinstance(analysis_result, list):
-					for str_ in analysis_result:
-						win.on_update_note_tc_a(change_font_color(str_ + '\n'))
-				else:
-					debug_print_txt('hour_analysis', '', '不识别的数据格式', debug)
+					flash_flag = True
 				
-				debug_print_txt('hour_analysis', '', str(analysis_result), debug)
+			elif isinstance(analysis_result, list):
 				
-	
+				# 去空值
+				analysis_result = list(filter(lambda x: not pd.isnull(x), analysis_result))
+				
+				# 非空说明有情况，闪烁提示
+				if not pd.isnull(analysis_result):
+					flash_flag = True
+					
+				for str_ in analysis_result:
+					win.on_update_note_tc_a(change_font_color(str_ + '\n'))
+			else:
+				debug_print_txt('hour_analysis', '', '不识别的数据格式', debug)
+			
+			debug_print_txt('hour_analysis', '', str(analysis_result), debug)
+				
 	return flash_flag
 
 
@@ -552,7 +560,7 @@ def analysis_print(pipe_data, win, kind, debug=False):
 	
 	# 向提示框打印提示
 	for key in pipe_data[1]:
-		flash_flag = print_analysis_to_win(pipe_data[1][key], win, debug)
+		flash_flag = print_analysis_to_win(pipe_data[1][key], win, flash_flag, debug)
 	
 	if flash_flag:
 		win.flash_window()
@@ -670,7 +678,6 @@ def data_process_callback(pipe_proc, debug=False):
 	pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
 	pipe_proc.send((DAY_UPDATE_NUM, day_pic))
 	
-
 	# 循环
 	while True:
 		
@@ -696,7 +703,7 @@ def data_process_callback(pipe_proc, debug=False):
 			pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
 			
 			debug_print_txt('main_log', '', '\n完成半小时分析和更新！')
-		
+
 		time.sleep(5)
 		
 	
