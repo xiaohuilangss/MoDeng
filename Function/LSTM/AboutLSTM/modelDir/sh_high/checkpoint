@@ -1,0 +1,2 @@
+model_checkpoint_path: "sh_high.ckpt"
+all_model_checkpoint_paths: "sh_high.ckpt"

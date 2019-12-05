@@ -1,0 +1,2 @@
+model_checkpoint_path: "sz_close.ckpt"
+all_model_checkpoint_paths: "sz_close.ckpt"
