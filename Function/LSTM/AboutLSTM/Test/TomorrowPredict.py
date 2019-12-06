@@ -1,5 +1,6 @@
 # encoding=utf-8
 import json
+import os
 
 import tushare as ts
 from Config.AutoStkConfig import rootPath
@@ -39,7 +40,7 @@ def predict_tomorrow(
     """
 
     """ ---------------------- 读取json中存储的极值 ---------------------- """
-    with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+    with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
         max_min_info = json.load(f)
 
     """ ---------------------- 获取实时数据 ---------------------- """
@@ -99,7 +100,7 @@ def predict_tomorrow(
 
 def predict_tomorrow_index(tc, debug=False):
 
-    with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+    with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
         max_min_info = json.load(f)
 
     stk2name = {
@@ -140,7 +141,7 @@ def predict_tomorrow_index(tc, debug=False):
 
 def printPredict2Public():
 
-    with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+    with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
         max_min_info = json.load(f)
 
     for stk in ['sh', 'sz', 'cyb']:

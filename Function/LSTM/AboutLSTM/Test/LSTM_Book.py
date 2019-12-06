@@ -109,7 +109,7 @@ def train_main(stk_code, times):
             NUM_LAYERS=NUM_LAYERS)
 
         # 将本次训练的精度写入json文件
-        with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+        with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
             json_max_min_info = json.load(f)
 
         if stk_code in json_max_min_info.keys():
@@ -117,7 +117,7 @@ def train_main(stk_code, times):
         else:
             json_max_min_info[stk_code] = {label+'_acc': '%0.3f' % (acc*10000)}
 
-        with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'w') as f:
+        with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'w') as f:
             json.dump(json_max_min_info, f)
 
 

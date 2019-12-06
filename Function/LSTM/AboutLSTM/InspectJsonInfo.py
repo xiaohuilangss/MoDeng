@@ -10,7 +10,7 @@ import json
 
 from Config.AutoStkConfig import rootPath
 
-with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
     json_max_min_info = json.load(f)
 
 end = 0

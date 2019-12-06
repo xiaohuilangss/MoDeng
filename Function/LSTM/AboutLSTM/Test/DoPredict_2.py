@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
         """ ---------------------- 使用模型进行预测 ------------------------- """
         result = [(x[1][-1][0], sess.run([predictions], feed_dict={X: [x[0]]})[0][0][0]) for x in data_train]
-        with open(rootPath + '\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+        with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
             max_min_info = json.load(f)
 
         p_max = max_min_info[stk_code]['p_max']
