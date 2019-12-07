@@ -8,13 +8,8 @@
 
 import tushare as ts
 import talib
-from pylab import *
 
-from AutoDailyOpt.p_diff_ratio_last import RSV_Record
-from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.RelativeRank.Sub import relativeRank
-from SDK.MyTimeOPT import get_current_date_str
-
 
 # def calRSVRank(stk_code, Mdays, history_length=20):
 #

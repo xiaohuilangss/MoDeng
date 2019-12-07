@@ -50,9 +50,9 @@ rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject
 
 MDataPWD = os.path.abspath(rootPath + '/RelativeRank/')
 
-SeaSelectDataPWD = os.path.abspath(rootPath+'/AutoDailyOpt/SeaSelect/')
+SeaSelectDataPWD = os.path.abspath(rootPath+'/History/SeaSelect/')
 
-LastScale = os.path.abspath(rootPath+'/AutoDailyOpt/') + '/LastScale/'
+LastScale = os.path.abspath(rootPath+'/History/') + '/LastScale/'
 
 # 检查配置
 checkConfigFile()

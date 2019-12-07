@@ -5,7 +5,6 @@
 
 """
 import calendar
-import pandas as pd
 import talib
 
 from DataSource.Code2Name import code2name
@@ -13,32 +12,32 @@ from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 
 
-from SendMsgByQQ.QQGUI import send_qq
-from SendMsgByQQ.SendPicByQQ import send_pic_qq
+from SDK.SendMsgByQQ.QQGUI import send_qq
+from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
 
 from pylab import *
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 
 
-def plot_W_M(df_w, df_m):
-    """
-
-    :param df_w:
-    :param df_m:
-    :return:
-    """
-    """ --------------------------------------- 生成图片 -------------------------------------"""
-    fig, ax = subplots(ncols=1, nrows=4)
-
-    ax[0].plot(range(0, len(df_w['date'])), df_w['close'], 'g*--', label='close')
-    ax[1].bar(range(0, len(df_w['date'])), df_w['MACD'],  label='week_MACD')
-    ax[1].plot(range(0, len(df_w['date'])), [0 for x in range(0, len(df_w['date']))], 'r--', label='week_MACD')
-
-    ax[2].plot(range(0, len(df_m['date'])), df_m['close'], 'g*--', label='close')
-    ax[3].bar(range(0, len(df_m['date'])), df_m['MACD'],  label='month_MACD')
-    ax[3].plot(range(0, len(df_m['date'])), [0 for x in range(0, len(df_m['date']))], 'r--', label='month_MACD')
-
-    return fig, ax
+# def plot_W_M(df_w, df_m):
+#     """
+#
+#     :param df_w:
+#     :param df_m:
+#     :return:
+#     """
+#     """ --------------------------------------- 生成图片 -------------------------------------"""
+#     fig, ax = subplots(ncols=1, nrows=4)
+#
+#     ax[0].plot(range(0, len(df_w['date'])), df_w['close'], 'g*--', label='close')
+#     ax[1].bar(range(0, len(df_w['date'])), df_w['MACD'],  label='week_MACD')
+#     ax[1].plot(range(0, len(df_w['date'])), [0 for x in range(0, len(df_w['date']))], 'r--', label='week_MACD')
+#
+#     ax[2].plot(range(0, len(df_m['date'])), df_m['close'], 'g*--', label='close')
+#     ax[3].bar(range(0, len(df_m['date'])), df_m['MACD'],  label='month_MACD')
+#     ax[3].plot(range(0, len(df_m['date'])), [0 for x in range(0, len(df_m['date']))], 'r--', label='month_MACD')
+#
+#     return fig, ax
 
 
 def send_W_M_MACD(stk_code, towho):

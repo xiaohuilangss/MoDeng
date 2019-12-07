@@ -10,12 +10,9 @@ from Config.Sub import read_config
 
 # 获取stk列表
 from DataSource.Data_Sub import get_k_data_JQ
-from Experiment.RelativeRank.Sub import get_RT_price, relativeRank, checkHourMACD_callback
+from Experiment.RelativeRank.Sub import get_RT_price, relativeRank
 # from Experiment.SafeStkRelaLevel.Demo1 import calRelaPLevel, sendPLevel2QQ
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
-from SendMsgByQQ.QQGUI import send_qq
-import json
-import pandas as pd
 
 
 def update_middle_period_hour_data():

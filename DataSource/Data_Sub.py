@@ -4,10 +4,12 @@
 与数据源相关的一些子函数
 """
 import jqdatasdk
+import talib
 import tushare as ts
-from SDK.MyTimeOPT import get_current_date_str
 import jqdatasdk as jq
 
+from SDK.MyTimeOPT import get_current_date_str
+from talib import MA_Type
 
 def get_RT_price(stk_code, source='jq'):
 
@@ -49,6 +51,52 @@ def get_current_price_JQ(stk_code):
     current_price = float(jq.get_price(stk_code_normal, count=1, end_date=get_current_date_str())['close'].values[0])
 
     return current_price
+
+def add_stk_index_to_df(stk_df):
+    """
+    向含有“收盘价（close）”的df中添加相关stk指标
+
+    :param stk_df:
+    :return:
+    """
+    """
+    准备指标：
+    MACD
+    RSI
+    KD
+    SAR
+    BRAR
+    BIAS
+    """
+    stk_df['MACD'], stk_df['MACDsignal'], stk_df['MACDhist'] = talib.MACD(stk_df.close,
+                                                                          fastperiod=12, slowperiod=26,
+                                                                          signalperiod=9)
+
+    # 添加rsi信息
+    stk_df['RSI5'] = talib.RSI(stk_df.close, timeperiod=5)
+    stk_df['RSI12'] = talib.RSI(stk_df.close, timeperiod=12)
+    stk_df['RSI30'] = talib.RSI(stk_df.close, timeperiod=30)
+
+    # 添加SAR指标
+    stk_df['SAR'] = talib.SAR(stk_df.high, stk_df.low, acceleration=0.05, maximum=0.2)
+
+    # 添加KD指标
+    stk_df['slowk'], stk_df['slowd'] = talib.STOCH(stk_df.high,
+                                                   stk_df.low,
+                                                   stk_df.close,
+                                                    fastk_period=9,
+                                                    slowk_period=3,
+                                                    slowk_matype=0,
+                                                    slowd_period=3,
+                                                    slowd_matype=0)
+
+    # 添加布林线
+    stk_df['upper'], stk_df['middle'], stk_df['lower'] = talib.BBANDS(stk_df['close'], matype=MA_Type.T3)
+
+    # 计算close动量
+    stk_df['MOM'] = talib.MOM(stk_df['close'], timeperiod=5)
+
+    return stk_df
 
 
 def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
