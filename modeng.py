@@ -20,8 +20,11 @@
 #
 # from Function.GUI.GUI_main.Sub import run_myframe_in_process
 # from Function.GUI.GUI_main.Thread_Sub import data_process_callback
+from Config.AutoGenerateConfigFile import checkConfigFile
 
 if __name__ == '__main__':
+
+	checkConfigFile()
 
 	try:
 
