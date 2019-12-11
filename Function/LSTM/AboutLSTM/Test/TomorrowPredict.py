@@ -100,43 +100,47 @@ def predict_tomorrow(
 
 def predict_tomorrow_index(tc, debug=False):
 
-    with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
-        max_min_info = json.load(f)
+    try:
 
-    stk2name = {
-        'sh': '上证',
-        'sz': '深证',
-        'cyb': '创业板'
-    }
+        with open(rootPath + '\Function\LSTM\AboutLSTM\stk_max_min.json', 'r') as f:
+            max_min_info = json.load(f)
 
-    for stk in ['sh', 'sz', 'cyb']:
+        stk2name = {
+            'sh': '上证',
+            'sz': '深证',
+            'cyb': '创业板'
+        }
 
-        today_df = ts.get_k_data(stk).tail(1)
+        for stk in ['sh', 'sz', 'cyb']:
 
-        tc.AppendText(stk2name.get(stk) + ' 今天数据：\n' + str(today_df)
-                      .replace('volume', '成交量')
-                      .replace('date', '日期')
-                      .replace('open', '开盘价')
-                      .replace('high', '最高点')
-                      .replace('low', '最低点')
-                      .replace('close', '收盘价') + '\n\n')
+            today_df = ts.get_k_data(stk).tail(1)
 
-        close_today = today_df['close'].values[0]
-        r = [(label, '%0.2f' % predict_tomorrow(
-            stk,
-            label,
-            N_STEPS=N_STEPS,
-            feature_cols=feature_cols,
-            HIDDEN_SIZE=HIDDEN_SIZE,
-            NUM_LAYERS=NUM_LAYERS), max_min_info[stk][label + '_acc']) for label in ['high', 'low', 'close']]
+            tc.AppendText(stk2name.get(stk) + ' 今天数据：\n' + str(today_df)
+                          .replace('volume', '成交量')
+                          .replace('date', '日期')
+                          .replace('open', '开盘价')
+                          .replace('high', '最高点')
+                          .replace('low', '最低点')
+                          .replace('close', '收盘价') + '\n\n')
 
-        # 增加与今天收盘价的对比
-        r_contrast = [(x[0], x[1], '%0.2f' % ((float(x[1])-close_today)/close_today*100) + '%') for x in r]
+            close_today = today_df['close'].values[0]
+            r = [(label, '%0.2f' % predict_tomorrow(
+                stk,
+                label,
+                N_STEPS=N_STEPS,
+                feature_cols=feature_cols,
+                HIDDEN_SIZE=HIDDEN_SIZE,
+                NUM_LAYERS=NUM_LAYERS), max_min_info[stk][label + '_acc']) for label in ['high', 'low', 'close']]
 
-        tc.AppendText(stk2name[stk] + '明日预测:\n' + str(r_contrast)
-                      .replace('high', '最高点')
-                      .replace('low', '最低点')
-                      .replace('close', '收盘价') + '\n\n')
+            # 增加与今天收盘价的对比
+            r_contrast = [(x[0], x[1], '%0.2f' % ((float(x[1])-close_today)/close_today*100) + '%') for x in r]
+
+            tc.AppendText(stk2name[stk] + '明日预测:\n' + str(r_contrast)
+                          .replace('high', '最高点')
+                          .replace('low', '最低点')
+                          .replace('close', '收盘价') + '\n\n')
+    except Exception as e:
+        tc.AppendText('预测明日大盘操作失败！原因：\n' + str(e))
 
 
 def printPredict2Public():
