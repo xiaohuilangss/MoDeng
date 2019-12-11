@@ -744,14 +744,12 @@ def data_process_callback(pipe_proc, debug=False, process=6):
 		
 	
 def timer_ctrl(win, debug=False):
-
+	jq_login()
 	while True:
-		jq_login()
-
 		on_timer_ctrl(win, debug)
 		time.sleep(30)
 		
-		logout()
+	logout()
 
 
 def hour_analysis(pipe_master):
