@@ -76,7 +76,7 @@ def predict_tomorrow(
     # 初始化
     sess = tf.Session()
     model_name = stk_code + '_' + label
-    model_dir = rootPath + '\LSTM\AboutLSTM\modelDir/'
+    model_dir = rootPath + 'Function\LSTM\AboutLSTM\modelDir/'
 
     if os.path.exists(model_dir + model_name + '/' + model_name + '.ckpt.meta'):
 
