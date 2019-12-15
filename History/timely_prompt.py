@@ -25,7 +25,7 @@ import jqdatasdk as jq
 from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, update_middle_period_hour_data
 
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
-from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_MACD, checkWeekStrayForAll
+from Experiment.MACD_Stray_Analysis.Sub import send_W_M_MACD, checkWeekStrayForAll
 from Experiment.RelativeRank.Sub import get_k_data_JQ, calRealtimeRankWithGlobal, updateConcernStkMData
 from SDK.MyTimeOPT import get_current_date_str
 
