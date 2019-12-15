@@ -26,7 +26,7 @@ https://docs.qq.com/doc/DVnB3aG5UWFpmS0tT
 4、启动运行：
 ------------
 当前程序入口文件：
-\MoDeng\modeng.py
+\modeng.py
 
 运行该文件来启动程序！
 
