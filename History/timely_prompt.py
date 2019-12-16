@@ -25,7 +25,7 @@ import jqdatasdk as jq
 from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, update_middle_period_hour_data
 
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
-from Experiment.MACD_Stray_Analysis.Demo1 import send_W_M_MACD, checkWeekStrayForAll
+from Experiment.MACD_Stray_Analysis.Sub import send_W_M_MACD, check_week_stray_for_all
 from Experiment.RelativeRank.Sub import get_k_data_JQ, calRealtimeRankWithGlobal, updateConcernStkMData
 from SDK.MyTimeOPT import get_current_date_str
 
@@ -351,7 +351,7 @@ sched.add_job(func=update_middle_period_hour_data, trigger='cron', day_of_week='
 # sched.add_job(func=sendRelaLevel2QQ, trigger='cron', day_of_week='mon-fri', hour=18, minute=20, misfire_grace_time=3600, coalesce=True)
 
 # 检测周背离 checkWeekStrayForAll
-sched.add_job(func=checkWeekStrayForAll, trigger='cron', day_of_week='mon-fri', hour=19, minute=15, misfire_grace_time=3600, coalesce=True)
+sched.add_job(func=check_week_stray_for_all, trigger='cron', day_of_week='mon-fri', hour=19, minute=15, misfire_grace_time=3600, coalesce=True)
 
 # 更新离心度历史数据
 sched.add_job(func=updateConcernStkMData, trigger='cron', day_of_week='mon-fri', hour=5, minute=30, misfire_grace_time=3600, coalesce=True)

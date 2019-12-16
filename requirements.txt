@@ -5,3 +5,4 @@ pywin32
 tensorflow==1.13.1
 wxPython
 tushare
+dask==0.17
