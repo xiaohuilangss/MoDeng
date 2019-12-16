@@ -17,8 +17,7 @@ from Global_Value.p_diff_ratio_last import MACD_min_last, RSV_Record
 from Global_Value.thread_lock import opt_record_lock, opt_lock
 from Config.Sub import read_config, dict_stk_list
 from DataSource.Code2Name import code2name
-from DataSource.Data_Sub import get_k_data_JQ, get_current_price_JQ
-
+from DataSource.Data_Sub import get_k_data_JQ, get_current_price_JQ, add_stk_index_to_df
 
 from Global_Value.file_dir import opt_record_file_url, hist_pic_dir, opt_record
 from SDK.Debug_Sub import debug_print_txt, myPrint
@@ -848,7 +847,6 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 	:param gui:
 	:return:
 	"""
-	
 	money_each_opt = 5000
 	
 	""" 变量声明 """
@@ -856,9 +854,6 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		'note': '',
 		'msg': ''
 	}
-	
-	""" 'n':无操作，'b', 's' """
-	opt_now = 'n'
 	
 	""" ==== 获取该stk的实时价格,如果是大盘指数，使用聚宽数据，否则有限使用tushare ==== """
 	try:
@@ -953,48 +948,21 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		finally:
 			opt_lock.release()
 	
-	if debug:
-		# print('函数 JudgeSingleStk:' + stk_code + '定时处理完成后，操作记录为：\n')
-		# pprint(opt_record)
-		pass
-	
-	""" ==================== 判断波动是否满足“最小网格限制” ================= """
-	"""
-	config_json = read_config()
-	if not ('minReseau' in config_json.keys()):
-		write_config('minReseau', 0.02)
-		min_reseau = 0.02
-	else:
-		min_reseau = config_json['minReseau']
-
-	if (min_reseau > math.fabs(thh_sale/last_p)) | (min_reseau > math.fabs(thh_buy/last_p)):
-
-		str_tmp = stk_code + ' ' + code2name(stk_code) + ':\n'\
-			+ 'buy相对宽度：%0.3f \n' % (thh_buy/last_p) +\
-			  'sale相对宽度：%0.3f\n' % (thh_sale/last_p) +\
-			  '设定波动阈值：%0.3f\n' % min_reseau +\
-			  '波动未达到最小网格宽度，返回！'
-
-		str_gui = myPrint(
-			str_gui,
-			str_tmp,
-			method={True: 'gm', False: 'n'}[gui])
-		return str_gui
-
-	if debug:
-
-		str_gui = myPrint(
-			str_gui,
-			stk_code +
-			':\np_change:' + str(price_diff * stk_amount_last) +
-			'\nthreshold:' + str(earn_threshold_unit) +
-			'\nthh_sale:' + str(thh_sale) +
-			'\nthh_buy:' + str(thh_buy),
-			method={True: 'gm', False: 'n'}[gui])
-	"""
-	
 	""" ============================= 判断是否超过阈值,进行bs操作 ============================== """
 	pcr = read_config()['pcr']
+	
+	# 打印日志
+	debug_print_txt('stk_judge', stk_code, '读取的最小波动率:' + str(pcr) + '\n', debug)
+	debug_print_txt('stk_judge', stk_code, '判断是否可以卖出：\ncurrent_price - b_p_min > thh_sale:' + str(current_price - b_p_min > thh_sale) + '\n', debug)
+	debug_print_txt('stk_judge', stk_code,
+	                '(current_price - b_p_min) / b_p_min:' + str((current_price - b_p_min) / b_p_min) + '\n', debug)
+	
+	debug_print_txt('stk_judge', stk_code,
+	                '判断是否可以买入：\ncurrent_price - last_p < -thh_buy:' + str(current_price - last_p < -thh_buy) + '\n',
+	                debug)
+	debug_print_txt('stk_judge', stk_code,
+	                '(current_price - last_p) / b_p_min <= -pcr:' + str((current_price - last_p) / b_p_min <= -pcr) + '\n', debug)
+
 	if (current_price - b_p_min > thh_sale) & ((current_price - b_p_min) / b_p_min >= pcr):
 		
 		str_temp = "触发卖出网格！可以考虑卖出！ " + stk_code + code2name(stk_code) + \
@@ -1014,10 +982,6 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 			method={True: 'gn', False: 'qq'}[gui],
 			towho=qq)
 		
-		if not gui:
-			# sendHourMACDToQQ(stk_code, qq, source='jq')
-			pass
-	
 	elif (current_price - last_p < -thh_buy) & ((current_price - last_p) / b_p_min <= -pcr):
 		
 		str_temp = "触发买入网格！可以考虑买入！" + stk_code + code2name(stk_code) + \
@@ -1037,9 +1001,6 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 			method={True: 'gn', False: 'qq'}[gui],
 			towho=qq)
 		
-		# if not gui:
-			# sendHourMACDToQQ(stk_code, qq, source='jq')
-	
 	else:
 		str_gui = myPrint(
 			str_gui,
@@ -1048,26 +1009,6 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		
 		debug_print_txt('stk_judge', stk_code, stk_code + ':未触发任何警戒线！',
 		                debug)
-	
-	""" ========================== 波动检测 =========================== """
-	# change_flag, str_gui = judge_p_change_ratio(stk_code, (current_price-last_p)/last_p, str_gui=str_gui, gui=gui)
-	# if change_flag:
-	#
-	# 	str_temp = "波动推送! " + stk_code + code2name(stk_code) +\
-	# 			'\nAmount:' + str(buy_amount) +\
-	# 			'\n当前价格:' + str(current_price) +\
-	# 			'\n上次价格:' + str(last_p) +\
-	# 			'\n买入网格大小:' + '%0.2f' % thh_buy +\
-	# 			'\n卖出网格大小:' + '%0.2f' % thh_sale
-	#
-	# 	str_gui = myPrint(
-	# 		str_gui,
-	# 		str_temp,
-	# 		method={True: 'gn', False: 'qq'}[gui],
-	# 		towho=qq)
-	
-	# if not gui:
-	# 	sendHourMACDToQQ(stk_code, qq, source='jq')
 	
 	return str_gui
 

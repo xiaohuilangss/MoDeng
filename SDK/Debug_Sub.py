@@ -52,7 +52,7 @@ def debug_print_txt(file_name, stk, value, enable=True):
         os.makedirs(file_dir)
 
     with open(file_url, 'a+') as f:
-        f.write(get_current_datetime_str() + ':\n' + value + '\n')
+        f.write(get_current_datetime_str() + ':\n-------------------\n' + value + '\n')
 
 
 
