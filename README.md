@@ -20,6 +20,10 @@ https://docs.qq.com/doc/DVkRpd2drb2hkWXh5
 
 3、安装配置：
 ------------
+
+下载源码后，在 “/文档/使用说明/” 路径下有pdf版本的安装指导手册
+
+或者使用在线文档：
 https://docs.qq.com/doc/DVnB3aG5UWFpmS0tT
 
 
