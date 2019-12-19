@@ -115,7 +115,7 @@ def predict_tomorrow_index(tc, debug=False):
 
             today_df = ts.get_k_data(stk).tail(1)
 
-            tc.AppendText(stk2name.get(stk) + ' 今天数据：\n' + str(today_df)
+            tc.AppendText(stk2name.get(stk) + ' 今天数据：\n' + today_df.to_string()
                           .replace('volume', '成交量')
                           .replace('date', '日期')
                           .replace('open', '开盘价')
