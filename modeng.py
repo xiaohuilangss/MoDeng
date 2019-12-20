@@ -27,6 +27,8 @@ if __name__ == '__main__':
 	from Function.GUI.GUI_main.Thread_Sub import data_process_callback
 	from Config.AutoGenerateConfigFile import checkConfigFile
 
+	mp.freeze_support()
+
 	# 检查配置文件
 	checkConfigFile()
 
