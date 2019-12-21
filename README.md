@@ -30,7 +30,7 @@ https://docs.qq.com/doc/DVkRpd2drb2hkWXh5
   https://pan.baidu.com/s/1aFLseULl2RxTvBVDrijK0Q
 
 
-  B、在 “/文档/使用说明/” 路径下有pdf版本的安装指导手册
+  B、在源码的 “/文档/使用说明/” 路径下有pdf版本的安装指导手册
 
   或者使用在线文档：
   https://docs.qq.com/doc/DVnB3aG5UWFpmS0tT
