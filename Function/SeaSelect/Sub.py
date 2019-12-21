@@ -16,7 +16,77 @@ from pylab import *
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 
 
-def week_macd_stray_judge(stk_code, towho, debug_plot=False):
+def get_week_month_index_data(df_stk, stk_code=''):
+    """
+    给定日线数据，计算周线/月线指标！
+    :param df_stk:
+     
+     get_k_data_JQ(stk_code, count=400, end_date=get_current_date_str()).reset_index()
+    
+    :return:
+    """
+
+    df = df_stk
+
+    if len(df) < 350:
+        print('函数week_MACD_stray_judge：' + stk_code + '数据不足！')
+        return False, pd.DataFrame()
+
+    # 规整
+    df_floor = df.tail(math.floor(len(df) / 20) * 20 - 19)
+
+    # 增加每周的星期几
+    df_floor['day'] = df_floor.apply(
+        lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]),
+                                   int(x['date'].split('-')[2])), axis=1)
+
+    # 隔着5个取一个
+    if df_floor.tail(1)['day'].values[0] != 4:
+        df_week = pd.concat([df_floor[df_floor.day == 4], df_floor.tail(1)], axis=0)
+    else:
+        df_week = df_floor[df_floor.day == 4]
+
+    # 计算指标
+    df_week['MACD'], df_week['MACDsignal'], df_week['MACDhist'] = talib.MACD(
+        df_week.close,
+        fastperiod=6, slowperiod=12,
+        signalperiod=9)
+
+    # 隔着20个取一个（月线）
+    df_month = df_floor.loc[::20, :]
+
+    # 计算指标
+    df_month['MACD'], df_month['MACDsignal'], df_month['MACDhist'] = talib.MACD(
+        df_month.close,
+        fastperiod=4,
+        slowperiod=8,
+        signalperiod=9)
+    
+    return df_week, df_month
+
+
+def sar_stray_judge(df_stk):
+    """
+    判断sar的反转情况，返回三种值
+    -1, 0， 1
+    -1：向下反转
+    0：未反转
+    1：向上反转
+    
+    :param df_stk:
+    :return:
+    """
+    df_tail = df_stk.tail(2).reset_index()
+    
+    if (df_tail.loc[1, 'SAR'] >= df_tail.loc[1, 'close']) & (df_tail.loc[0, 'SAR'] <= df_tail.loc[0, 'close']):
+        return -1
+    elif (df_tail.loc[1, 'SAR'] <= df_tail.loc[1, 'close']) & (df_tail.loc[0, 'SAR'] >= df_tail.loc[0, 'close']):
+        return 1
+    else:
+        return 0
+
+
+def week_macd_stray_judge(df_week, debug_plot=False):
 
     """
     对周线macd反转进行判断
@@ -25,66 +95,12 @@ def week_macd_stray_judge(stk_code, towho, debug_plot=False):
     :param debug_plot:
     :return:
     """
-
-    try:
-        # 获取今天的情况，涨幅没有超过3%的不考虑
-        df_now = get_k_data_JQ(stk_code, count=2, end_date=get_current_date_str()).reset_index()
-
-        if (df_now.tail(1)['close'].values[0]-df_now.head(1)['close'].values[0])/df_now.head(1)['close'].values[0] < -0.05:
-            print('函数week_MACD_stray_judge：' + stk_code + '涨幅不够！')
-            return False, pd.DataFrame()
-
-        df = get_k_data_JQ(stk_code, count=400, end_date=get_current_date_str()).reset_index()
-
-        if len(df) < 350:
-            print('函数week_MACD_stray_judge：'+stk_code + '数据不足！')
-            return False, pd.DataFrame()
-
-        # 规整
-        df_floor = df.tail(math.floor(len(df)/20)*20-19)
-
-        # 增加每周的星期几
-        df_floor['day'] = df_floor.apply(
-            lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]),
-                                       int(x['date'].split('-')[2])), axis=1)
-
-        # 增加每周的星期几
-        df_floor['day'] = df_floor.apply(lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]), int(x['date'].split('-')[2])), axis=1)
-
-        # 隔着5个取一个
-        if df_floor.tail(1)['day'].values[0] != 4:
-            df_floor_slice_5 = pd.concat([df_floor[df_floor.day == 4], df_floor.tail(1)], axis=0)
-        else:
-            df_floor_slice_5 = df_floor[df_floor.day == 4]
-
-        # 计算指标
-        df_floor_slice_5['MACD'], df_floor_slice_5['MACDsignal'], df_floor_slice_5['MACDhist'] = talib.MACD(df_floor_slice_5.close,
-                                                                              fastperiod=6, slowperiod=12,
-                                                                              signalperiod=9)
-
-        # 隔着20个取一个（月线）
-        df_floor_slice_20 = df_floor.loc[::20, :]
-
-        # 计算指标
-        df_floor_slice_20['MACD'], df_floor_slice_20['MACDsignal'], df_floor_slice_20['MACDhist'] = talib.MACD(
-            df_floor_slice_20.close,
-            fastperiod=4,
-            slowperiod=8,
-            signalperiod=9)
-
-        # 获取最后的日期
-        date_last = df_floor_slice_5.tail(1)['date'].values[0]
-
-        # 判断背离
-        MACD_5 = df_floor_slice_5.tail(3)['MACD'].values
-        MACD_20 = df_floor_slice_20.tail(4)['MACD'].values
-        if (MACD_5[1] == np.min(MACD_5)) & (MACD_20[1] != np.max(MACD_20)) & (MACD_20[2] != np.max(MACD_20)):
-            return True, df
-        else:
-            return False, pd.DataFrame()
-    except Exception as e:
-        print(stk_code + '出错：\n' + str(e))
-        return False, pd.DataFrame()
+    # 判断背离
+    macd_week = df_week.tail(3)['MACD'].values
+    if macd_week[1] == np.min(macd_week):
+        return True
+    else:
+        return False
 
 
 def stk_sea_select(stk_code, tc):
