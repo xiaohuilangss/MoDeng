@@ -11,7 +11,7 @@ https://mp.weixin.qq.com/s/hSAvV4gVM8jjkutiIS_eJg
 https://mp.weixin.qq.com/s/uckT1Va0U1VphjgCaVxAUQ
 
 软件掠影（视频）：
-https://pan.baidu.com/s/1t0TEzuTVNS_81tbCTyF4mA
+http://mp.weixin.qq.com/s/WClol9bGdZ-uJotIE7gGCw
 
 
 
