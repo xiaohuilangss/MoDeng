@@ -2,19 +2,17 @@
 import math
 
 import datetime
-import talib
 import tushare as ts
 import numpy as np
 
 from DataSource.Code2Name import code2name
-from DataSource.Data_Sub import get_k_data_JQ
-from Experiment.CornerDetectAndAutoEmail.Sub import add_stk_index_to_df
+from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
+
 from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
 from SDK.MyTimeOPT import s2t, Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
 from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend
-
 from reportlab.lib.pagesizes import letter
 
 # 画图相关
