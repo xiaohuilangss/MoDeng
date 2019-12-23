@@ -20,16 +20,16 @@ if __name__ == '__main__':
 	
 		sys.path.append('..')
 		sys.path.append(rootPath)
+		
+		# 检查配置文件,需要首先检查，因为后面的import操作会用到配置文件！
+		from Config.AutoGenerateConfigFile import checkConfigFile
+		checkConfigFile()
 	
 		import multiprocessing as mp
 	
 		from Function.GUI.GUI_main.Sub import run_myframe_in_process
 		from Function.GUI.GUI_main.Thread_Sub import data_process_callback
-		from Config.AutoGenerateConfigFile import checkConfigFile
-	
-		# 检查配置文件
-		checkConfigFile()
-	
+		
 		# 定义管道
 		pipe_master, pipe_proc = mp.Pipe()
 	
