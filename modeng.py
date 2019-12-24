@@ -22,6 +22,7 @@ if __name__ == '__main__':
 		sys.path.append(rootPath)
 	
 		import multiprocessing as mp
+		mp.freeze_support()
 	
 		from Function.GUI.GUI_main.Sub import run_myframe_in_process
 		from Function.GUI.GUI_main.Thread_Sub import data_process_callback

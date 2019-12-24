@@ -1,6 +1,8 @@
 # encoding=utf-8
 
 import multiprocessing
+multiprocessing.freeze_support()
+
 import pprint
 import time
 
