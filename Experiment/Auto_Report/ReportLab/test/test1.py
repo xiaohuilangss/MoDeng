@@ -23,7 +23,7 @@ def send_basic_email():
     # ========================================= 进行画图 ========================================
 
     # 增加封面
-    c = addFront(canvas_param=c, theme='中国A股日度数据展示', subtitle='')
+    c = add_front(canvas_param=c, theme='中国A股日度数据展示', subtitle='')
 
     # ========================================= 开始画大盘图 =====================================
     c.bookmarkPage("P" + str(page_n))
@@ -121,12 +121,12 @@ def send_basic_email():
 
             # 准备画图数据
             c_data['date'] = c_data.index
-            ids = ExtractPointFromDf_DateX(c_data, 'date', 'industry_index')
+            ids = extract_point_from_df_date_x(c_data, 'date', 'industry_index')
 
             data = [tuple(ids)]
             data_name = [c_name]
 
-            drawing_ave = genLPDrawing(data=data, data_note=data_name, height=letter[1] * 0.3)
+            drawing_ave = gen_lp_drawing(data=data, data_note=data_name, height=letter[1] * 0.3)
             renderPDF.draw(drawing=drawing_ave, canvas=c, x=10, y=letter[1] * 0.6)
 
             c.showPage()
@@ -146,40 +146,40 @@ def send_basic_email():
     c.addOutlineEntry('货币供应', "P" + str(page_n), closed=1, level=1)
     page_n += 1
 
-    c = addMoneySupplyPage(c)
+    c = add_money_supply_aage(c)
 
     # 存款准备金基率
     c.bookmarkPage("P" + str(page_n))
     c.addOutlineEntry('准备金基率', "P" + str(page_n), closed=1, level=1)
     page_n += 1
 
-    c = addReserveBaseRatePage(c)
+    c = add_reserve_base_rate_page(c)
 
     # gdp
     c.bookmarkPage("P" + str(page_n))
     c.addOutlineEntry('季度GDP', "P" + str(page_n), closed=1, level=1)
     page_n += 1
 
-    c = addQuarterGDPPage(c)
+    c = add_quarter_gdp_page(c)
 
     # 三大产业对GDP的拉动
     c.bookmarkPage("P" + str(page_n))
     c.addOutlineEntry('三大产业对GDP的拉动', "P" + str(page_n), closed=1,level=1)
     page_n += 1
 
-    c = addDemandsForGDPPage(c)
+    c = add_demands_for_gdp_page(c)
 
     # CPI
     c.bookmarkPage("P" + str(page_n))
     c.addOutlineEntry('月度CPI', "P" + str(page_n), closed=1, level=1)
     page_n += 1
-    c = addCPIPage(c,50)
+    c = add_cpi_page(c, 50)
 
     # PPI
     c.bookmarkPage("P" + str(page_n))
     c.addOutlineEntry('月度PPI', "P" + str(page_n), closed=1, level=1)
     page_n += 1
-    c = addPPIPage(c,50)
+    c = add_ppi_page(c, 50)
 
     # 建一级目录
     # c.bookmarkPage("P" + str(page_n))
@@ -207,7 +207,7 @@ def send_basic_email():
     c.addOutlineEntry('尾注', "P" + str(page_n), closed=1, level=0)
     page_n += 1
 
-    c = addTailPage(c)
+    c = add_tail_page(c)
 
     c.save()
 
