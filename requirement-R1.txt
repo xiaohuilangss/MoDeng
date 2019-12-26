@@ -1,0 +1,13 @@
+
+bs4==0.0.1
+jqdatasdk==1.7.7
+lxml==3.8.0
+matplotlib==3.1.2
+numpy==1.17.2
+pandas==0.24.1
+pywin32==221
+SQLAlchemy==1.2.12
+tensorflow==1.13.1
+tushare==1.2.35
+wxPython==4.0.6
+
