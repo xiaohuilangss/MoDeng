@@ -73,7 +73,7 @@ def checkConfigFile():
 
         )
 
-        exit(1)
+        input('请按照提示进行配置，完成后重启即可！')
 
 
 if __name__ == '__main__':
