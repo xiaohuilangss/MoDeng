@@ -7,7 +7,7 @@ numpy==1.17.2
 pandas==0.24.1
 pywin32==221
 SQLAlchemy==1.2.12
-tensorflow==1.13.1
+tensorflow==1.15.0
 tushare==1.2.35
 wxPython==4.0.6
 
