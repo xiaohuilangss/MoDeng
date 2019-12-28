@@ -12,7 +12,9 @@ from SDK.SendMsgByQQ.QQGUI import send_qq
 
 def myPrint(str_gui, str_temp, method='n', towho=''):
 	"""
-
+	gn:note消息
+	gm:msg消息
+	
 	:param gui:
 	:param str_gui:
 	:param method:
@@ -32,6 +34,7 @@ def myPrint(str_gui, str_temp, method='n', towho=''):
 		send_qq(towho, str_temp)
 
 	return str_gui
+
 
 def debug_print_txt(file_name, stk, value, enable=True):
     """

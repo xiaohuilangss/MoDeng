@@ -2,19 +2,17 @@
 import math
 
 import datetime
-import talib
 import tushare as ts
 import numpy as np
 
 from DataSource.Code2Name import code2name
-from DataSource.Data_Sub import get_k_data_JQ
-from Experiment.CornerDetectAndAutoEmail.Sub import add_stk_index_to_df
+from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
+
 from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
 from SDK.MyTimeOPT import s2t, Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
 from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend
-
 from reportlab.lib.pagesizes import letter
 
 # 画图相关
@@ -129,91 +127,6 @@ def extract_point_from_df_date_x(df_origin, date_col, y_col, timeAxis='day'):
     point_array = list(map(lambda x: (x[0], float(x[1])), df_part.values))
 
     return point_array
-
-
-def add_ac_temp(canvas_param, opc_df_today, pos_x, pos_y, width, height):
-
-    total_df = opc_df_today
-
-    total_df_OAT = total_df[total_df.browse_name == 'OA-T']
-
-    total_df_CSSWT = total_df[total_df.browse_name == 'CS-SWT']
-    total_df_CSRWT = total_df[total_df.browse_name == 'CS-RWT']
-
-    total_df_FSSWT = total_df[total_df.browse_name == 'FS-SWT']
-    total_df_FSRWT = total_df[total_df.browse_name == 'FS-RWT']
-
-    # 生成5个变量相应的点阵
-    data_OAT = extract_point_from_df_date_x(df_origin=total_df_OAT, date_col='present_value_source_timestamp',
-                                            y_col='present_value_value')
-
-    data_CSSWT = extract_point_from_df_date_x(df_origin=total_df_CSSWT, date_col='present_value_source_timestamp',
-                                              y_col='present_value_value')
-    data_CSRWT = extract_point_from_df_date_x(df_origin=total_df_CSRWT, date_col='present_value_source_timestamp',
-                                              y_col='present_value_value')
-
-    data_FSSWT = extract_point_from_df_date_x(df_origin=total_df_FSSWT, date_col='present_value_source_timestamp',
-                                              y_col='present_value_value')
-    data_FSRWT = extract_point_from_df_date_x(df_origin=total_df_FSRWT, date_col='present_value_source_timestamp',
-                                              y_col='present_value_value')
-
-    data_origin = [tuple(data_OAT), tuple(data_CSSWT), tuple(data_CSRWT), tuple(data_FSSWT), tuple(data_FSRWT)]
-
-    # 定义各曲线标签
-    data_name_origin = ['室外温度', '冷却侧供水温度', '冷却侧回水温度', '冷冻侧供水温度', '冷冻侧回水温度']
-
-    # 处理某条线没有数据的情况，若不处理“没有数据”的情况，画线的时候会报错！
-    data = []
-    data_name = []
-
-    for i in range(0, len(data_origin)):
-        if len(data_origin[i]) != 0:
-            data.append(data_origin[i])
-            data_name.append(data_name_origin[i])
-
-    if len(data) == 0:
-        print('函数 addAcTemp：原始df解析后没有想要的温度数据！')
-        return canvas_param
-
-    c = canvas_param
-    # c.setFont("song", 10)
-
-    drawing = Drawing(width=width, height=height)
-
-    lp = LinePlot()
-    # lp.x = 50
-    # lp.y = 50
-    lp.height = height
-    lp.width = width
-    lp.data = data
-    lp.joinedLines = 1
-
-    # 定义各曲线颜色
-    lp.lines[0].strokeColor = colors.blue
-    lp.lines[1].strokeColor = colors.red
-    lp.lines[2].strokeColor = colors.lightgreen
-    lp.lines[3].strokeColor = colors.orange
-    lp.lines[4].strokeColor = colors.darkgreen
-
-    for i in range(0, len(data)):
-        lp.lines[i].name = data_name[i]
-        lp.lines[i].symbol = makeMarker('FilledCircle', size=0.5)
-        lp.lines[i].strokeWidth = 0.2
-
-    # lp.lineLabelFormat = '%2.0f'
-    # lp.strokeColor = colors.black
-
-    lp.xValueAxis.valueMin = 0
-    lp.xValueAxis.valueMax = 60*60*24
-    lp.xValueAxis.valueSteps = [n for n in range(0, 60*60*24, 60*60)]
-    lp.xValueAxis.labelTextFormat = lambda x: str(s2t(x))[0:2]
-    lp.yValueAxis.valueMin = 0
-    # lp.yValueAxis.valueMax = 50
-    # lp.yValueAxis.valueSteps = [1, 2, 3, 5, 6]
-    drawing.add(lp)
-    add_legend(draw_obj=drawing, chart=lp, pos_x=10, pos_y=-10)
-
-    renderPDF.draw(drawing=drawing, canvas=c, x=pos_x, y=pos_y)
 
 
 def gen_lp_drawing(data, data_note, width=letter[0] * 0.8, height=letter[1] * 0.25, time_axis='day', y_min_zero=False,

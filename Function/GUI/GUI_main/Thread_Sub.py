@@ -293,28 +293,28 @@ def print_analysis_to_win(r_dic, win, flash_flag, debug=False):
 		for stk_info in dict_stk_list[page]:
 			analysis_result = r_dic[page][stk_info[1] + '_res']
 			
+			debug_print_txt('pipe_msg_pro', '', '收到数据：' + str(analysis_result) + ', 开始闪动和提示处理：\n', debug)
 			if isinstance(analysis_result, str):
 				
 				# 非空说明有情况，闪烁提示
-				if not pd.isnull(analysis_result):
+				if (not pd.isnull(analysis_result)) & (len(analysis_result) > 0):
 					win.on_update_note_tc_a(change_font_color(analysis_result + '\n'))
 					flash_flag = True
-				
 			elif isinstance(analysis_result, list):
 				
 				# 去空值
 				analysis_result = list(filter(lambda x: not pd.isnull(x), analysis_result))
 				
 				# 非空说明有情况，闪烁提示
-				if not pd.isnull(analysis_result):
+				if (not pd.isnull(analysis_result)) & (len(analysis_result) > 0):
 					flash_flag = True
 					
 				for str_ in analysis_result:
 					win.on_update_note_tc_a(change_font_color(str_ + '\n'))
 			else:
 				debug_print_txt('hour_analysis', '', '不识别的数据格式', debug)
-			
-			debug_print_txt('hour_analysis', '', str(analysis_result), debug)
+				
+			debug_print_txt('pipe_msg_pro', '', '本次数据处理完成！', debug)
 
 	return flash_flag
 
@@ -554,16 +554,16 @@ def on_timer_ctrl(win, debug=False):
 	
 	# 对stk进行检查
 	for stk in buy_stk_list:
-		str_gui = judge_single_stk(stk_code=stk, stk_amount_last=400, qq='', gui=True, debug=True)
+		str_gui = judge_single_stk(stk_code=stk, stk_amount_last=400, gui=True, debug=True)
 		
 		if len(str_gui['note']):
-			note_list.append(str_gui['note'])
+			note_list.append(str_gui['note'] + '\n\n')
 		
 		# 打印流水信息
 		if len(str_gui['msg']):
 			wx.PostEvent(win, ResultEvent(
 				id=MSG_UPDATE_ID_A,
-				data=str_gui['msg']))
+				data=change_font_color(str_gui['msg'])))
 	
 	# 打印日志
 	debug_print_txt('timer_ctrl_log', 'total',
@@ -606,15 +606,11 @@ def analysis_print(pipe_data, win, kind, debug=False):
 
 
 def pipe_msg_process(win, pipe_to_master, debug=False):
-	# 更新rsv，将更新rsv的工作放入线程中，
-	# 便于快速出GUI，也可以避免多次链接jq数据源
-	# win.on_update_msg_tc_a('正在初始化RSV值...\n')
-	# update_rsv_record(win)
-	# debug_print_txt('pipe_msg_pro', '', '\n进入循环！\n', debug)
+	
 	while True:
 		pipe_data = pipe_to_master.recv()
 		
-		debug_print_txt('pipe_msg_pro', '', '\n收到信息，进行判断！\n', debug)
+		debug_print_txt('pipe_msg_pro', '', '\n\n==========================================\n收到信息，进行判断！\n', debug)
 		
 		""" ------------------ 管道处理机 ---------------------- """
 
@@ -666,6 +662,7 @@ def pipe_msg_process(win, pipe_to_master, debug=False):
 		
 		# 闪烁
 		elif pipe_data[0] == FLASH_WINDOW_NUM:
+			debug_print_txt('pipe_msg_pro', '', '收到闪动命令，闪动窗口！\n', debug)
 			win.flash_window()
 		
 		# 更新上次时间
@@ -839,69 +836,76 @@ class ResultEvent(wx.PyEvent):
 		self.data = data
 
 
-def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
+def judge_single_stk(stk_code, stk_amount_last, debug=False, gui=False):
 	"""
 
 	:param stk_code:
 	:param stk_amount_last:
-	:param qq:
 	:param debug:
 	:param gui:
 	:return:
 	"""
-	money_each_opt = 5000
 	
 	""" 变量声明 """
 	str_gui = {
 		'note': '',
 		'msg': ''
 	}
+	str_ = '\n\n\n=============================================\n' + code2name(stk_code) + ':开始进入本周期判断!\n'
+	debug_print_txt('stk_judge', stk_code, str_, debug)
+	str_gui['msg'] = str_gui['msg'] + str_
+	
+	money_each_opt = 5000
 	
 	""" ==== 获取该stk的实时价格,如果是大盘指数，使用聚宽数据，否则有限使用tushare ==== """
 	try:
 		current_price = get_current_price_JQ(stk_code)
 	except:
-		str_gui = myPrint(str_gui, stk_code + '获取实时price失败！', method={True: 'gm', False: 'n'}[gui])
+		str_gui['msg'] = str_gui['msg'] + stk_code + '获取实时price失败！\n'
 		return str_gui
 	
-	debug_print_txt('stk_judge', stk_code, 'realtime_p:' + str(current_price) + '\n', debug)
+	str_ = '实时价格:' + str(current_price) + '\n'
+	debug_print_txt('stk_judge', stk_code, str_, debug)
+	str_gui['msg'] = str_gui['msg'] + str_
 	
 	""" ==================== 获取上次price ==================== """
 	opt_json_stk = read_opt_json(stk_code, opt_record_file_url)
 	
 	# 如果没有相应的json文件，不进行判断，直接返回
 	if opt_json_stk == {}:
-		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！\n',
+		str_ = code2name(stk_code) + '没有历史操作记录，不进行阈值判断！\n'
+		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + str_,
 		                debug)
-		
-		# print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
+		str_gui['msg'] = str_gui['msg'] + str_
 		return str_gui
 	
 	if len(opt_json_stk['b_opt']) == 0:
-		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！\n',
+		str_ = code2name(stk_code) + '没有历史操作记录，不进行阈值判断！\n'
+		debug_print_txt('stk_judge', stk_code, '函数 judge_single_stk：' + str_,
 		                debug)
-		
-		# print('函数 judge_single_stk：' + code2name(stk_code) + '没有历史操作记录，不进行阈值判断！')
+		str_gui['msg'] = str_gui['msg'] + str_
 		return str_gui
+	
+	# 读取
+	threshold_satisfied_flag = opt_json_stk['threshold_satisfied_flag']
+	
+	str_gui['msg'] = str_gui['msg'] + '已经进行过闪动提示?：' + {False: '是', True: '否'}.get(threshold_satisfied_flag, '未知') + '\n'
 	
 	# 读取上次p和b操作中的最小p，备用
 	last_p = opt_json_stk['p_last']
 	b_p_min = np.min([x['p'] for x in opt_json_stk['b_opt']])
 	
-	debug_print_txt('stk_judge', stk_code,
-	                '\n上次p：' + str(last_p) +
-	                '\n最小p：' + str(b_p_min) +
-	                '\nb_change_ratio:' + '%0.2f' % (100.0 * (current_price - last_p) / last_p) + '%' +
-	                '\ns_change_ratio:' + '%0.2f' % (100.0 * (current_price - b_p_min) / b_p_min) + '%',
-	                debug)
+	str_ = '\n上次操作价格：' + str(last_p) + \
+	       '\n最小买入价格：' + str(b_p_min) + \
+           '\n买入-波动率:' + '%0.3f' % (100.0 * (current_price - last_p) / last_p) + '%' + \
+           '\n卖出-波动率:' + '%0.3f' % (100.0 * (current_price - b_p_min) / b_p_min) + '%' + \
+			'\n买入-波动:' + '%0.2f' % (current_price - last_p) + \
+			'\n卖出-波动:' + '%0.2f' % (current_price - b_p_min)
+	
+	debug_print_txt('stk_judge', stk_code, str_, debug)
+	str_gui['msg'] = str_gui['msg'] + str_ + '\n'
 	
 	""" =========== 实时计算价差，用于“波动提示”和“最小网格限制” ======== """
-	if debug:
-		str_gui = myPrint(
-			str_gui,
-			'\n\n' + stk_code + ':\np_now:' + str(current_price) + '\np_last:' + str(
-				last_p) + '\np_change_ratio:' + '',
-			method={True: 'gm', False: 'n'}[gui])
 	
 	""" ========== 排除获取的价格为0的情况，此种情况可能是stop或者时间未到 ========== """
 	if current_price == 0.0:
@@ -927,9 +931,10 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		RSV_Record[stk_code] = cal_rsv_rank(stk_code, 5)
 		thh_sale = earn_threshold_unit * 2 * RSV_Record[stk_code]
 		thh_buy = earn_threshold_unit * 2 * (1 - RSV_Record[stk_code])
-	
-	debug_print_txt('stk_judge', stk_code, 'thh_sale:' + str(thh_sale) + ' thh_buy:' + str(thh_buy),
-	                debug)
+		
+	str_ = '\n卖出网格大小:' + '%0.3f' % thh_sale + '\n买入网格大小:' + '%0.3f' % thh_buy + '\n'
+	debug_print_txt('stk_judge', stk_code, str_, debug)
+	str_gui['msg'] = str_gui['msg'] + str_
 	
 	""" 将操作日志保存到全局变量中 """
 	if opt_lock.acquire():
@@ -951,13 +956,15 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 			opt_lock.release()
 	
 	""" ============================= 判断是否超过阈值,进行bs操作 ============================== """
-	pcr = read_config()['pcr']
+	pcr = read_config()['pcr']/100.0
 	
 	# 打印日志
 	debug_print_txt('stk_judge', stk_code, '读取的最小波动率:' + str(pcr) + '\n', debug)
+	
+	debug_print_txt('stk_judge', stk_code, '允许阈值判断标志位（True为允许）:' + str(threshold_satisfied_flag) + '\n', debug)
 	debug_print_txt('stk_judge', stk_code, '判断是否可以卖出：\ncurrent_price - b_p_min > thh_sale:' + str(current_price - b_p_min > thh_sale) + '\n', debug)
 	debug_print_txt('stk_judge', stk_code,
-	                '(current_price - b_p_min) / b_p_min:' + str((current_price - b_p_min) / b_p_min) + '\n', debug)
+	                '(current_price - b_p_min) / b_p_min >= pcr:' + str((current_price - b_p_min) / b_p_min >= pcr) + '\n', debug)
 	
 	debug_print_txt('stk_judge', stk_code,
 	                '判断是否可以买入：\ncurrent_price - last_p < -thh_buy:' + str(current_price - last_p < -thh_buy) + '\n',
@@ -975,15 +982,18 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		           '\n卖出网格大小:' + '%0.3f' % thh_sale + \
 		           '\n最小操作幅度:' + '%0.3f' % pcr
 		
-		debug_print_txt('stk_judge', stk_code, str_temp,
+		debug_print_txt('stk_judge', stk_code, str_temp + '\n在灯神进行bs操作之前，此stk不再进行阈值判断\n',
 		                debug)
 		
-		str_gui = myPrint(
-			str_gui,
-			str_temp,
-			method={True: 'gn', False: 'qq'}[gui],
-			towho=qq)
-		
+		if threshold_satisfied_flag:
+			str_gui['note'] = str_gui['note'] + str_temp
+			
+			# 除非有bs操作，否则不再提示
+			set_opt_json_threshold_satisfied_flag(opt_record_file_url, stk_code, value=False)
+			
+		else:
+			str_gui['msg'] = str_gui['msg'] + str_temp
+			
 	elif (current_price - last_p < -thh_buy) & ((current_price - last_p) / b_p_min <= -pcr):
 		
 		str_temp = "触发买入网格！可以考虑买入！" + stk_code + code2name(stk_code) + \
@@ -994,25 +1004,48 @@ def judge_single_stk(stk_code, stk_amount_last, qq, debug=False, gui=False):
 		           '\n卖出网格大小:' + '%0.2f' % thh_sale + \
 		           '\n最小操作幅度:' + '%0.3f' % pcr
 		
-		debug_print_txt('stk_judge', stk_code, str_temp,
+		debug_print_txt('stk_judge', stk_code, str_temp + '\n在灯神进行bs操作之前，此stk不再进行阈值判断\n',
 		                debug)
+		if threshold_satisfied_flag:
+			str_gui['note'] = str_gui['note'] + str_temp
+			
+			# 除非有bs操作，否则不再提示
+			set_opt_json_threshold_satisfied_flag(opt_record_file_url, stk_code, value=False)
+		else:
+			str_gui['msg'] = str_gui['msg'] + str_temp
 		
-		str_gui = myPrint(
-			str_gui,
-			str_temp,
-			method={True: 'gn', False: 'qq'}[gui],
-			towho=qq)
 		
-	else:
-		str_gui = myPrint(
-			str_gui,
-			stk_code + ':未触发任何警戒线！',
-			method={True: 'gm', False: 'n'}[gui])
-		
-		debug_print_txt('stk_judge', stk_code, stk_code + ':未触发任何警戒线！',
-		                debug)
 	
+	else:
+		str_ = stk_code + ':未触发任何警戒线！\n'
+		str_gui['msg'] = str_gui['msg'] + str_
+		debug_print_txt('stk_judge', stk_code, str_, debug)
+		
 	return str_gui
+
+
+def set_opt_json_threshold_satisfied_flag(json_file_url, stk_code, value=True):
+	if os.path.exists(json_file_url):
+		with open(json_file_url, 'r') as f:
+			json_p = json.load(f)
+		
+		if stk_code in json_p.keys():
+			json_p[stk_code]['threshold_satisfied_flag'] = value
+		else:
+			json_p[stk_code] = {
+					'b_opt': [],
+					'p_last': None,
+					'threshold_satisfied_flag': value,
+					'total_earn': 0
+				}
+			
+		# 将数据写入
+		with open(json_file_url, 'w') as f:
+			json.dump(json_p, f)
+			
+		return 0
+	else:
+		return 2
 
 
 if __name__ == '__main__':
@@ -1024,7 +1057,7 @@ if __name__ == '__main__':
 	
 	# 对stk进行检查
 	for stk in buy_stk_list:
-		str_gui = judge_single_stk(stk_code=stk, stk_amount_last=400, qq='', gui=True, debug=True)
+		str_gui = judge_single_stk(stk_code=stk, stk_amount_last=400, gui=True, debug=True)
 	logout()
 	app = wx.App()
 	pool = multiprocessing.Pool(processes=7)
