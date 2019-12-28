@@ -16,9 +16,9 @@ from Global_Value.file_dir import data_dir, sea_select_pic_dir
 from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_hour_macd_pic_local, gen_hour_index_pic_local, \
 	gen_day_pic_local, gen_w_m_macd_pic_local, gen_idx_pic_local
 from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str
-
+stk_code = '000001'
 if __name__ == '__main__':
-	stk_code = '000001'
+	
 	jq_login()
 	
 	""" --------------------- 生成相关图片 ------------------------ """
