@@ -1,15 +1,8 @@
 
 （一）安装软件
 
-    软件安装主要有三步工作：
-
-    1、安装python环境。
-
-    2、注册聚宽数据和tushare数据账号，在配置文件中配置相应账密
-
-    3、安装代码运行所需要的python包，比如TensorFlow、tushare、聚宽数据、talib等
-
-    详细的安装步骤请查看文档/使用说明/魔灯安装指导手册.pdf
+    请参考在线文档：
+    https://docs.qq.com/doc/DVlJSQkZjcW1ORGVY
 
 
 （二）启动软件
