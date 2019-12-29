@@ -2,14 +2,18 @@
 import math
 
 import datetime
+
+import PIL
 import tushare as ts
 import numpy as np
+from reportlab.lib.utils import ImageReader
 
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
+from Global_Value.file_dir import sea_select_pic_dir, rootPath
 
 from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
-from SDK.MyTimeOPT import s2t, Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
+from SDK.MyTimeOPT import Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
 from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend
@@ -33,6 +37,10 @@ fonts.addMapping('song', 0, 1, 'song')
 fonts.addMapping('song', 1, 0, 'hei')
 fonts.addMapping('song', 1, 1, 'hei')
 
+# 获取纸面的高度和宽度
+w = letter[0]
+h = letter[1]
+
 
 def add_front(canvas_param, theme, subtitle, pagesize=letter):
     """
@@ -51,8 +59,8 @@ def add_front(canvas_param, theme, subtitle, pagesize=letter):
     canvas_param.drawString((PAGE_WIDTH-stringWidth(theme, fontName='song', fontSize=30))/2.0, PAGE_HEIGHT*0.618, theme)
 
     # 设置副标题字体并打印副标题
-    canvas_param.setFont("song", 10)
-    canvas_param.drawString((PAGE_WIDTH-stringWidth(theme, fontName='song', fontSize=30))/2.0, PAGE_HEIGHT*0.15, subtitle)
+    canvas_param.setFont("song", 14)
+    canvas_param.drawString((PAGE_WIDTH-stringWidth(subtitle, fontName='song', fontSize=14))/2.0, PAGE_HEIGHT*0.15, subtitle)
 
     canvas_param.showPage()
 
@@ -835,11 +843,73 @@ def add_tail_page(canvas_param, pagesize=letter):
     PAGE_HEIGHT = pagesize[1]
 
     # 设置主标题字体并打印主标题
-    canvas_param.setFont("song", 30)
-    canvas_param.drawString(20, PAGE_HEIGHT*0.7, '加群：StockReport 825832838')
+    canvas_param.setFont("song", 20)
+    canvas_param.drawString(20, PAGE_HEIGHT * 0.75, '联系我们：')
+    canvas_param.drawString(20, PAGE_HEIGHT * 0.7, '投资里的数据分析（微信公众号）')
 
-    canvas_param.drawString(20, PAGE_HEIGHT * 0.65, '每日免费获取该文档！')
+    # 插入小时macd图
+    image_file = PIL.Image.open(rootPath + 'Function\SeaSelect\Sub\modeng.jpg')
+    canvas_param.drawImage(ImageReader(image_file), x=w * 0.3, y=h * 0.3, height=0.3 * h, width=0.4 * w,
+                preserveAspectRatio=True)
 
     canvas_param.showPage()
 
     return canvas_param
+
+
+def print_k_to_pdf(c, stk_code, date):
+    """
+    将一只股票的走势图打印到pdf中的一页
+    :param c:
+    :param stk_code:
+    :param date:
+    :return:
+    """
+
+    """ --------------------------------- 打印小时线图片 ------------------------------------ """
+    c.setFont("song", 10)
+    c.drawString(20, letter[1] - 20, stk_code + ' ' + code2name(stk_code) + ' ' + '小时走势图')
+    c.setLineWidth(3)
+    c.line(10, h - 24, w - 10, h - 24)
+
+    # 插入小时macd图
+    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_' + stk_code + '.png')
+    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                preserveAspectRatio=True)
+
+    # 插入小时指标图
+    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_idx_' + stk_code + '.png')
+    c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                preserveAspectRatio=True)
+
+    """ --------------------------------- 打印日线图片 ------------------------------------ """
+    c.setFont("song", 10)
+    c.drawString(20, h * 0.65, stk_code + ' ' + code2name(stk_code) + ' ' + '日线走势图')
+    c.setLineWidth(3)
+    c.line(10, h * 0.65 - 4, w - 10, h * 0.65 - 4)
+
+    # 插入日线macd图
+    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_' + stk_code + '.png')
+    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                preserveAspectRatio=True)
+
+    # 插入日线指标图
+    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_idx_' + stk_code + '.png')
+    c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                preserveAspectRatio=True)
+
+    """ --------------------------------- 打印周月线图片 ------------------------------------ """
+
+    c.setFont("song", 10)
+    c.drawString(20, h * 0.35, stk_code + ' ' + code2name(stk_code) + ' ' + '周/月走势图')
+    c.setLineWidth(3)
+    c.line(10, h * 0.35 - 4, w - 10, h * 0.35 - 4)
+
+    # 插入周线图
+    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'wm_' + stk_code + '.png')
+    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.05, height=0.3 * h, width=0.45 * w,
+                preserveAspectRatio=True)
+
+    c.showPage()
+
+    return c
