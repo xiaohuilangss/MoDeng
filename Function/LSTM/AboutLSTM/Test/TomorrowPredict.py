@@ -3,13 +3,13 @@ import json
 import os
 
 import tushare as ts
-from Experiment.RelativeRank.Sub import relativeRank
 from Function.LSTM.AboutLSTM.Config import feature_cols, N_STEPS, HIDDEN_SIZE, NUM_LAYERS
 from Function.LSTM.AboutLSTM.Test.Sub import lstm_model
 import tensorflow as tf
 from pylab import *
 
 from Global_Value.file_dir import rootPath
+from SDK.DataPro import relativeRank
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from SDK.SendMsgByQQ.QQGUI import send_qq
 

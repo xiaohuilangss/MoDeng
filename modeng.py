@@ -2,7 +2,7 @@
 
 if __name__ == '__main__':
 
-	try:
+	# try:
 
 		""" =========================== 将当前路径及工程的跟目录添加到路径中，必须在文件头部，否则易出错 ============================ """
 	
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 		# 启动处理循环
 		data_process_callback(pipe_proc, debug=False)
 
-	except Exception as e:
-		print('出错！错误：\n' + str(e) + '\n')
-
-		a = input('请关闭！')
+	# except Exception as e:
+	# 	print('出错！错误：\n' + str(e) + '\n')
+    #
+	# 	a = input('请关闭！')
