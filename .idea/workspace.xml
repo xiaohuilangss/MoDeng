@@ -2,19 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="de72db1b-3182-4b8d-8da0-f8e89f0d37ca" name="Default" comment="">
+      <change beforePath="" afterPath="$PROJECT_DIR$/update.bat" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/Config/AutoStkConfig.py" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/Config/GlobalSetting.py" afterPath="$PROJECT_DIR$/Config/GlobalSetting.py" />
-      <change beforePath="$PROJECT_DIR$/Experiment/Capital_Flow/Money_Flow.py" afterPath="$PROJECT_DIR$/Experiment/Capital_Flow/Money_Flow.py" />
-      <change beforePath="$PROJECT_DIR$/Experiment/RelativeRank/Sub.py" afterPath="$PROJECT_DIR$/Experiment/RelativeRank/Sub.py" />
-      <change beforePath="$PROJECT_DIR$/Function/GUI/GUI_main/Sub.py" afterPath="$PROJECT_DIR$/Function/GUI/GUI_main/Sub.py" />
-      <change beforePath="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/DoPredict_2.py" afterPath="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/DoPredict_2.py" />
-      <change beforePath="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/LSTM_Book.py" afterPath="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/LSTM_Book.py" />
-      <change beforePath="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/TomorrowPredict.py" afterPath="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/TomorrowPredict.py" />
-      <change beforePath="$PROJECT_DIR$/SDK/DataPro.py" afterPath="$PROJECT_DIR$/SDK/DataPro.py" />
-      <change beforePath="$PROJECT_DIR$/SDK/Gen_Stk_Pic_Sub.py" afterPath="$PROJECT_DIR$/SDK/Gen_Stk_Pic_Sub.py" />
-      <change beforePath="$PROJECT_DIR$/SDK/test.png" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/modeng.py" afterPath="$PROJECT_DIR$/modeng.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -33,16 +22,6 @@
               <folding>
                 <element signature="e#323#360#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Sub.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Config/Sub.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -180,14 +159,15 @@
         <option value="$PROJECT_DIR$/Experiment/RelativeRank/Sub.py" />
         <option value="$PROJECT_DIR$/SDK/DataPro.py" />
         <option value="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/TomorrowPredict.py" />
+        <option value="$PROJECT_DIR$/update.bat" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="85" />
-    <option name="y" value="21" />
-    <option name="width" value="1213" />
-    <option name="height" value="709" />
+    <option name="x" value="295" />
+    <option name="y" value="93" />
+    <option name="width" value="1122" />
+    <option name="height" value="631" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -233,14 +213,6 @@
               <item name="Experiment" type="462c0819:PsiDirectoryNode" />
               <item name="Auto_Report" type="462c0819:PsiDirectoryNode" />
               <item name="ReportLab" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MoDeng" type="462c0819:PsiDirectoryNode" />
-              <item name="Experiment" type="462c0819:PsiDirectoryNode" />
-              <item name="Auto_Report" type="462c0819:PsiDirectoryNode" />
-              <item name="ReportLab" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
@@ -418,13 +390,20 @@
       <option name="project" value="LOCAL" />
       <updated>1577608314383</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="合并更新">
+      <created>1577613344845</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1577613344845</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="85" y="21" width="1213" height="709" extended-state="0" />
+    <frame x="295" y="93" width="1122" height="631" extended-state="0" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42212766" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21771218" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6928447" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -434,7 +413,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2909226" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2635253" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3050505" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -442,6 +421,9 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.bat" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -476,7 +458,8 @@
     <MESSAGE value="Merge branch 'develop' of https://github.com/xiaohuilangss/MoDeng into develop&#10;&#10;# Conflicts:&#10;#&#9;Function/GUI/GUI_main/Sub.py&#10;#&#9;modeng.py" />
     <MESSAGE value="1、续写海选代码&#10;2、修复rootpath问题" />
     <MESSAGE value="发布版本关闭调试标志位" />
-    <option name="LAST_COMMIT_MESSAGE" value="发布版本关闭调试标志位" />
+    <MESSAGE value="合并更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="合并更新" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -779,6 +762,14 @@
             <element signature="e#19#38#0" expanded="true" />
             <element signature="e#615#828#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/update.bat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="9" column="8" lean-forward="true" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>
