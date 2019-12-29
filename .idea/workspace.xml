@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="de72db1b-3182-4b8d-8da0-f8e89f0d37ca" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change beforePath="$PROJECT_DIR$/使用说明书.txt" afterPath="$PROJECT_DIR$/使用说明书.txt" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -422,7 +420,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577615299847</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="更新使用说明书和readme">
+      <created>1577619202704</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1577619202704</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -486,7 +491,8 @@
     <MESSAGE value="发布版本关闭调试标志位" />
     <MESSAGE value="合并更新" />
     <MESSAGE value="提交代码更新脚本" />
-    <option name="LAST_COMMIT_MESSAGE" value="提交代码更新脚本" />
+    <MESSAGE value="更新使用说明书和readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新使用说明书和readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
