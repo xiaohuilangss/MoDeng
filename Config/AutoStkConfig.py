@@ -46,7 +46,7 @@ corner_Pot_Retrospective_Half = 6       # 进行后验检测拐点时，时间�
 
 curPath = os.path.abspath(os.path.dirname(__file__))
 # rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject，也就是项目的根路径
-rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject，也就是项目的根路径
+# rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject，也就是项目的根路径
 
 MDataPWD = os.path.abspath(rootPath + '/RelativeRank/')
 
