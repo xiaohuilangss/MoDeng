@@ -215,15 +215,15 @@ def cal_stk_p_level(c):
     }
 
 
-def checkWeekStrayForAll():
+def sea_select():
 
-    towho = '影子2'
-    send_qq(towho, '以下是今晚海选结果：')
 
     df_total = ts.get_stock_basics()
 
     # 过滤掉年龄小于四岁的
     df_age_filter = df_total[df_total.apply(lambda x: int(str(x['timeToMarket'])[:4]) <= int(get_current_date_str()[:4]) - 4, axis=1)]
+
+    # 找出半小时线反转的股票
 
     # 根据week反转情况进行过滤，保留有反转的单位
     df_age_filter_stray = list(df_age_filter.reset_index().apply(lambda x: (x['code'], week_macd_stray_judge(x['code'], towho)), axis=1))
@@ -231,45 +231,39 @@ def checkWeekStrayForAll():
     # 过滤掉非反转的情况
     df_age_f2 = list(filter(lambda x: x[1][0], df_age_filter_stray))
 
+    # 筛选小时线sar反转
+
+
     # 增加stk的水平信息
     df_level = [(x[0], x[1][1], cal_stk_p_level(x[1][1]['close'].values)) for x in df_age_f2]
 
-    # 按总体水平排序，筛选优异者
-    df_level.sort(key=lambda x: x[2]['total_last'])
-    df_level = df_level[:math.floor(len(df_level)/3*2)]
+    # # 按总体水平排序，筛选优异者
+    # df_level.sort(key=lambda x: x[2]['total_last'])
+    # df_level = df_level[:math.floor(len(df_level)/3*2)]
+    #
+    # # 按照近30的波动率进行排序,筛选优异者
+    # df_level.sort(key=lambda x: x[2]['std'], reverse=True)
+    # df_level = df_level[:math.floor(len(df_level) / 3 * 2)]
+    #
+    # # 按照近30的水平排序，留下最后8只
+    # df_level.sort(key=lambda x: x[2]['t30_last'], reverse=False)
+    # df_level = df_level[:np.min([math.floor(len(df_level) / 3 * 2), 15])]
 
-    # 按照近30的波动率进行排序,筛选优异者
-    df_level.sort(key=lambda x: x[2]['std'], reverse=True)
-    df_level = df_level[:math.floor(len(df_level) / 3 * 2)]
 
-    # 按照近30的水平排序，留下最后8只
-    df_level.sort(key=lambda x: x[2]['t30_last'], reverse=False)
-    df_level = df_level[:np.min([math.floor(len(df_level) / 3 * 2), 15])]
 
     # 打印信息
     stk_list = [k[0] for k in df_level]
 
     for stk in stk_list:
 
-        # 打印周与月信息
-        send_W_M_MACD(stk_code=stk, towho=towho)
 
-        # 打印日线信息
-        df = get_k_data_JQ(stk, count=400, end_date=get_current_date_str())
-        fig, _, _ = genStkPicForQQ(df)
-
-        plt.title(str(stk))
-        send_pic_qq(towho, fig)
-        plt.close()
-
-        fig, _, _ = genStkIdxPicForQQ(df)
-
-        plt.title(str(stk))
-        send_pic_qq(towho, fig)
-        plt.close()
 
 
 if __name__ == '__main__':
 
+    df = ts.get_stock_basics()
+
+    # 遍历所有股票
+    list(df.index)
 
     end = 0
