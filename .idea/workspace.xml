@@ -1,0 +1,1167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="608860de-e082-404c-9cc7-5e8de08b819a" name="Default" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>FLASH_WINDOW_ID</find>
+      <find>timer_ctrl</find>
+      <find>买入-</find>
+      <find>'r'</find>
+      <find>进行过</find>
+      <find>预测明日</find>
+      <find>删除关注</find>
+      <find>收到小时</find>
+      <find>pipe_</find>
+      <find>pipe_msg_pro</find>
+      <find>F1</find>
+      <find>WXK_F1</find>
+      <find>main_log</find>
+      <find>on_update</find>
+      <find>path</find>
+      <find>'h'</find>
+      <find>h_idx</find>
+      <find>save_dir + file_name</find>
+      <find>jq_login</find>
+      <find>预测大盘指数</find>
+      <find>请关闭</find>
+      <find>增加</find>
+      <find>code is '未知代码'</find>
+      <find>不识别的stk</find>
+      <find>code == '未知代码'</find>
+      <find>小主请吩咐</find>
+      <find>小主</find>
+      <find>c.drawImage</find>
+      <find>c.save</find>
+      <find>Font(TTFont('song', 'SURSONG.TTF</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>stk</replace>
+      <replace>stk + '_url'</replace>
+      <replace>stk + '_res'</replace>
+      <replace>请输入命令</replace>
+      <replace />
+    </replaceStrings>
+    <dirStrings>
+      <dir>F:\MYAI\Code\master\MoDeng</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="develop" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Experiment/Test/ThreadTest/Global_Values.py" />
+        <option value="$PROJECT_DIR$/Experiment/Test/ThreadTest/Main_Pro.py" />
+        <option value="$PROJECT_DIR$/HuiCe/demo1.py" />
+        <option value="$PROJECT_DIR$/Experiment/Reseau/StdForReseau/Sub.py" />
+        <option value="$PROJECT_DIR$/HuiCe/prepare_data.py" />
+        <option value="$PROJECT_DIR$/HuiCe/huice_main.py" />
+        <option value="$PROJECT_DIR$/HuiCe/Sub.py" />
+        <option value="$PROJECT_DIR$/AutoDailyOpt/opt_info_input_test.py" />
+        <option value="$PROJECT_DIR$/Global_Value/thread_lock.py" />
+        <option value="$PROJECT_DIR$/Experiment/Threads/multi_thread_module/demo1.py" />
+        <option value="$PROJECT_DIR$/Experiment/Threads/multi_process.py" />
+        <option value="$PROJECT_DIR$/Experiment/Threads/DistributedComputingDemo/AboutMultiprocessing/AnotherDoc.py" />
+        <option value="$PROJECT_DIR$/Experiment/BOLLForReseau/Demo.py" />
+        <option value="$PROJECT_DIR$/Experiment/Auto_Report/ReportLab/test/SingleStock.py" />
+        <option value="$PROJECT_DIR$/Experiment/Threads/multi_process_comu.py" />
+        <option value="$PROJECT_DIR$/Experiment/Threads/multi_process_comu2.py" />
+        <option value="$PROJECT_DIR$/Experiment/wxpythonGUI/MyCode/Data_Pro_Sub.py" />
+        <option value="$PROJECT_DIR$/AutoDailyOpt/Debug_Sub.py" />
+        <option value="$PROJECT_DIR$/Experiment/wxpythonGUI/MyCode/Thread_Sub.py" />
+        <option value="$PROJECT_DIR$/AutoDailyOpt/Sub.py" />
+        <option value="$PROJECT_DIR$/Experiment/wxpythonGUI/DengShen/Sub.py" />
+        <option value="$PROJECT_DIR$/Experiment/wxpythonGUI/MyCode/Sub.py" />
+        <option value="$PROJECT_DIR$/GUI/MyCode/Sub.py" />
+        <option value="$PROJECT_DIR$/GUI/MyCode/modeng.py" />
+        <option value="$PROJECT_DIR$/GUI/MyCode/Thread_Sub.py" />
+        <option value="$PROJECT_DIR$/History/Sub.py" />
+        <option value="$PROJECT_DIR$/Experiment/CornerDetectAndAutoEmail/Sub.py" />
+        <option value="$PROJECT_DIR$/DataSource/Data_Sub.py" />
+        <option value="$PROJECT_DIR$/Experiment/MACD_Stray_Analysis/Demo1.py" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/Experiment/RelativeRank/Sub.py" />
+        <option value="$PROJECT_DIR$/SDK/Gen_Stk_Pic_Sub.py" />
+        <option value="$PROJECT_DIR$/文档/用户手册/用户手册" />
+        <option value="$PROJECT_DIR$/使用说明书" />
+        <option value="$PROJECT_DIR$/SDK/Debug_Sub.py" />
+        <option value="$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/TomorrowPredict.py" />
+        <option value="$PROJECT_DIR$/Function/GUI/GUI_main/Thread_Sub.py" />
+        <option value="$PROJECT_DIR$/Function/GUI/GUI_main/Sub.py" />
+        <option value="$PROJECT_DIR$/Function/SeaSelect/Sub.py" />
+        <option value="$PROJECT_DIR$/Global_Value/file_dir.py" />
+        <option value="$PROJECT_DIR$/DataSource/auth_info.py" />
+        <option value="$PROJECT_DIR$/Function/SeaSelect/pdf_sub.py" />
+        <option value="$PROJECT_DIR$/Experiment/Auto_Report/ReportLab/SubFunction.py" />
+        <option value="$PROJECT_DIR$/Function/SeaSelect/reportlab_sub.py" />
+        <option value="$PROJECT_DIR$/modeng.py" />
+        <option value="$PROJECT_DIR$/Config/AutoGenerateConfigFile.py" />
+        <option value="$PROJECT_DIR$/Function/GUI/DengShen/Sub.py" />
+        <option value="$PROJECT_DIR$/Function/GUI/GUI_main/note_string.py" />
+        <option value="$PROJECT_DIR$/Function/SeaSelect/Sub/pdf_sub.py" />
+        <option value="$PROJECT_DIR$/Function/SeaSelect/Sub/reportlab_sub.py" />
+        <option value="$PROJECT_DIR$/Function/SeaSelect/SingleStock.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="x" value="403" />
+    <option name="y" value="207" />
+    <option name="width" value="1049" />
+    <option name="height" value="665" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Python</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>PyInconsistentIndentationInspection</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MoDeng" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MoDeng" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiment" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MoDeng" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiment" type="462c0819:PsiDirectoryNode" />
+              <item name="Auto_Report" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MoDeng" type="462c0819:PsiDirectoryNode" />
+              <item name="Function" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MoDeng" type="462c0819:PsiDirectoryNode" />
+              <item name="Function" type="462c0819:PsiDirectoryNode" />
+              <item name="LSTM" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MoDeng" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MoDeng" type="462c0819:PsiDirectoryNode" />
+              <item name="Function" type="462c0819:PsiDirectoryNode" />
+              <item name="LSTM" type="462c0819:PsiDirectoryNode" />
+              <item name="AboutLSTM" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="editor.preferences.smartKeys" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\MYAI\Code\master\MoDeng\Function\SeaSelect\Sub" />
+      <recent name="F:\MYAI\Code\master\MoDeng\SDK" />
+      <recent name="F:\MYAI\Code\master\MoDeng\Global_Value" />
+      <recent name="F:\MYAI\Code\master\MoDeng\Function" />
+      <recent name="F:\MYAI\Code\master\MoDeng" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\MYAI\Code\master\MoDeng\Function\SeaSelect" />
+      <recent name="F:\MYAI\Code\master\MoDeng" />
+      <recent name="F:\MYAI\Code\master\MoDeng\SDK" />
+      <recent name="F:\MYAI\Code\master\MoDeng\Experiment\Threads" />
+      <recent name="F:\MYAI\Code\master\MoDeng\AutoDailyOpt" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.Sub">
+    <configuration name="DoPredict" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/LSTM/AboutLSTM/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="MoDeng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/LSTM/AboutLSTM/Test/DoPredict.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="DoPredict_2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/LSTM/AboutLSTM/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="MoDeng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/LSTM/AboutLSTM/Test/DoPredict_2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="Sub" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Function/GUI/DengShen" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="MoDeng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Function/GUI/DengShen/Sub.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="TomorrowPredict" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/LSTM/AboutLSTM/Test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="MoDeng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/LSTM/AboutLSTM/Test/TomorrowPredict.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="modeng" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="MoDeng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/modeng.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Python.TomorrowPredict" />
+      <item index="1" class="java.lang.String" itemvalue="Python.modeng" />
+      <item index="2" class="java.lang.String" itemvalue="Python.Sub" />
+      <item index="3" class="java.lang.String" itemvalue="Python.DoPredict" />
+      <item index="4" class="java.lang.String" itemvalue="Python.DoPredict_2" />
+    </list>
+    <recent_temporary>
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Python.DoPredict_2" />
+        <item index="1" class="java.lang.String" itemvalue="Python.DoPredict" />
+        <item index="2" class="java.lang.String" itemvalue="Python.Sub" />
+        <item index="3" class="java.lang.String" itemvalue="Python.modeng" />
+        <item index="4" class="java.lang.String" itemvalue="Python.TomorrowPredict" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="608860de-e082-404c-9cc7-5e8de08b819a" name="Default" comment="" />
+      <created>1569381597858</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1569381597858</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Merge branch 'master' of https://github.com/xiaohuilangss/MoDeng&#10;&#10;# Conflicts:&#10;#&#9;Experiment/wxpythonGUI/MyCode/Sub.py">
+      <created>1571055721735</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1571055721735</updated>
+    </task>
+    <task id="LOCAL-00015" summary="1、微调lstm预测程序&#10;2、增加cmd模块使用demo">
+      <created>1571132677206</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1571132677206</updated>
+    </task>
+    <task id="LOCAL-00016" summary="1、增加灯神相关代码">
+      <created>1571391844700</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1571391844701</updated>
+    </task>
+    <task id="LOCAL-00017" summary="1、增加灯神相关代码">
+      <created>1571457945042</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1571457945042</updated>
+    </task>
+    <task id="LOCAL-00018" summary="1、定时更新">
+      <created>1571650638479</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1571650638479</updated>
+    </task>
+    <task id="LOCAL-00019" summary="1、为新分支更新">
+      <created>1571724247477</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1571724247477</updated>
+    </task>
+    <task id="LOCAL-00020" summary="1、优化LSTM预测部分代码">
+      <created>1571736662331</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1571736662331</updated>
+    </task>
+    <task id="LOCAL-00021" summary="1、优化LSTM预测部分代码">
+      <created>1571997342852</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1571997342852</updated>
+    </task>
+    <task id="LOCAL-00022" summary="1、定时同步">
+      <created>1572051695574</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1572051695574</updated>
+    </task>
+    <task id="LOCAL-00023" summary="1、规整自动报告部分的代码">
+      <created>1572440403596</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1572440403596</updated>
+    </task>
+    <task id="LOCAL-00024" summary="1、改进图片展示">
+      <created>1572515374476</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1572515374476</updated>
+    </task>
+    <task id="LOCAL-00025" summary="1、规范规整代码&#10;2、增加“小时-其他指标”列&#10;3、暂时去除“中期水平检测”&#10;4、续写灯神代码">
+      <created>1572610385139</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1572610385139</updated>
+    </task>
+    <task id="LOCAL-00026" summary="1、更新字符串提示&#10;2、修复灯神小bug">
+      <created>1572829805628</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1572829805628</updated>
+    </task>
+    <task id="LOCAL-00027" summary="1、完善灯神技能">
+      <created>1572958278446</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1572958278446</updated>
+    </task>
+    <task id="LOCAL-00028" summary="1、完善回测">
+      <created>1574071966648</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1574071966648</updated>
+    </task>
+    <task id="LOCAL-00029" summary="1、完善回测">
+      <created>1574159928777</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1574159928777</updated>
+    </task>
+    <task id="LOCAL-00030" summary="1、完善代码">
+      <created>1574496744622</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1574496744622</updated>
+    </task>
+    <task id="LOCAL-00031" summary="1、完善代码">
+      <created>1574511923231</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1574511923231</updated>
+    </task>
+    <task id="LOCAL-00032" summary="1、完善代码">
+      <created>1574679955429</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1574679955429</updated>
+    </task>
+    <task id="LOCAL-00033" summary="1、完善多进程代码">
+      <created>1575089219403</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1575089219403</updated>
+    </task>
+    <task id="LOCAL-00034" summary="1、完善多进程代码">
+      <created>1575293204396</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1575293204396</updated>
+    </task>
+    <task id="LOCAL-00035" summary="1、基本完成多进程改造">
+      <created>1575369701033</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1575369701033</updated>
+    </task>
+    <task id="LOCAL-00036" summary="1、调整代码">
+      <created>1575514773065</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1575514773065</updated>
+    </task>
+    <task id="LOCAL-00037" summary="1、规整代码">
+      <created>1575540404086</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1575540404086</updated>
+    </task>
+    <task id="LOCAL-00038" summary="1、规整代码">
+      <created>1575540547295</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1575540547295</updated>
+    </task>
+    <task id="LOCAL-00039" summary="1、开发分支merge到主分支">
+      <created>1575540592373</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1575540592373</updated>
+    </task>
+    <task id="LOCAL-00040" summary="1、改为“非调试”">
+      <created>1575540648228</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1575540648228</updated>
+    </task>
+    <task id="LOCAL-00041" summary="1、修改readme">
+      <created>1575540770053</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1575540770053</updated>
+    </task>
+    <task id="LOCAL-00042" summary="1、修改readme">
+      <created>1575625093462</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1575625093463</updated>
+    </task>
+    <task id="LOCAL-00043" summary="1、修改聚宽数据的登录方式">
+      <created>1576060225199</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1576060225199</updated>
+    </task>
+    <task id="LOCAL-00044" summary="1、修改使用说明书">
+      <created>1576322263714</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1576322263714</updated>
+    </task>
+    <task id="LOCAL-00045" summary="1、修复LSTM预测明日大盘指数的功能">
+      <created>1576326474380</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1576326474380</updated>
+    </task>
+    <task id="LOCAL-00046" summary="1、打包资料上传">
+      <created>1576492856515</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1576492856515</updated>
+    </task>
+    <task id="LOCAL-00047" summary="1、整理代码，增加调试打印">
+      <created>1576499081100</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1576499081100</updated>
+    </task>
+    <task id="LOCAL-00048" summary="1、修复网格检测和闪动bug">
+      <created>1576577189250</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1576577189250</updated>
+    </task>
+    <task id="LOCAL-00049" summary="1、合并开发分支，并在启动文件中恢复try catch">
+      <created>1576631060009</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1576631060009</updated>
+    </task>
+    <task id="LOCAL-00050" summary="1、调整控制台的“msg”栏的打印格式&#10;2、修复阈值判断的bug&#10;3、修复无提示时出现闪动的bug">
+      <created>1576719678085</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1576719678086</updated>
+    </task>
+    <task id="LOCAL-00051" summary="1、微调日志打印">
+      <created>1576735571665</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1576735571665</updated>
+    </task>
+    <task id="LOCAL-00052" summary="1、给灯神操作加上try保护">
+      <created>1576748189836</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1576748189836</updated>
+    </task>
+    <task id="LOCAL-00053" summary="1、给灯神操作加上try保护">
+      <created>1576749093585</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1576749093585</updated>
+    </task>
+    <task id="LOCAL-00054" summary="1、打印间隔微调">
+      <created>1576750772312</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1576750772312</updated>
+    </task>
+    <task id="LOCAL-00055" summary="1、续写海选功能">
+      <created>1576920954568</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1576920954568</updated>
+    </task>
+    <task id="LOCAL-00056" summary="1、将配置文件检查提前，防止后面import时因为没有检测到配置文件而出错！">
+      <created>1577064544167</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1577064544167</updated>
+    </task>
+    <task id="LOCAL-00057" summary="1、提示中“预测大盘指数”改为“预测明日大盘指数”">
+      <created>1577066013341</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1577066013341</updated>
+    </task>
+    <task id="LOCAL-00058" summary="1、配置文件检查使用input实现暂停，避免命令行界面一晃而过">
+      <created>1577357063206</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1577357063206</updated>
+    </task>
+    <task id="LOCAL-00059" summary="1、定时更新">
+      <created>1577367374038</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1577367374038</updated>
+    </task>
+    <task id="LOCAL-00060" summary="1、删除废代码，清理无用文件夹，为目录瘦身">
+      <created>1577497661347</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1577497661347</updated>
+    </task>
+    <task id="LOCAL-00061" summary="1、完善海选功能的pdf打印">
+      <created>1577525932270</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1577525932270</updated>
+    </task>
+    <task id="LOCAL-00062" summary="1、定时commit">
+      <created>1577667800360</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1577667800360</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
+    <servers />
+  </component>
+  <component name="TestHistory">
+    <history-entry file="py_test_in_DialogTest_py - 2019.10.18 at 15h 27m 32s.xml">
+      <configuration name="py.test in DialogTest.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="py_test_in_DialogTest_py - 2019.10.18 at 15h 28m 09s.xml">
+      <configuration name="py.test in DialogTest.py" configurationId="tests" />
+    </history-entry>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="403" y="207" width="1049" height="665" extended-state="1" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26904055" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34666666" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18424243" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14628822" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17047353" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34023285" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2725" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24875" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.md" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="1、基本完成多进程改造" />
+    <MESSAGE value="1、调整代码" />
+    <MESSAGE value="1、规整代码" />
+    <MESSAGE value="1、开发分支merge到主分支" />
+    <MESSAGE value="1、改为“非调试”" />
+    <MESSAGE value="1、修改readme" />
+    <MESSAGE value="1、修改聚宽数据的登录方式" />
+    <MESSAGE value="1、修改使用说明书" />
+    <MESSAGE value="1、修复LSTM预测明日大盘指数的功能" />
+    <MESSAGE value="1、打包资料上传" />
+    <MESSAGE value="1、整理代码，增加调试打印" />
+    <MESSAGE value="1、修复网格检测和闪动bug" />
+    <MESSAGE value="1、合并开发分支，并在启动文件中恢复try catch" />
+    <MESSAGE value="1、调整控制台的“msg”栏的打印格式&#10;2、修复阈值判断的bug&#10;3、修复无提示时出现闪动的bug" />
+    <MESSAGE value="1、微调日志打印" />
+    <MESSAGE value="1、给灯神操作加上try保护" />
+    <MESSAGE value="1、打印间隔微调" />
+    <MESSAGE value="1、续写海选功能" />
+    <MESSAGE value="1、将配置文件检查提前，防止后面import时因为没有检测到配置文件而出错！" />
+    <MESSAGE value="1、提示中“预测大盘指数”改为“预测明日大盘指数”" />
+    <MESSAGE value="1、配置文件检查使用input实现暂停，避免命令行界面一晃而过" />
+    <MESSAGE value="1、定时更新" />
+    <MESSAGE value="1、删除废代码，清理无用文件夹，为目录瘦身" />
+    <MESSAGE value="1、完善海选功能的pdf打印" />
+    <MESSAGE value="1、定时commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="1、定时commit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/LSTM/AboutLSTM/Test/TomorrowPredict.py</url>
+          <line>204</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="78" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateCodeFragment">
+      <expression>
+        <expression-string>letter[1]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>letter[0]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>letter</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>code is '未知代码'</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>len(analysis_result)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>(not pd.isnull(analysis_result)) &amp; len(analysis_result)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>str_gui</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>plt.savefig(save_dir, facecolor=fig_tmp.get_facecolor())</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>cal_rsv_rank(stk_code, 5)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Experiment/Threads/multi_process_comu2.py" />
+    <entry file="file://D:/ProgramData/Anaconda3/Lib/site-packages/tensorflow/python/framework/dtypes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="526" column="0" lean-forward="false" selection-start-line="526" selection-start-column="0" selection-end-line="526" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/DoPredict_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2340">
+          <caret line="61" column="47" lean-forward="false" selection-start-line="61" selection-start-column="47" selection-end-line="61" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/LSTM_Book.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="990">
+          <caret line="33" column="44" lean-forward="false" selection-start-line="33" selection-start-column="44" selection-end-line="33" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="69" column="0" lean-forward="false" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/GUI/GUI_main/Data_Pro_Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="43">
+          <caret line="10" column="29" lean-forward="false" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/History/Debug_Sub.py" />
+    <entry file="file://$PROJECT_DIR$/SDK/StdForReseau/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-679">
+          <caret line="26" column="7" lean-forward="true" selection-start-line="26" selection-start-column="7" selection-end-line="26" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/MiddlePeriodLevelCheck/Demo1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="31" column="14" lean-forward="true" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/CornerDetectAndAutoEmail/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="487" column="0" lean-forward="false" selection-start-line="487" selection-start-column="0" selection-end-line="487" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DataSource/Data_Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/MACD_Stray_Analysis/Demo1.py" />
+    <entry file="file://$PROJECT_DIR$/Global_Value/p_diff_ratio_last.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LSTM/AboutLSTM/Test/DoPredict_2.py" />
+    <entry file="file://$PROJECT_DIR$/LSTM/AboutLSTM/Test/LSTM_Book.py" />
+    <entry file="file://$PROJECT_DIR$/LSTM/AboutLSTM/Test/Sub.py" />
+    <entry file="file://$PROJECT_DIR$/LSTM/AboutLSTM/Test/TomorrowPredict.py" />
+    <entry file="file://$PROJECT_DIR$/Experiment/wxpythonGUI/MyCode/Sub.py" />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="23" column="14" lean-forward="false" selection-start-line="23" selection-start-column="14" selection-end-line="23" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/RelativeRank/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1277">
+          <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/文档/用户手册/用户手册" />
+    <entry file="file://$PROJECT_DIR$/使用说明书.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1845">
+          <caret line="41" column="0" lean-forward="true" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/LSTM/Lstm_Stock_Demo/stock_predict_v1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-6210">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/ProgramData/Anaconda3/Lib/site-packages/tushare/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="8" column="16" lean-forward="true" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DataSource/Code2Name.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SDK/Debug_Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-466">
+          <caret line="12" column="4" lean-forward="false" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/History/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="470" column="78" lean-forward="false" selection-start-line="470" selection-start-column="54" selection-end-line="470" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/ProgramData/Anaconda3/Lib/site-packages/pandas/core/internals/managers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="251">
+          <caret line="1086" column="0" lean-forward="false" selection-start-line="1086" selection-start-column="0" selection-end-line="1086" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/skfuzzy_test/Demo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="6" column="22" lean-forward="false" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/LSTM/AboutLSTM/Test/TomorrowPredict.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1019">
+          <caret line="117" column="79" lean-forward="false" selection-start-line="117" selection-start-column="79" selection-end-line="117" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/GUI/GUI_main/Thread_Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="738">
+          <caret line="662" column="61" lean-forward="false" selection-start-line="662" selection-start-column="61" selection-end-line="662" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/GUI/DengShen/test/On_key.py" />
+    <entry file="file://$PROJECT_DIR$/Function/GUI/GUI_main/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="79">
+          <caret line="442" column="60" lean-forward="false" selection-start-line="442" selection-start-column="60" selection-end-line="442" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/Threads/DistributedComputingDemo/AboutMultiprocessing/AnotherDoc.py" />
+    <entry file="file://$PROJECT_DIR$/DataSource/auth_info.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="9" column="4" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SDK/Gen_Stk_Pic_Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="216" column="4" lean-forward="false" selection-start-line="216" selection-start-column="4" selection-end-line="216" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/Auto_Report/ReportLab/test/senderInfo.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Config/AutoGenerateConfigFile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="73" column="9" lean-forward="false" selection-start-line="73" selection-start-column="9" selection-end-line="73" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modeng.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5">
+          <caret line="23" column="4" lean-forward="false" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/GUI/DengShen/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-573">
+          <caret line="43" column="39" lean-forward="false" selection-start-line="43" selection-start-column="39" selection-end-line="43" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/GUI/GUI_main/note_string.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="73" column="4" lean-forward="false" selection-start-line="73" selection-start-column="4" selection-end-line="73" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Global_Value/file_dir.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="11" column="24" lean-forward="true" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/SeaSelect/Sub/Sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="612">
+          <caret line="53" column="0" lean-forward="true" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/ProgramData/Anaconda3/Lib/codecs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="308" column="0" lean-forward="false" selection-start-line="308" selection-start-column="0" selection-end-line="308" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/Auto_Report/ReportLab/test/test1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/Auto_Report/ReportLab/test/SingleStock.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="11" column="18" lean-forward="false" selection-start-line="11" selection-start-column="18" selection-end-line="11" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/SeaSelect/Sub/reportlab_sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2318">
+          <caret line="302" column="56" lean-forward="false" selection-start-line="302" selection-start-column="4" selection-end-line="302" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/Auto_Report/Auto_Email/RPT_Subfunction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-672">
+          <caret line="40" column="0" lean-forward="true" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiment/Auto_Report/ReportLab/SubFunction.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-270">
+          <caret line="51" column="10" lean-forward="true" selection-start-line="51" selection-start-column="4" selection-end-line="51" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/SeaSelect/SingleStock.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="344">
+          <caret line="50" column="13" lean-forward="true" selection-start-line="50" selection-start-column="13" selection-end-line="50" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Function/SeaSelect/Sub/pdf_sub.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="31" column="19" lean-forward="true" selection-start-line="31" selection-start-column="19" selection-end-line="31" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
