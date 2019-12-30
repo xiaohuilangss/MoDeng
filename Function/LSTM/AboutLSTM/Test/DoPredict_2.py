@@ -4,11 +4,13 @@ import json
 import tensorflow as tf
 from pylab import *
 
-from Config.AutoStkConfig import rootPath
-from LSTM.AboutLSTM.Config import N_STEPS, feature_cols, HIDDEN_SIZE, NUM_LAYERS
-from LSTM.AboutLSTM.Test.Sub import lstm_model
+
+from Function.LSTM.AboutLSTM.Config import N_STEPS, feature_cols, HIDDEN_SIZE, NUM_LAYERS
+from Function.LSTM.AboutLSTM.Test.Sub import lstm_model
 import pickle
 import os
+
+from Global_Value.file_dir import rootPath
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus'] = False

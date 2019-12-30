@@ -1,8 +1,6 @@
 # encoding = utf-8
 from email.mime.image import MIMEImage
 
-
-from Config.AutoStkConfig import *
 import talib
 from talib import MA_Type
 
