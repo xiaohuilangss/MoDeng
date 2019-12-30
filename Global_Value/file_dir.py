@@ -1,4 +1,5 @@
 # encoding=utf-8
+import os
 
 config_path = 'c:/MoDeng/'
 data_source_url = config_path+'data_source.json'
@@ -14,3 +15,8 @@ sea_select_pic_dir = data_dir + 'Sea_Select_Pic_tmp/'       # 海选图片存放
 
 # 全局变量，记录操作细节
 opt_record = []
+
+# 源代码根目录
+curPath = os.path.abspath(os.path.dirname(__file__))
+rootPath = curPath[:curPath.find("MoDeng\\")+len("MoDeng\\")]  # 获取myProject，也就是项目的根路径
+

@@ -26,7 +26,8 @@ if __name__ == '__main__':
 		checkConfigFile()
 	
 		import multiprocessing as mp
-	
+		mp.freeze_support()
+
 		from Function.GUI.GUI_main.Sub import run_myframe_in_process
 		from Function.GUI.GUI_main.Thread_Sub import data_process_callback
 		
@@ -34,7 +35,7 @@ if __name__ == '__main__':
 		pipe_master, pipe_proc = mp.Pipe()
 	
 		# 启动主进程
-		process = mp.Process(target=run_myframe_in_process, args=(pipe_master, True))
+		process = mp.Process(target=run_myframe_in_process, args=(pipe_master, False))
 		process.start()
 	
 		# 启动处理循环
@@ -42,5 +43,5 @@ if __name__ == '__main__':
 
 	# except Exception as e:
 	# 	print('出错！错误：\n' + str(e) + '\n')
-	#
+    #
 	# 	a = input('请关闭！')

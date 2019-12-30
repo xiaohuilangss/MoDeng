@@ -150,26 +150,14 @@ localDBInfo = {'host': 'localhost',
                'password': 'yourpasswd',
                'charset': 'utf8'}
 
-# (conn_profit, engine_profit)                 = genDbConn(localDBInfo, stk_profit_data_db_name)
-# (conn_tick,engine_tick)                     = genDbConn(localDBInfo,stk_tick_data_db_name)
-# (conn_k,engine_k)                           = genDbConn(localDBInfo,stk_k_data_db_name)
-# (conn_basic,engine_basic)                   = genDbConn(localDBInfo,stk_basic_data_db_name)
-# (conn_dd,engine_dd)                         = genDbConn(localDBInfo,stk_dd_data_db_name)
-# (conn_stkBasics,engine_stkBasics)           = genDbConn(localDBInfo,stk_dd_data_db_name)
-# (conn_growth, engine_growth)                 = genDbConn(localDBInfo, stk_growth_data_db_name)
-# (conn_operation, engine_operation)           = genDbConn(localDBInfo, stk_operation_data_db_name)
-# (conn_debtpaying, engine_debtpaying)         = genDbConn(localDBInfo, stk_debtpaying_data_db_name)
-# (conn_cashflow, engine_cashflow)             = genDbConn(localDBInfo, stk_cashflow_data_db_name)
-# (conn_industry, engine_industry)             = genDbConn(localDBInfo, stk_industry_data_db_name)
-# (conn_days_all, engine_days_all)             = genDbConn(localDBInfo, stk_days_all_data_db_name)
-
-#-----------------------------------------------以上为数据库相关------------------------------------------
-
 
 src_current = 'sn'
 
 # 全局数据下载重试延时参数（秒）
 gSleepTime = 10
+
+plot_current_days_amount = 40   # 画出近期的stk走势情况，该参数指示最近取的天数
+tailLengthForMACD = 150         # 在计算MACD时，因为之用最近的几个数，所以不需要往前延伸太多，以节省计算量
 
 
 # 所有stk信息：

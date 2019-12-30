@@ -13,9 +13,11 @@ import random
 import os
 import time
 
-from Config.AutoStkConfig import rootPath
-from LSTM.AboutLSTM.Config import N_STEPS, feature_cols, HIDDEN_SIZE, NUM_LAYERS
-from LSTM.AboutLSTM.Test.Sub import lstm_model
+
+from Function.LSTM.AboutLSTM.Config import N_STEPS, feature_cols, HIDDEN_SIZE, NUM_LAYERS
+from Function.LSTM.AboutLSTM.Test.Sub import lstm_model
+
+from Global_Value.file_dir import rootPath
 
 """ -------------------- 测试 ---------------------- """
 
