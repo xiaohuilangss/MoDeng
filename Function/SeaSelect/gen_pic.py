@@ -11,7 +11,7 @@
 import os
 
 from DataSource.Data_Sub import get_k_data_JQ
-from DataSource.auth_info import jq_login
+from DataSource.auth_info import jq_login, logout
 from Global_Value.file_dir import data_dir, sea_select_pic_dir
 from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_hour_macd_pic_local, gen_hour_index_pic_local, \
     gen_day_pic_local, gen_w_m_macd_pic_local, gen_idx_pic_local
@@ -19,7 +19,7 @@ from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str
 
 
 def gen_stk_sea_select_pic(stk_code):
-
+    jq_login()
     try:
 
         # 保存路径
@@ -44,6 +44,8 @@ def gen_stk_sea_select_pic(stk_code):
 
     except Exception as e:
         print('生成股票走势图失败！原因：\n' + str(e))
+    finally:
+        logout()
 
 
 if __name__ == '__main__':

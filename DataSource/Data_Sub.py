@@ -10,6 +10,8 @@ import jqdatasdk as jq
 
 from SDK.MyTimeOPT import get_current_date_str
 from talib import MA_Type
+import pandas as pd
+
 
 def get_RT_price(stk_code, source='jq'):
 
@@ -106,23 +108,27 @@ def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_da
     :param amount:
     :return:
     """
-    if stk_code in ['sh', 'sz', 'cyb']:
+    try:
+        if stk_code in ['sh', 'sz', 'cyb']:
 
-        stk_code_normal = {
-            'sh': '000001.XSHG',
-            'sz': '399001.XSHE',
-            'cyb': '399006.XSHE'
-        }[stk_code]
-        df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
-                                 end_date=end_date)
-    else:
-        df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk_code), frequency=freq, count=count,
-                                 end_date=end_date, start_date=start_date)
+            stk_code_normal = {
+                'sh': '000001.XSHG',
+                'sz': '399001.XSHE',
+                'cyb': '399006.XSHE'
+            }[stk_code]
+            df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
+                                     end_date=end_date)
+        else:
+            df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk_code), frequency=freq, count=count,
+                                     end_date=end_date, start_date=start_date)
 
-    df['datetime'] = df.index
-    df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
+        df['datetime'] = df.index
+        df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
 
-    return df
+        return df
+    except Exception as e:
+        print('函数get_k_data_JQ：出错！错误详情：\n' + str(e))
+        return pd.DataFrame()
 
 
 def ts_code_normalize(code):
