@@ -15,7 +15,7 @@ from DataSource.auth_info import jq_login, logout
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 from Function.SeaSelect.Sub.reportlab_sub import add_front, print_k_to_pdf, add_tail_page
 from Function.SeaSelect.gen_pic import gen_stk_sea_select_pic
-from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_half_hour_index
+from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_half_hour_sar
 
 from SDK.SendMsgByQQ.QQGUI import send_qq
 from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
@@ -75,7 +75,7 @@ def hour_sar_judge(stk_data_list):
     :param stk_data_list:
     :return:
     """
-    stk_result_list = [(x[0], sar_stray_judge_sub(gen_half_hour_index(x[1]))) for x in stk_data_list]
+    stk_result_list = [(x[0], sar_stray_judge_sub(gen_half_hour_sar(x[1]))) for x in stk_data_list]
     return [r[0] for r in list(filter(lambda x: x[1] == 1, stk_result_list))]
 
 
@@ -306,7 +306,7 @@ def cal_stk_p_level_sub(c):
 
 def sea_select():
 
-    df_total = ts.get_stock_basics()[200:500]
+    df_total = ts.get_stock_basics()
 
     # 过滤掉年龄小于四岁的
     df_stk = df_total[df_total.apply(lambda x: int(str(x['timeToMarket'])[:4]) <= int(get_current_date_str()[:4])-4, axis=1)]
@@ -357,8 +357,5 @@ if __name__ == '__main__':
     sea_select()
 
     df = ts.get_stock_basics()
-
-    # 遍历所有股票
-    list(df.index)
 
     end = 0
