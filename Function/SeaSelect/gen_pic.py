@@ -19,8 +19,9 @@ from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str
 
 
 def gen_stk_sea_select_pic(stk_code):
-    jq_login()
+
     try:
+        jq_login()
 
         # 保存路径
         save_dir = sea_select_pic_dir + get_current_date_str() + '/'

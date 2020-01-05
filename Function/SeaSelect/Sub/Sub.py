@@ -1,7 +1,8 @@
 # encoding=utf-8
+import matplotlib
+matplotlib.use('Agg')
 
 import calendar
-
 import multiprocessing
 import talib
 import pandas as pd
@@ -306,7 +307,7 @@ def cal_stk_p_level_sub(c):
 
 def sea_select():
 
-    df_total = ts.get_stock_basics()
+    df_total = ts.get_stock_basics()[2000:]
 
     # 过滤掉年龄小于四岁的
     df_stk = df_total[df_total.apply(lambda x: int(str(x['timeToMarket'])[:4]) <= int(get_current_date_str()[:4])-4, axis=1)]
@@ -338,10 +339,14 @@ def sea_select():
     pool.join()
     print('已过滤出周线macd转折的股票！耗时%0.2f分钟' % ((time.time()-tic)/60))
 
+    print('最终筛选的股票为：' + str(stk_list))
+
     for stk in stk_list:
 
         # 将选定的股票的走势图打印到本地
         gen_stk_sea_select_pic(stk)
+
+    print('开始生成pdf...')
 
     # 生成pdf
     c = canvas.Canvas(U"魔灯海选" + get_current_date_str() + ".pdf", pagesize=letter)
@@ -354,7 +359,23 @@ def sea_select():
 
 if __name__ == '__main__':
 
-    sea_select()
+    # sea_select()
+
+    stk_list = ['601318', '600027', '600961', '002410', '002172', '000959', '000766', '601633', '300136', '600557', '002724', '603008', '300499', '002581', '300300']
+    # for stk in stk_list:
+    #
+    #     # 将选定的股票的走势图打印到本地
+    #     gen_stk_sea_select_pic(stk)
+    #
+    # print('开始生成pdf...')
+
+    # 生成pdf
+    c = canvas.Canvas(U"魔灯海选" + get_current_date_str() + ".pdf", pagesize=letter)
+    c = add_front(c, '魔灯每日股票海选结果' + get_current_date_str(), '本文档由免费开源的量化投资软件“魔灯”自动生成 末尾公众号内有软件介绍', pagesize=letter)
+    for stk in stk_list:
+        c = print_k_to_pdf(c, stk, get_current_date_str())
+    c = add_tail_page(c)
+    c.save()
 
     df = ts.get_stock_basics()
 

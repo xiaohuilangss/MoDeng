@@ -101,7 +101,7 @@ def add_stk_index_to_df(stk_df):
     return stk_df
 
 
-def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
+def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
     """
     使用JQData来下载stk的历史数据
     :param stk_code:
@@ -109,17 +109,24 @@ def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_da
     :return:
     """
     try:
-        if stk_code in ['sh', 'sz', 'cyb']:
 
+        # 增加以兼容list的情况
+        if isinstance(stk, list):
+            stk_code = [jqdatasdk.normalize_code(x) for x in stk]
+
+            df = jqdatasdk.get_price(stk_code, frequency=freq, count=count,
+                                     end_date=end_date, start_date=start_date)
+
+        elif stk in ['sh', 'sz', 'cyb']:
             stk_code_normal = {
                 'sh': '000001.XSHG',
                 'sz': '399001.XSHE',
                 'cyb': '399006.XSHE'
-            }[stk_code]
+            }[stk]
             df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
                                      end_date=end_date)
         else:
-            df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk_code), frequency=freq, count=count,
+            df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk), frequency=freq, count=count,
                                      end_date=end_date, start_date=start_date)
 
         df['datetime'] = df.index
