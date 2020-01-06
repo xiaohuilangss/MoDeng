@@ -25,14 +25,14 @@ from pylab import *
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 
 
-def download_stk_list_day_data(stk_list):
+def download_stk_list_day_data(stk_list, days=None):
     """
     给定stk_list,下载日期数据,以tuple的形式返回
     :return:
     """
 
     jq_login()
-    stk_list_data = [(x, get_k_data_JQ(x)) for x in stk_list]
+    stk_list_data = [(x, get_k_data_JQ(x,count=days)) for x in stk_list]
     stk_list_data = list(filter(lambda x: not x[1].empty, stk_list_data))
     logout()
 
@@ -55,6 +55,40 @@ def download_stk_list_hour_data(stk_list):
     logout()
 
     return stk_list_data
+
+
+def judge_rsi_sub(df, span, threshold):
+    """
+    根据rsi来筛选股票
+    :param 包含rsi的df数据
+    :param span: 5， 12， 30三种选择
+    :param threshold:[0.1, 0.3]  rsi所在区间
+    :return:
+    """
+    try:
+        # 增加rsi指数
+        rsi_str = 'RSI' + str(span)
+        df[rsi_str] = talib.RSI(df.close, timeperiod=span)
+
+        # 判断是否符合标准
+        rsi_now = df.tail(1)[rsi_str].values[0]
+        if (rsi_now >= threshold[0]) & (rsi_now <= threshold[1]):
+            return True
+        else:
+            return False
+    except Exception as e:
+        print('函数judge_rsi_sub：出错！\n' + str(e))
+        return False
+
+
+def judge_rsi(stk_data_list, span, threshold):
+    """
+
+    :return:
+    """
+    stk_result_list = [(x[0], judge_rsi_sub(x[1], span, threshold)) for x in stk_data_list]
+
+    return [r[0] for r in list(filter(lambda x: x[1], stk_result_list))]
 
 
 def week_macd_judge(stk_data_list):
@@ -95,7 +129,7 @@ def week_macd_judge_sub(df_day, stk_code='', debug=False):
         df_week = get_week_month_index_data_sub(df_day, stk_code='')[0]
 
         # 判断周线转折
-        return week_macd_stray_judge_sub(df_week, debug_plot=False)
+        return macd_stray_judge_sub(df_week, debug_plot=False)
 
     except Exception as e:
         print('周反转判断失败，原因：\n' + str(e))
@@ -176,7 +210,7 @@ def sar_stray_judge_sub(df_stk, debug=False):
         return 0
 
 
-def week_macd_stray_judge_sub(df_week, debug_plot=False):
+def macd_stray_judge_sub(df_week, debug_plot=False):
 
     """
     对周线macd反转进行判断
@@ -193,91 +227,16 @@ def week_macd_stray_judge_sub(df_week, debug_plot=False):
         return False
 
 
-# def stk_sea_select(stk_code, tc):
-#
-#     try:
-#
-#         """ ------------------------ 下载原始数据 ------------------------------- """
-#         df = get_k_data_JQ(stk_code, count=400, end_date=get_current_date_str()).reset_index()
-#
-#         if len(df) < 350:
-#             print('函数week_MACD_stray_judge：'+stk_code + '数据不足！')
-#             return False, pd.DataFrame()
-#
-#         # 规整
-#         df_floor = df.tail(math.floor(len(df)/20)*20-19)
-#
-#         """ ------------------------ 判断周线是否达标 ------------------------------- """
-#         # 增加每周的星期几
-#         df_floor['day'] = df_floor.apply(
-#             lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]),
-#                                        int(x['date'].split('-')[2])), axis=1)
-#
-#         # 增加每周的星期几
-#         df_floor['day'] = df_floor.apply(lambda x: calendar.weekday(int(x['date'].split('-')[0]), int(x['date'].split('-')[1]), int(x['date'].split('-')[2])), axis=1)
-#
-#         # 隔着5个取一个
-#         if df_floor.tail(1)['day'].values[0] != 4:
-#             df_floor_slice_5 = pd.concat([df_floor[df_floor.day == 4], df_floor.tail(1)], axis=0)
-#         else:
-#             df_floor_slice_5 = df_floor[df_floor.day == 4]
-#
-#         # 计算周线指标
-#         df_floor_slice_5['MACD'], df_floor_slice_5['MACDsignal'], df_floor_slice_5['MACDhist'] = talib.MACD(df_floor_slice_5.close,
-#                                                                               fastperiod=6, slowperiod=12,
-#                                                                               signalperiod=9)
-#
-#         # 判断周线的走势,周线不是底部，直接返回
-#         MACD_5 = df_floor_slice_5.tail(3)['MACD'].values
-#         if not (MACD_5[1] == np.min(MACD_5)):
-#             tc.AppendText(stk_code + code2name(stk_code) + '：“周线”不符合要求！')
-#             return False
-#
-#         """ ------------------------ 判断月线是否达标 ------------------------------- """
-#         # 隔着20个取一个（月线）
-#         df_floor_slice_20 = df_floor.loc[::20, :]
-#
-#         # 计算指标
-#         df_floor_slice_20['MACD'], df_floor_slice_20['MACDsignal'], df_floor_slice_20['MACDhist'] = talib.MACD(
-#             df_floor_slice_20.close,
-#             fastperiod=4,
-#             slowperiod=8,
-#             signalperiod=9)
-#
-#         # 获取最后的日期
-#         date_last = df_floor_slice_5.tail(1)['date'].values[0]
-#
-#         # 判断月线的走势，不符合条件直接返回
-#         MACD_20 = df_floor_slice_20.tail(4)['MACD'].values
-#         if not ((MACD_20[1] != np.max(MACD_20)) & (MACD_20[2] != np.max(MACD_20))):
-#             tc.AppendText(stk_code + code2name(stk_code) + '：“月线”不符合要求！')
-#             return False
-#
-#         """ ------------------------ 判断日线SAR是否达标 ------------------------------- """
-#
-#         # 判断日线SAR指标
-#         df_floor['SAR'] = talib.SAR(df_floor.high, df_floor.low, acceleration=0.05, maximum=0.2)
-#         if df_floor.tail(1)['SAR'].values[0] > df_floor.tail(1)['SAR'].values[0]:
-#             tc.AppendText(stk_code + code2name(stk_code) + '：“日线SAR指标”不符合要求！')
-#             return False
-#
-#         """ ------------------------ 判断半小时SAR是否达标 ------------------------------- """
-#         df_half_hour = get_k_data_JQ(stk_code, count=120,
-#                               end_date=add_date_str(get_current_date_str(), 1), freq='30m')
-#
-#         # 判断日线SAR指标
-#         df_half_hour['SAR'] = talib.SAR(df_half_hour.high, df_half_hour.low, acceleration=0.05, maximum=0.2)
-#         if df_half_hour.tail(1)['SAR'].values[0] > df_half_hour.tail(1)['SAR'].values[0]:
-#             tc.AppendText(stk_code + code2name(stk_code) + '：“半小时SAR指标”不符合要求！')
-#             return False
-#
-#         # 符合要求，返回True
-#         tc.AppendText(stk_code + code2name(stk_code) + '：符合要求！')
-#         return True
-#
-#     except Exception as e:
-#         tc.AppendText(stk_code + '出错：\n' + str(e))
-#         return False
+def cal_level_sub(c):
+    """
+    计算一个序列数据，最后一个数在当前序列中的水平
+    :param p_array:
+    :return:
+    """
+    # 进行归一化
+    c = (c - np.min(c)) / (np.max(c) - np.min(c))
+
+    return c[-1]
 
 
 def cal_stk_p_level_sub(c):
@@ -314,7 +273,21 @@ def sea_select():
     print('已过滤掉上市小于4年的股票！')
     stk_list = list(df_stk.index)
 
+    """ --------------------------------- 根据日线rsi筛选数据 ------------------------------- """
+    tic = time.time()
+    stk_day_data = download_stk_list_day_data(stk_list, days=400)
+    print('已下载day数据！耗时%0.2f分钟' % ((time.time()-tic)/60))
+
+    tic = time.time()
+    pool = multiprocessing.Pool(4)
+    stk_list = pool.apply_async(judge_rsi, (stk_day_data, 30, [0, 50],)).get()
+    pool.close()
+    pool.join()
+    print('已过符合RSI条件的股票！耗时%0.2f分钟' % ((time.time()-tic)/60) + '\n筛选结果为：\n' + str(stk_list))
+
+
     """ --------------------------------- 半小时sar反转的股票 ------------------------------- """
+
     # 下载半小时数据
     tic = time.time()
     stk_hour_data = download_stk_list_hour_data(stk_list)
@@ -328,16 +301,16 @@ def sea_select():
     print('已过滤出半小时sar转折的股票！耗时%0.2f分钟' % ((time.time()-tic)/60))
 
     """ --------------------------------- 根据week反转情况进行过滤，保留有反转的股票 ------------------------------- """
-    tic = time.time()
-    stk_day_data = download_stk_list_day_data(stk_list)
-    print('已下载day数据！耗时%0.2f分钟' % ((time.time()-tic)/60))
-
-    tic = time.time()
-    pool = multiprocessing.Pool(4)
-    stk_list = pool.apply_async(week_macd_judge, (stk_day_data,)).get()
-    pool.close()
-    pool.join()
-    print('已过滤出周线macd转折的股票！耗时%0.2f分钟' % ((time.time()-tic)/60))
+    # tic = time.time()
+    # stk_day_data = download_stk_list_day_data(stk_list, days=300)
+    # print('已下载day数据！耗时%0.2f分钟' % ((time.time()-tic)/60))
+    #
+    # tic = time.time()
+    # pool = multiprocessing.Pool(4)
+    # stk_list = pool.apply_async(week_macd_judge, (stk_day_data,)).get()
+    # pool.close()
+    # pool.join()
+    # print('已过滤出周线macd转折的股票！耗时%0.2f分钟' % ((time.time()-tic)/60))
 
     print('最终筛选的股票为：' + str(stk_list))
 
@@ -359,7 +332,9 @@ def sea_select():
 
 if __name__ == '__main__':
 
-    # sea_select()
+
+
+    sea_select()
 
     stk_list = ['601318', '600027', '600961', '002410', '002172', '000959', '000766', '601633', '300136', '600557', '002724', '603008', '300499', '002581', '300300']
     # for stk in stk_list:
