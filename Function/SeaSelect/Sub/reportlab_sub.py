@@ -845,7 +845,7 @@ def add_tail_page(canvas_param, pagesize=letter):
     # 设置主标题字体并打印主标题
     canvas_param.setFont("song", 20)
     canvas_param.drawString(20, PAGE_HEIGHT * 0.75, '联系我们：')
-    canvas_param.drawString(20, PAGE_HEIGHT * 0.7, '投资里的数据分析（微信公众号）')
+    canvas_param.drawString(20, PAGE_HEIGHT * 0.7, '魔灯量化（微信公众号）')
 
     # 插入小时macd图
     image_file = PIL.Image.open(rootPath + 'Function\SeaSelect\Sub\modeng.jpg')
@@ -869,46 +869,61 @@ def print_k_to_pdf(c, stk_code, date):
     """ --------------------------------- 打印小时线图片 ------------------------------------ """
     c.setFont("song", 10)
     c.drawString(20, letter[1] - 20, stk_code + ' ' + code2name(stk_code) + ' ' + '小时走势图')
-    c.setLineWidth(3)
+    c.setLineWidth(0.5)
     c.line(10, h - 24, w - 10, h - 24)
 
     # 插入小时macd图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.65, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     # 插入小时指标图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_idx_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.65, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_idx_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     """ --------------------------------- 打印日线图片 ------------------------------------ """
     c.setFont("song", 10)
     c.drawString(20, h * 0.65, stk_code + ' ' + code2name(stk_code) + ' ' + '日线走势图')
-    c.setLineWidth(3)
+    c.setLineWidth(0.5)
     c.line(10, h * 0.65 - 4, w - 10, h * 0.65 - 4)
 
     # 插入日线macd图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.35, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     # 插入日线指标图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_idx_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.35, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_idx_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     """ --------------------------------- 打印周月线图片 ------------------------------------ """
 
     c.setFont("song", 10)
     c.drawString(20, h * 0.35, stk_code + ' ' + code2name(stk_code) + ' ' + '周/月走势图')
-    c.setLineWidth(3)
+    c.setLineWidth(0.5)
     c.line(10, h * 0.35 - 4, w - 10, h * 0.35 - 4)
 
     # 插入周线图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'wm_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.05, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'wm_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.05, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     c.showPage()
 
