@@ -280,7 +280,7 @@ def sea_select():
 
     tic = time.time()
     pool = multiprocessing.Pool(4)
-    stk_list = pool.apply_async(judge_rsi, (stk_day_data, 30, [0, 50],)).get()
+    stk_list = pool.apply_async(judge_rsi, (stk_day_data, 5, [0, 30],)).get()
     pool.close()
     pool.join()
     print('已过符合RSI条件的股票！耗时%0.2f分钟' % ((time.time()-tic)/60) + '\n筛选结果为：\n' + str(stk_list))
