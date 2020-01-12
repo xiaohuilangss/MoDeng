@@ -69,7 +69,7 @@ def set_opt_json_threshold_satisfied_flag(json_file_url, stk_code, value=True):
 			json_p = json.load(f)
 			
 		if stk_code in json_p.keys():
-			json_p[stk_code]['threshold_satisfied_flag'] = value
+			json_p[stk_code]['has_flashed_flag'] = value
 			
 			# 将数据写入
 			with open(json_file_url, 'w') as f:
@@ -468,7 +468,7 @@ def judge_p_change_ratio(stk_code, price_diff_ratio, str_gui, debug=True, gui=Fa
 
 if __name__ == '__main__':
 	
-	r = read_opt_json('000333', opt_record_file_url)['threshold_satisfied_flag']
+	r = read_opt_json('000333', opt_record_file_url)['has_flashed_flag']
 	
 	r = set_opt_json_threshold_satisfied_flag(opt_record_file_url, '000333', value=False)
 	
