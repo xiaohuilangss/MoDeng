@@ -21,12 +21,14 @@ from SDK.StdForReseau.Sub import get_single_stk_reseau
 
 class ReseauJudge:
     def __init__(self, stk_code, opt_record_, debug=False):
+        self.opt_record = opt_record_
         self.stk_code = stk_code
         self.debug = debug
         self.str_gui = {
             'note': '',
             'msg': ''
         }
+        self.add_msg('\n\n\n------------------------------------------\n' + code2name(stk_code) + ':开始进入本周期判断!\n')
 
         self.opt_record_stk = {}
 
@@ -81,7 +83,7 @@ class ReseauJudge:
         """
 
         # 如果没有相应的json文件，不进行判断，直接返回
-        if pd.isnull(self.opt_record_stk):
+        if pd.isnull(self.opt_record_stk) | (not bool(self.opt_record_stk)):
             str_ = code2name(self.stk_code) + '没有历史操作记录，不进行阈值判断！\n'
             debug_print_txt('stk_judge', self.stk_code, '函数 judge_single_stk：' + str_,
                             self.debug)
@@ -98,7 +100,7 @@ class ReseauJudge:
             return True
 
     @staticmethod
-    def set_opt_json_threshold_satisfied_flag(json_file_url, stk_code, value=True):
+    def set_has_flashed_flag(json_file_url, stk_code, value=True):
         if os.path.exists(json_file_url):
             with open(json_file_url, 'r') as f:
                 json_p = json.load(f)
@@ -126,11 +128,16 @@ class ReseauJudge:
         判断是否已经提示过
         :return:
         """
-        # 读取
-        has_flashed_flag = self.opt_record_stk['has_flashed_flag']
-        self.add_msg('已经进行过闪动提示?：' + {False: '是', True: '否'}.get(has_flashed_flag, '未知') + '\n')
-
-        self.has_flashed_flag = has_flashed_flag
+        # 如果没有该字段，加上
+        if 'has_flashed_flag' not in self.opt_record_stk.keys():
+            self.opt_record.set_config_value('has_flashed_flag', False)
+            self.has_flashed_flag = False
+        else:
+            # 读取
+            has_flashed_flag = self.opt_record_stk['has_flashed_flag']
+            self.add_msg('已经进行过闪动提示?：' + {False: '是', True: '否'}.get(has_flashed_flag, '未知') + '\n')
+    
+            self.has_flashed_flag = has_flashed_flag
 
     def get_last_price(self):
 
@@ -144,7 +151,7 @@ class ReseauJudge:
                '\n卖出-波动率:' + '%0.3f' % (100.0 * (self.current_price - self.b_p_min) / self.b_p_min) + '%' + \
                '\n买入-波动:' + '%0.2f' % (self.current_price - self.last_p) + \
                '\n卖出-波动:' + '%0.2f' % (self.current_price - self.b_p_min) + \
-               '\n上次闪动价格:' + '%0.3f' % self.opt_record_stk.get_config_value('last_prompt_point')
+               '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
 
         debug_print_txt('stk_judge', self.stk_code, str_, self.debug)
         self.add_msg(str_ + '\n')
@@ -219,9 +226,11 @@ class ReseauJudge:
                             (self.current_price - self.last_p) / self.b_p_min <= -self.pcr) + '\n', self.debug)
 
     def fluctuate_judge(self):
-        if (self.current_price - self.opt_record_stk.get_config_value('last_prompt_point') > self.thh_sale) &\
-                (self.opt_record_stk.get_config_value('last_prompt_point') != -1) &\
-                ((self.current_price - self.opt_record_stk.get_config_value('last_prompt_point')) / self.opt_record_stk.get_config_value('last_prompt_point') >= self.pcr):
+        if pd.isnull(self.opt_record.get_config_value('last_prompt_point')):
+            return
+        elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') > self.thh_sale) &\
+                (self.opt_record.get_config_value('last_prompt_point') != -1) &\
+                ((self.current_price - self.opt_record.get_config_value('last_prompt_point')) / self.opt_record.get_config_value('last_prompt_point') >= self.pcr):
 
             str_temp = "当前价格距离上次提示的价格的上涨幅度超过卖出网格！ " + self.stk_code + code2name(self.stk_code) + \
                        '\n当前价格:' + str(self.current_price) + \
@@ -229,13 +238,13 @@ class ReseauJudge:
                        '\n买入网格大小:' + '%0.3f' % self.thh_buy + \
                        '\n卖出网格大小:' + '%0.3f' % self.thh_sale + \
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
-                        '\n上次闪动价格:' + '%0.3f' % self.opt_record_stk.get_config_value('last_prompt_point')
+                        '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
 
             self.bs_note(str_temp)
 
-        elif (self.current_price - self.opt_record_stk.get_config_value('last_prompt_point') < -self.thh_buy) &\
-                (self.opt_record_stk.get_config_value('last_prompt_point') != -1) &\
-                ((self.current_price - self.opt_record_stk.get_config_value('last_prompt_point')) / self.opt_record_stk.get_config_value('last_prompt_point') <= -self.pcr):
+        elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') < -self.thh_buy) &\
+                (self.opt_record.get_config_value('last_prompt_point') != -1) &\
+                ((self.current_price - self.opt_record.get_config_value('last_prompt_point')) / self.opt_record.get_config_value('last_prompt_point') <= -self.pcr):
 
             str_temp = "当前价格距离上次提示的价格的下跌幅度超过买入网格！" + self.stk_code + code2name(self.stk_code) + \
                        '\n当前价格:' + str(self.current_price) + \
@@ -243,15 +252,13 @@ class ReseauJudge:
                        '\n买入网格大小:' + '%0.2f' % self.thh_buy + \
                        '\n卖出网格大小:' + '%0.2f' % self.thh_sale + \
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
-                        '\n上次闪动价格:' + '%0.3f' % self.opt_record_stk.get_config_value('last_prompt_point')
+                        '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
 
             self.bs_note(str_temp)
 
     def bs_judge(self):
 
-        if ((self.current_price - self.b_p_min > self.thh_sale) & ((self.current_price - self.b_p_min) / self.b_p_min >= self.pcr))\
-            |\
-                ((self.current_price - self.opt_record_stk.get_config_value('last_prompt_point') > self.thh_sale) & (self.opt_record_stk.get_config_value('last_prompt_point') != -1)):
+        if (self.current_price - self.b_p_min > self.thh_sale) & ((self.current_price - self.b_p_min) / self.b_p_min >= self.pcr):
 
             str_temp = "触发卖出网格！可以考虑卖出！ " + self.stk_code + code2name(self.stk_code) + \
                        '\n当前价格:' + str(self.current_price) + \
@@ -259,7 +266,7 @@ class ReseauJudge:
                        '\n买入网格大小:' + '%0.3f' % self.thh_buy + \
                        '\n卖出网格大小:' + '%0.3f' % self.thh_sale + \
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
-                        '\n上次闪动价格:' + '%0.3f' % self.opt_record_stk.get_config_value('last_prompt_point')
+                        '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
 
             self.bs_note(str_temp)
 
@@ -271,7 +278,7 @@ class ReseauJudge:
                        '\n买入网格大小:' + '%0.2f' % self.thh_buy + \
                        '\n卖出网格大小:' + '%0.2f' % self.thh_sale + \
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
-                        '\n上次闪动价格:' + '%0.3f' % self.opt_record_stk.get_config_value('last_prompt_point')
+                        '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
 
             self.bs_note(str_temp)
         else:
@@ -287,10 +294,10 @@ class ReseauJudge:
             self.add_note(str_temp)
 
             # 设置上次闪动价格
-            self.opt_record_stk.set_config_value('last_prompt_point', self.current_price)
+            self.opt_record.set_config_value('last_prompt_point', self.current_price)
 
             # 除非有bs操作，否则不再提示
-            self.set_opt_json_threshold_satisfied_flag(opt_record_file_url, self.stk_code, value=False)
+            self.set_has_flashed_flag(opt_record_file_url, self.stk_code, value=False)
 
         else:
             self.add_msg(str_temp)

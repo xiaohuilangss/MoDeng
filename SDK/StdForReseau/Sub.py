@@ -41,12 +41,12 @@ def get_single_stk_reseau(stk_code):
 	:return:
 	"""
 	# df = my_pro_bar(stk_code=stk_code, start=add_date_str(get_current_date_str(), -10))
-	df = get_k_data_JQ(stk_code=stk_code, start_date=add_date_str(get_current_date_str(), -10),
+	df = get_k_data_JQ(stk=stk_code, start_date=add_date_str(get_current_date_str(), -10),
 					   end_date=get_current_date_str())
 
 	if len(df) < 7:
 		# df = my_pro_bar(stk_code=stk_code, start=add_date_str(get_current_date_str(), -30))
-		df = get_k_data_JQ(stk_code=stk_code, start_date=add_date_str(get_current_date_str(), -30),
+		df = get_k_data_JQ(stk=stk_code, start_date=add_date_str(get_current_date_str(), -30),
 						   end_date=get_current_date_str())
 
 	return get_single_stk_reseau_sub(df)

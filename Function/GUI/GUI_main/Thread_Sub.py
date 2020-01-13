@@ -559,7 +559,7 @@ def on_timer_ctrl(win, rsv, debug=False):
 	
 	# 对stk进行检查
 	for stk in buy_stk_list:
-		str_gui = judge_single_stk(stk_code=stk, rsv=rsv, stk_amount_last=400, gui=True, debug=True)
+		str_gui = judge_single_stk(stk_code=stk, debug=True)
 		
 		if len(str_gui['note']):
 			note_list.append(str_gui['note'] + '\n\n')
@@ -850,7 +850,7 @@ class ResultEvent(wx.PyEvent):
 		self.data = data
 
 
-def judge_single_stk(stk_code, rsv, stk_amount_last, debug=False, gui=False):
+def judge_single_stk(stk_code, debug=False):
 
 	reseau_judge = ReseauJudge(stk_code=stk_code, opt_record_=OptRecord(opt_record_file_url_=opt_record_file_url, stk_code=stk_code))
 
@@ -869,7 +869,7 @@ def judge_single_stk(stk_code, rsv, stk_amount_last, debug=False, gui=False):
 	reseau_judge.get_last_price()
 
 	# 计算网格
-	reseau_judge.cal_reseau()
+	reseau_judge.cal_reseau(RSV())
 
 	# 保存网格信息
 	reseau_judge.save_opt_info()
