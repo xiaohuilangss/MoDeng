@@ -135,7 +135,7 @@ class ReseauJudge:
         else:
             # 读取
             has_flashed_flag = self.opt_record_stk['has_flashed_flag']
-            self.add_msg('已经进行过闪动提示?：' + {False: '是', True: '否'}.get(has_flashed_flag, '未知') + '\n')
+            self.add_msg('已经进行过闪动提示?：' + {False: '否', True: '是'}.get(has_flashed_flag, '未知') + '\n')
     
             self.has_flashed_flag = has_flashed_flag
 
@@ -191,10 +191,10 @@ class ReseauJudge:
         if len(rsv.msg) > 0:
             self.add_msg(rsv.msg + '\n')
 
-        thh_sale = earn_threshold_unit * 2 * rsv_stk
-        thh_buy = earn_threshold_unit * 2 * (1 - rsv_stk)
+        self.thh_sale = earn_threshold_unit * 2 * rsv_stk
+        self.thh_buy = earn_threshold_unit * 2 * (1 - rsv_stk)
 
-        str_ = '\n卖出网格大小:' + '%0.3f' % thh_sale + '\n买入网格大小:' + '%0.3f' % thh_buy + '\n'
+        str_ = '\n卖出网格大小:' + '%0.3f' % self.thh_sale + '\n买入网格大小:' + '%0.3f' % self.thh_buy + '\n'
         debug_print_txt('stk_judge', self.stk_code, str_, self.debug)
         self.add_msg(str_)
 
@@ -297,7 +297,7 @@ class ReseauJudge:
             self.opt_record.set_config_value('last_prompt_point', self.current_price)
 
             # 除非有bs操作，否则不再提示
-            self.set_has_flashed_flag(opt_record_file_url, self.stk_code, value=False)
+            self.set_has_flashed_flag(opt_record_file_url, self.stk_code, value=True)
 
         else:
             self.add_msg(str_temp)

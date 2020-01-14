@@ -579,9 +579,9 @@ def on_timer_ctrl(win, rsv, debug=False):
 	if len(note_list):
 		
 		# 清屏
-		wx.PostEvent(win, ResultEvent(
-			id=NOTE_UPDATE_ID_S,
-			data='检测时间：' + get_current_datetime_str() + '\n\n'))
+		# wx.PostEvent(win, ResultEvent(
+		# 	id=NOTE_UPDATE_ID_S,
+		# 	data='检测时间：' + get_current_datetime_str() + '\n\n'))
 		
 		# 打印提示
 		for note in note_list:

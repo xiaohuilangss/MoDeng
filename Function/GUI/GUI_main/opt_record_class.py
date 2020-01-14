@@ -107,6 +107,7 @@ class OptRecord:
         if self.stk_code in self.opt_record.keys():
             opt_r_stk = self.opt_record[self.stk_code]
             opt_r_stk[key_] = value
+            self.save_json()
         else:
             # 如果没有这支股票的信息，则进行初始化，并保存到文件中
             self.opt_record[self.stk_code] = self.opt_dict_init
