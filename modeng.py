@@ -35,7 +35,7 @@ if __name__ == '__main__':
 		pipe_master, pipe_proc = mp.Pipe()
 	
 		# 启动主进程
-		process = mp.Process(target=run_myframe_in_process, args=(pipe_master, True))
+		process = mp.Process(target=run_myframe_in_process, args=(pipe_master, False))
 		process.start()
 	
 		# 启动处理循环

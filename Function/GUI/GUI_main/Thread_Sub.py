@@ -535,7 +535,7 @@ def is_time_h_macd_update(last_upt_t):
 # 		jq.logout()
 
 
-def on_timer_ctrl(win, rsv, debug=False):
+def on_timer_ctrl(win, rsv_, debug=False):
 	"""
 	控制台定时器响应函数
 	:return:
@@ -559,7 +559,7 @@ def on_timer_ctrl(win, rsv, debug=False):
 	
 	# 对stk进行检查
 	for stk in buy_stk_list:
-		str_gui = judge_single_stk(stk_code=stk, debug=True)
+		str_gui = judge_single_stk(stk_code=stk, rsv_=rsv_, debug=True)
 		
 		if len(str_gui['note']):
 			note_list.append(str_gui['note'] + '\n\n')
@@ -758,10 +758,13 @@ def timer_ctrl(win, debug=False):
 		win.on_update_note_tc_a('rsv初始化成功\n')
 
 	while True:
-		on_timer_ctrl(win, rsv, debug)
+		try:
+			on_timer_ctrl(win, rsv, debug)
+		except Exception as e_:
+			win.on_update_msg_tc_a('\n\n----------------------------\n高频网格检测出错! 原因：\n' + str(e_) + '\n\n')
 		time.sleep(30)
 		
-	logout()
+	# logout()
 
 
 def hour_analysis(pipe_master):
@@ -850,7 +853,7 @@ class ResultEvent(wx.PyEvent):
 		self.data = data
 
 
-def judge_single_stk(stk_code, debug=False):
+def judge_single_stk(stk_code, rsv_, debug=False):
 
 	reseau_judge = ReseauJudge(stk_code=stk_code, opt_record_=OptRecord(opt_record_file_url_=opt_record_file_url, stk_code=stk_code))
 
@@ -869,7 +872,7 @@ def judge_single_stk(stk_code, debug=False):
 	reseau_judge.get_last_price()
 
 	# 计算网格
-	reseau_judge.cal_reseau(RSV())
+	reseau_judge.cal_reseau(rsv_)
 
 	# 保存网格信息
 	reseau_judge.save_opt_info()

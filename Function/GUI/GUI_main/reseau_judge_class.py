@@ -240,7 +240,10 @@ class ReseauJudge:
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
                         '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
 
-            self.bs_note(str_temp)
+            self.add_note(str_temp)
+
+            # 设置上次闪动价格
+            self.opt_record.set_config_value('last_prompt_point', self.current_price)
 
         elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') < -self.thh_buy) &\
                 (self.opt_record.get_config_value('last_prompt_point') != -1) &\
@@ -254,7 +257,10 @@ class ReseauJudge:
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
                         '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
 
-            self.bs_note(str_temp)
+            self.add_note(str_temp)
+            
+            # 设置上次闪动价格
+            self.opt_record.set_config_value('last_prompt_point', self.current_price)
 
     def bs_judge(self):
 
