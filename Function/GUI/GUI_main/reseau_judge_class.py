@@ -100,9 +100,9 @@ class ReseauJudge:
             return True
 
     @staticmethod
-    def set_has_flashed_flag(json_file_url, stk_code, value=True):
-        if os.path.exists(json_file_url):
-            with open(json_file_url, 'r') as f:
+    def set_has_flashed_flag(opt_record_file_url_, stk_code, value=True):
+        if os.path.exists(opt_record_file_url_):
+            with open(opt_record_file_url_, 'r') as f:
                 json_p = json.load(f)
 
             if stk_code in json_p.keys():
@@ -116,7 +116,7 @@ class ReseauJudge:
                 }
 
             # 将数据写入
-            with open(json_file_url, 'w') as f:
+            with open(opt_record_file_url_, 'w') as f:
                 json.dump(json_p, f)
 
             return 0
