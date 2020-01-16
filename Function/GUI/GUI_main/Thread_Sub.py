@@ -559,7 +559,7 @@ def on_timer_ctrl(win, rsv_, debug=False):
 	
 	# 对stk进行检查
 	for stk in buy_stk_list:
-		str_gui = judge_single_stk(stk_code=stk, rsv_=rsv_, debug=True)
+		str_gui = judge_single_stk(stk_code=stk, rsv_=rsv_, debug=debug)
 		
 		if len(str_gui['note']):
 			note_list.append(str_gui['note'] + '\n\n')
@@ -855,11 +855,17 @@ class ResultEvent(wx.PyEvent):
 
 def judge_single_stk(stk_code, rsv_, debug=False):
 
-	reseau_judge = ReseauJudge(stk_code=stk_code, opt_record_=OptRecord(opt_record_file_url_=opt_record_file_url, stk_code=stk_code))
+	reseau_judge = ReseauJudge(stk_code=stk_code, opt_record_=OptRecord(opt_record_file_url_=opt_record_file_url, stk_code=stk_code), debug=debug)
 
 	# 获取实时价格
 	if not reseau_judge.get_current_price():
 		return reseau_judge.str_gui
+	
+	# 计算网格
+	reseau_judge.cal_reseau(rsv_)
+	
+	# 进行波动提示判断
+	reseau_judge.fluctuate_judge()
 
 	# 获取配置信息
 	if not reseau_judge.get_opt_record_json():
@@ -870,9 +876,6 @@ def judge_single_stk(stk_code, rsv_, debug=False):
 
 	# 读取last price
 	reseau_judge.get_last_price()
-
-	# 计算网格
-	reseau_judge.cal_reseau(rsv_)
 
 	# 保存网格信息
 	reseau_judge.save_opt_info()
@@ -885,9 +888,6 @@ def judge_single_stk(stk_code, rsv_, debug=False):
 
 	# 进行bs判断
 	reseau_judge.bs_judge()
-
-	# 进行波动提示判断
-	reseau_judge.fluctuate_judge()
 
 	return reseau_judge.str_gui
 
