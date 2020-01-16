@@ -226,9 +226,26 @@ class ReseauJudge:
                             (self.current_price - self.last_p) / self.b_p_min <= -self.pcr) + '\n', self.debug)
 
     def fluctuate_judge(self):
+        
+        # # 若该stk没有操作记录，也应该进行波动提示，故增加下面标志位进行判断
+        # fluctuate_b_flag = False
+        # fluctuate_s_flag = False
+        #
+        # b_opt_stk_ = self.opt_record.get_config_value('b_opt')
+        # if pd.isnull(b_opt_stk_):
+        #     fluctuate_b_flag = True
+        #     fluctuate_s_flag = True
+        # elif len(b_opt_stk_) == 0:
+        #     fluctuate_b_flag = True
+        #     fluctuate_s_flag = True
+        # else:
+        #     if (self.current_price - self.b_p_min) / self.b_p_min >= self.pcr:
+        #         fluctuate_s_flag = True
+
         if pd.isnull(self.opt_record.get_config_value('last_prompt_point')):
             return
-        elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') > self.thh_sale) &\
+        elif ((self.current_price - self.b_p_min) / self.b_p_min >= self.pcr) \
+		        & (self.current_price - self.opt_record.get_config_value('last_prompt_point') > self.thh_sale) &\
                 (self.opt_record.get_config_value('last_prompt_point') != -1) &\
                 ((self.current_price - self.opt_record.get_config_value('last_prompt_point')) / self.opt_record.get_config_value('last_prompt_point') >= self.pcr):
 
