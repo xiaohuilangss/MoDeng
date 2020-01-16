@@ -32,7 +32,7 @@ def download_stk_list_day_data(stk_list, days=None):
     """
 
     jq_login()
-    stk_list_data = [(x, get_k_data_JQ(x,count=days)) for x in stk_list]
+    stk_list_data = [(x, get_k_data_JQ(x, count=days)) for x in stk_list]
     stk_list_data = list(filter(lambda x: not x[1].empty, stk_list_data))
     logout()
 
