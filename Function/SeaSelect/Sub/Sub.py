@@ -334,15 +334,15 @@ if __name__ == '__main__':
 
 
 
-    sea_select()
+    # sea_select()
 
-    stk_list = ['601318', '600027', '600961', '002410', '002172', '000959', '000766', '601633', '300136', '600557', '002724', '603008', '300499', '002581', '300300']
-    # for stk in stk_list:
-    #
-    #     # 将选定的股票的走势图打印到本地
-    #     gen_stk_sea_select_pic(stk)
-    #
-    # print('开始生成pdf...')
+    stk_list = ['300495', '000504', '002016', '000503', '603012', '300143']
+    for stk in stk_list:
+
+        # 将选定的股票的走势图打印到本地
+        gen_stk_sea_select_pic(stk)
+
+    print('开始生成pdf...')
 
     # 生成pdf
     c = canvas.Canvas(U"魔灯海选" + get_current_date_str() + ".pdf", pagesize=letter)
