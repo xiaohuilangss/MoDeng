@@ -28,8 +28,8 @@ if __name__ == '__main__':
 		import multiprocessing as mp
 		mp.freeze_support()
 
-		from Function.GUI.GUI_main.Sub import run_myframe_in_process
-		from Function.GUI.GUI_main.Thread_Sub import data_process_callback
+		from Function.GUI.GUI_main.sub import run_myframe_in_process
+		from Function.GUI.GUI_main.thread_sub import data_process_callback
 		
 		# 定义管道
 		pipe_master, pipe_proc = mp.Pipe()
