@@ -39,6 +39,4 @@ https://docs.qq.com/doc/DVlJSQkZjcW1ORGVY
 ------------
 
 QQ群：695751148
-微信公众号：投资里的数据分析
-
-
+微信公众号：魔灯量化
