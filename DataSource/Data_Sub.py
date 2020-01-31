@@ -117,12 +117,8 @@ def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_st
             df = jqdatasdk.get_price(stk_code, frequency=freq, count=count,
                                      end_date=end_date, start_date=start_date)
 
-        elif stk in ['sh', 'sz', 'cyb']:
-            stk_code_normal = {
-                'sh': '000001.XSHG',
-                'sz': '399001.XSHE',
-                'cyb': '399006.XSHE'
-            }[stk]
+        elif stk in ['sh', 'sz', 'cyb', 'hs300', 'sz50', 'zz500']:
+            stk_code_normal = JQMethod.get_index_jq_code()
             df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
                                      end_date=end_date)
         else:
@@ -172,6 +168,29 @@ def my_pro_bar(stk_code, start, end=get_current_date_str(), adj='qfq', freq='D')
     elif 'min' in freq:
         df = df.rename(columns={'trade_time': 'time'}).sort_values(by='time', ascending=True)
     return df
+
+
+class JQMethod:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_index_jq_code(index_str):
+        """
+        将 字符格式的指数转为聚宽代码
+        :param index_str:
+        :return:
+        """
+        index_str_2_jq_dict = {
+            'sh': '000001.XSHG',
+            'sz': '399001.XSHE',
+            'cyb': '399006.XSHE',
+            'zz500': '000905.XSHG',
+            'hs300': '000300.XSHG',
+            'sz50': '000016.XSHG'
+        }
+
+        return index_str_2_jq_dict.get(index_str, index_str)
 
 
 if __name__ == '__main__':

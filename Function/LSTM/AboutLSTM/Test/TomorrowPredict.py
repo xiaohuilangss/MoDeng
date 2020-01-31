@@ -3,6 +3,8 @@ import json
 import os
 
 import tushare as ts
+
+from Function.GUI.Sub.sub import text_append_color
 from Function.LSTM.AboutLSTM.Config import feature_cols, N_STEPS, HIDDEN_SIZE, NUM_LAYERS
 from Function.LSTM.AboutLSTM.Test.Sub import lstm_model
 import tensorflow as tf
@@ -115,7 +117,7 @@ def predict_tomorrow_index(tc, debug=False):
 
             today_df = ts.get_k_data(stk).tail(1)
 
-            tc.AppendText(stk2name.get(stk) + ' 今天数据：\n' + today_df.to_string()
+            text_append_color(tc, stk2name.get(stk) + ' 今天数据：\n' + today_df.to_string()
                           .replace('volume', '成交量')
                           .replace('date', '日期')
                           .replace('open', '开盘价')
@@ -135,12 +137,12 @@ def predict_tomorrow_index(tc, debug=False):
             # 增加与今天收盘价的对比
             r_contrast = [(x[0], x[1], '%0.2f' % ((float(x[1])-close_today)/close_today*100) + '%') for x in r]
 
-            tc.AppendText(stk2name[stk] + '明日预测:\n' + str(r_contrast)
+            text_append_color(tc, stk2name[stk] + '明日预测:\n' + str(r_contrast)
                           .replace('high', '最高点')
                           .replace('low', '最低点')
                           .replace('close', '收盘价') + '\n\n')
     except Exception as e:
-        tc.AppendText('预测明日大盘操作失败！原因：\n' + str(e))
+        text_append_color(tc, '预测明日大盘操作失败！原因：\n' + str(e))
 
 
 def printPredict2Public():
