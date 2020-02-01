@@ -118,7 +118,7 @@ def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_st
                                      end_date=end_date, start_date=start_date)
 
         elif stk in ['sh', 'sz', 'cyb', 'hs300', 'sz50', 'zz500']:
-            stk_code_normal = JQMethod.get_index_jq_code()
+            stk_code_normal = JQMethod.get_index_jq_code(stk)
             df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
                                      end_date=end_date)
         else:
