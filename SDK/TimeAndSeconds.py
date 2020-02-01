@@ -3,6 +3,14 @@ import time
 import datetime
 
 
+def minute_reckon(t_s):
+    """
+    计时（分钟）
+    :param t_s:
+    :return:
+    """
+    return '%0.2f' %((time.time()-t_s)/60)
+
 def DatetimeStr2Sec(s):
 
     '''

@@ -4,15 +4,20 @@ import math
 import datetime
 
 import PIL
+import os
 import tushare as ts
 import numpy as np
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfgen import canvas
 
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
+from DataSource.auth_info import jq_login, logout
 from Global_Value.file_dir import sea_select_pic_dir, rootPath
 
 from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
+from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_local, gen_hour_index_pic_local, gen_day_pic_local, \
+    gen_w_m_macd_pic_local, gen_idx_pic_local, gen_hour_macd_values
 from SDK.MyTimeOPT import Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
 from reportlab.graphics.charts.barcharts import VerticalBarChart
@@ -845,7 +850,7 @@ def add_tail_page(canvas_param, pagesize=letter):
     # 设置主标题字体并打印主标题
     canvas_param.setFont("song", 20)
     canvas_param.drawString(20, PAGE_HEIGHT * 0.75, '联系我们：')
-    canvas_param.drawString(20, PAGE_HEIGHT * 0.7, '投资里的数据分析（微信公众号）')
+    canvas_param.drawString(20, PAGE_HEIGHT * 0.7, '魔灯量化（微信公众号）')
 
     # 插入小时macd图
     image_file = PIL.Image.open(rootPath + 'Function\SeaSelect\Sub\modeng.jpg')
@@ -869,47 +874,227 @@ def print_k_to_pdf(c, stk_code, date):
     """ --------------------------------- 打印小时线图片 ------------------------------------ """
     c.setFont("song", 10)
     c.drawString(20, letter[1] - 20, stk_code + ' ' + code2name(stk_code) + ' ' + '小时走势图')
-    c.setLineWidth(3)
+    c.setLineWidth(0.5)
     c.line(10, h - 24, w - 10, h - 24)
 
     # 插入小时macd图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.65, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     # 插入小时指标图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_idx_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.65, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_idx_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     """ --------------------------------- 打印日线图片 ------------------------------------ """
     c.setFont("song", 10)
     c.drawString(20, h * 0.65, stk_code + ' ' + code2name(stk_code) + ' ' + '日线走势图')
-    c.setLineWidth(3)
+    c.setLineWidth(0.5)
     c.line(10, h * 0.65 - 4, w - 10, h * 0.65 - 4)
 
     # 插入日线macd图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.35, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     # 插入日线指标图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_idx_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.35, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_idx_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     """ --------------------------------- 打印周月线图片 ------------------------------------ """
 
     c.setFont("song", 10)
     c.drawString(20, h * 0.35, stk_code + ' ' + code2name(stk_code) + ' ' + '周/月走势图')
-    c.setLineWidth(3)
+    c.setLineWidth(0.5)
     c.line(10, h * 0.35 - 4, w - 10, h * 0.35 - 4)
 
     # 插入周线图
-    image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'wm_' + stk_code + '.png')
-    c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.05, height=0.3 * h, width=0.45 * w,
-                preserveAspectRatio=True)
+    try:
+        image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'wm_' + stk_code + '.png')
+        c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.05, height=0.3 * h, width=0.45 * w,
+                    preserveAspectRatio=True)
+    except Exception as e:
+        print('函数print_k_to_pdf：出错！\n' + str(e))
 
     c.showPage()
 
     return c
+
+
+class SeaSelectPdf:
+
+    """
+    海选功能中与生成pdf功能的类
+    """
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def add_tail_page(canvas_param, pagesize=letter):
+        """
+        函数功能：为pdf文档添加功能，分“主题”、“副标题”两部分
+        :param canvas:
+        :param pagesize: 页面大小，默认A4
+        :param theme: 主题字符串
+        :param subtitle: 副标题字符串
+        :return:
+        """
+        PAGE_WIDTH = pagesize[0]
+        PAGE_HEIGHT = pagesize[1]
+
+        # 设置主标题字体并打印主标题
+        canvas_param.setFont("song", 20)
+        canvas_param.drawString(20, PAGE_HEIGHT * 0.75, '联系我们：')
+        canvas_param.drawString(20, PAGE_HEIGHT * 0.7, '魔灯量化（微信公众号）')
+
+        # 插入小时macd图
+        image_file = PIL.Image.open(rootPath + 'Function\SeaSelect\Sub\modeng.jpg')
+        canvas_param.drawImage(ImageReader(image_file), x=w * 0.3, y=h * 0.3, height=0.3 * h, width=0.4 * w,
+                               preserveAspectRatio=True)
+
+        canvas_param.showPage()
+
+        return canvas_param
+
+    @staticmethod
+    def print_k_to_pdf(c, stk_code, date):
+        """
+        将一只股票的走势图打印到pdf中的一页
+        :param c:
+        :param stk_code:
+        :param date:
+        :return:
+        """
+
+        """ --------------------------------- 打印小时线图片 ------------------------------------ """
+        c.setFont("song", 10)
+        c.drawString(20, letter[1] - 20, stk_code + ' ' + code2name(stk_code) + ' ' + '小时走势图')
+        c.setLineWidth(0.5)
+        c.line(10, h - 24, w - 10, h - 24)
+
+        # 插入小时macd图
+        try:
+            image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_' + stk_code + '.png')
+            c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                        preserveAspectRatio=True)
+        except Exception as e:
+            print('函数print_k_to_pdf：出错！\n' + str(e))
+
+        # 插入小时指标图
+        try:
+            image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'h_idx_' + stk_code + '.png')
+            c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.65, height=0.3 * h, width=0.45 * w,
+                        preserveAspectRatio=True)
+        except Exception as e:
+            print('函数print_k_to_pdf：出错！\n' + str(e))
+
+        """ --------------------------------- 打印日线图片 ------------------------------------ """
+        c.setFont("song", 10)
+        c.drawString(20, h * 0.65, stk_code + ' ' + code2name(stk_code) + ' ' + '日线走势图')
+        c.setLineWidth(0.5)
+        c.line(10, h * 0.65 - 4, w - 10, h * 0.65 - 4)
+
+        # 插入日线macd图
+        try:
+            image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_' + stk_code + '.png')
+            c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                        preserveAspectRatio=True)
+        except Exception as e:
+            print('函数print_k_to_pdf：出错！\n' + str(e))
+
+        # 插入日线指标图
+        try:
+            image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'd_idx_' + stk_code + '.png')
+            c.drawImage(ImageReader(image_file), x=w * 0.5, y=h * 0.35, height=0.3 * h, width=0.45 * w,
+                        preserveAspectRatio=True)
+        except Exception as e:
+            print('函数print_k_to_pdf：出错！\n' + str(e))
+
+        """ --------------------------------- 打印周月线图片 ------------------------------------ """
+
+        c.setFont("song", 10)
+        c.drawString(20, h * 0.35, stk_code + ' ' + code2name(stk_code) + ' ' + '周/月走势图')
+        c.setLineWidth(0.5)
+        c.line(10, h * 0.35 - 4, w - 10, h * 0.35 - 4)
+
+        # 插入周线图
+        try:
+            image_file = PIL.Image.open(sea_select_pic_dir + date + '/' + 'wm_' + stk_code + '.png')
+            c.drawImage(ImageReader(image_file), x=w * 0.05, y=h * 0.05, height=0.3 * h, width=0.45 * w,
+                        preserveAspectRatio=True)
+        except Exception as e:
+            print('函数print_k_to_pdf：出错！\n' + str(e))
+
+        c.showPage()
+
+        return c
+
+    def gen_sea_select_pic(self, stk_list_ss):
+        """
+        打印图片
+        :param stk_list_ss:
+        :return:
+        """
+        for stk in stk_list_ss:
+
+            # 将选定的股票的走势图打印到本地
+            self.gen_stk_sea_select_pic_sub(stk.stk_code)
+
+    @staticmethod
+    def gen_stk_sea_select_pic_sub(stk_code):
+
+        try:
+            jq_login()
+
+            # 保存路径
+            save_dir = sea_select_pic_dir + get_current_date_str() + '/'
+
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+
+            # 准备 小时 和 日线 数据
+            df_hour = gen_hour_macd_values(stk_code)
+            df_day = get_k_data_JQ(stk_code, 800)
+
+            # 定义图片名称
+            file_name = stk_code + '.png'
+
+            # 生成小时图片
+            gen_hour_macd_pic_local(df_hour, stk_code, 'jq', '', save_dir + 'h_' + file_name)
+            gen_hour_index_pic_local(df_hour[0], stk_code, save_dir + 'h_idx_' + file_name)
+            gen_day_pic_local(df_day, stk_code, save_dir + 'd_' + file_name)
+            gen_w_m_macd_pic_local(df_day, stk_code, save_dir + 'wm_' + file_name)
+            gen_idx_pic_local(df_day, stk_code, save_dir + 'd_idx_' + file_name)
+
+        except Exception as e:
+            print('生成股票走势图失败！原因：\n' + str(e))
+        finally:
+            logout()
+
+    def gen_pdf(self, stk_list_ss, pdf_save_dir):
+        """
+        生成相应pdf
+        :return:
+        """
+        # 生成pdf
+        c = canvas.Canvas(pdf_save_dir + U"魔灯海选" + get_current_date_str() + ".pdf", pagesize=letter)
+        c = add_front(c, '魔灯每日股票海选结果' + get_current_date_str(), '本文档由免费开源的量化投资软件“魔灯”自动生成 末尾公众号内有软件介绍', pagesize=letter)
+        for stk in stk_list_ss:
+            c = print_k_to_pdf(c, stk.stk_code, get_current_date_str())
+        c = self.add_tail_page(c)
+        c.save()

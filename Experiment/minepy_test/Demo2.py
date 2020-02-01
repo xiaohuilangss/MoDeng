@@ -84,9 +84,13 @@ def others(n=1000):
     mysubplot(xy[:, 0], xy[:, 1], 3, 7, 21, (-7, 7), (-7, 7))
 
 
-plt.figure(facecolor='white')
-mvnormal(n=800)
-rotnormal(n=200)
-others(n=800)
-plt.tight_layout()
-plt.show()
+if __name__ == '__main__':
+    
+    plt.figure(facecolor='white')
+    mvnormal(n=800)
+    rotnormal(n=200)
+    others(n=800)
+    plt.tight_layout()
+    plt.show()
+    
+    end = 0

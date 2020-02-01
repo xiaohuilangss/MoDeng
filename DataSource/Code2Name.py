@@ -48,11 +48,14 @@ dict_code2name = read_code2name()
 def code2name(code):
     if code in dict_code2name.keys():
         return dict_code2name[code]
-    elif code in ['sh', 'sz', 'cyb']:
+    elif code in ['sh', 'sz', 'cyb', 'hs300', 'sz50', 'zz500']:
         return {
             'sh': '上证',
             'sz': '深证',
-            'cyb': '创业板'
+            'cyb': '创业板',
+            'hs300': '沪深300',
+            'sz50': '上证50',
+            'zz500': '中证500'
         }[code]
     else:
         return '未知名字'

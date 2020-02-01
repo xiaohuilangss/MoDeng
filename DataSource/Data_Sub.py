@@ -10,6 +10,8 @@ import jqdatasdk as jq
 
 from SDK.MyTimeOPT import get_current_date_str
 from talib import MA_Type
+import pandas as pd
+
 
 def get_RT_price(stk_code, source='jq'):
 
@@ -99,30 +101,37 @@ def add_stk_index_to_df(stk_df):
     return stk_df
 
 
-def get_k_data_JQ(stk_code, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
+def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
     """
     使用JQData来下载stk的历史数据
     :param stk_code:
     :param amount:
     :return:
     """
-    if stk_code in ['sh', 'sz', 'cyb']:
+    try:
 
-        stk_code_normal = {
-            'sh': '000001.XSHG',
-            'sz': '399001.XSHE',
-            'cyb': '399006.XSHE'
-        }[stk_code]
-        df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
-                                 end_date=end_date)
-    else:
-        df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk_code), frequency=freq, count=count,
-                                 end_date=end_date, start_date=start_date)
+        # 增加以兼容list的情况
+        if isinstance(stk, list):
+            stk_code = [jqdatasdk.normalize_code(x) for x in stk]
 
-    df['datetime'] = df.index
-    df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
+            df = jqdatasdk.get_price(stk_code, frequency=freq, count=count,
+                                     end_date=end_date, start_date=start_date)
 
-    return df
+        elif stk in ['sh', 'sz', 'cyb', 'hs300', 'sz50', 'zz500']:
+            stk_code_normal = JQMethod.get_index_jq_code(stk)
+            df = jqdatasdk.get_price(stk_code_normal, frequency=freq, count=count, start_date=start_date,
+                                     end_date=end_date)
+        else:
+            df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk), frequency=freq, count=count,
+                                     end_date=end_date, start_date=start_date)
+
+        df['datetime'] = df.index
+        df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
+
+        return df
+    except Exception as e:
+        print('函数get_k_data_JQ：出错！错误详情：\n' + str(e))
+        return pd.DataFrame()
 
 
 def ts_code_normalize(code):
@@ -159,6 +168,29 @@ def my_pro_bar(stk_code, start, end=get_current_date_str(), adj='qfq', freq='D')
     elif 'min' in freq:
         df = df.rename(columns={'trade_time': 'time'}).sort_values(by='time', ascending=True)
     return df
+
+
+class JQMethod:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_index_jq_code(index_str):
+        """
+        将 字符格式的指数转为聚宽代码
+        :param index_str:
+        :return:
+        """
+        index_str_2_jq_dict = {
+            'sh': '000001.XSHG',
+            'sz': '399001.XSHE',
+            'cyb': '399006.XSHE',
+            'zz500': '000905.XSHG',
+            'hs300': '000300.XSHG',
+            'sz50': '000016.XSHG'
+        }
+
+        return index_str_2_jq_dict.get(index_str, index_str)
 
 
 if __name__ == '__main__':
