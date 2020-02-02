@@ -455,7 +455,7 @@ class ExecuteSelectRole:
             _ = [x.cal_close_rank(k_kind, amount) for x in self.stk_list_ss]
 
             # 根据排名进行过滤
-            self.stk_list_ss = list(filter(lambda x: (float(x.close_rank) >= rank_low) & (float(x.close_rank) <= rank_high), self.stk_list_ss))
+            self.stk_list_ss = list(filter(lambda x: (float(x.close_rank) >= rank_low/100) & (float(x.close_rank) <= rank_high/100), self.stk_list_ss))
 
             return 'close_rank规则应用成功！'
 

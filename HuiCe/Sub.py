@@ -3,11 +3,15 @@
 """ 本脚本是用来存储一些与stk息息相关的子函数"""
 from pylab import *
 # from Config.GlobalSetting import g_total_stk_info_mysql
-from DataSource.Data_Sub import get_k_data_JQ
+from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
+from DataSource.auth_info import jq_login, logout
+from Function.GUI.GUI_main.opt_record_class import OptRecord
+from Function.GUI.GUI_main.reseau_judge_class import ReseauJudge
+from Global_Value.file_dir import opt_record_file_url
 from SDK.Normalize import normal01
 from SDK.PlotOptSub import addXticklabel
 import tushare as ts
-
+import pandas as pd
 
 def code2name_dict():
     """
@@ -294,6 +298,64 @@ def cal_today_ochl(df_m):
         'low': l
     }
 
+
+class RetestReseau:
+    """
+    与网格策略回测相关子函数的类
+    """
+    def __init__(self, stk_code, debug=False):
+        self.stk_code = stk_code
+        self.debug = debug
+
+        self.data_day = pd.DataFrame()
+        self.data_minute = pd.DataFrame()
+
+    def read_pcr(self):
+        reseau_judge = ReseauJudge(stk_code=self.stk_code,
+                                   opt_record_=OptRecord(opt_record_file_url_=opt_record_file_url, stk_code=self.stk_code),
+                                   debug=self.debug)
+
+        return reseau_judge.get_pcr()
+
+    @staticmethod
+    def judge_single_stk_sub(reseau, rsv, current_price, stk_price_last, min_reseau, sar_diff, sar_diff_day):
+
+        # 实时计算价差，用于“波动提示”和“最小网格限制”
+        price_diff = current_price - stk_price_last
+        price_diff_ratio = price_diff / stk_price_last
+
+        # 调节 buy 和 sale 的 threshold
+        thh_sale = reseau * 2 * rsv
+        thh_buy = reseau * 2 * (1 - rsv)
+
+        if math.fabs((current_price - stk_price_last) / stk_price_last) < min_reseau:
+            return 0, '未触及reseau'
+        elif (sar_diff >= 0) & (sar_diff_day >= 0) & ((current_price - stk_price_last) / stk_price_last > min_reseau):
+            return 1, 'sale'
+        elif (sar_diff <= 0) & (sar_diff_day <= 0) & ((current_price - stk_price_last) / stk_price_last < -min_reseau):
+            return 2, 'buy'
+        else:
+            return -1, 'no opt'
+
+    def prepare_data(self, period='5m', count=48*100):
+        """
+        准备数据
+        :return:
+        """
+        jq_login()
+
+        # 准备数据
+        df_5m = get_k_data_JQ(self.stk_code, count=count, freq=period)
+        df_5m['date'] = df_5m.apply(lambda x: str(x['datetime'])[:10], axis=1)
+        df_day = get_k_data_JQ(self.stk_code, count=8 * 100, freq='30m').sort_index(ascending=True)
+
+        # 想day data 中 增加必要index
+        self.data_day = add_stk_index_to_df(df_day)
+
+        # 增加必要index
+        self.data_minute = add_stk_index_to_df(df_5m)
+
+        logout()
 
 if __name__ == '__main__':
     end = 0
