@@ -108,6 +108,8 @@ def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_st
     :param amount:
     :return:
     """
+    if pd.isnull(end_date):
+        end_date = get_current_date_str()
     try:
 
         # 增加以兼容list的情况

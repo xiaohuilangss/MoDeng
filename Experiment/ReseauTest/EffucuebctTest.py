@@ -12,7 +12,7 @@ import tushare as ts
 from pylab import *
 
 from SDK.Normalize import normal01
-from SDK.PlotOptSub import addXticklabel
+from SDK.PlotOptSub import add_axis
 
 import profile
 

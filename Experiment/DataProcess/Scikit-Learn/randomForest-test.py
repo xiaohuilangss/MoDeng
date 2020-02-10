@@ -10,6 +10,7 @@ iris = load_iris()
 df = pd.DataFrame(iris.data, columns=iris.feature_names)
 
 # 随机分割训练数据和测试数据
+
 df['is_train'] = np.random.uniform(0, 1, len(df)) <= .75
 df['species'] = pd.Categorical.from_codes(iris.target, iris.target_names)
 df.head()

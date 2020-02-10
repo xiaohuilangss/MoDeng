@@ -563,22 +563,22 @@ def on_timer_ctrl(win, rsv_, debug=False):
     note_list = []
 
     # 对stk进行检查
-    for stk in buy_stk_list:
-        str_gui = judge_single_stk(stk_code=stk, rsv_=rsv_, debug=debug)
+    for stk_ in buy_stk_list:
+        str_gui_ = judge_single_stk(stk_code=stk_, rsv_=rsv_, debug=debug)
 
-        if len(str_gui['note']):
-            note_list.append(str_gui['note'] + '\n\n')
+        if len(str_gui_['note']):
+            note_list.append(str_gui_['note'] + '\n\n')
 
         # 打印流水信息
-        if len(str_gui['msg']):
+        if len(str_gui_['msg']):
             wx.PostEvent(win, ResultEvent(
                 id=MSG_UPDATE_ID_A,
-                data=change_font_color(str_gui['msg'])))
+                data=change_font_color(str_gui_['msg'])))
 
     # 打印日志
     debug_print_txt('timer_ctrl_log', 'total',
                     get_current_datetime_str() + ':\n' +
-                    '提示消息：\n' + str(note_list) + '\n' + '流水消息：\n' + str(str_gui['msg']))
+                    '提示消息：\n' + str(note_list) + '\n' + '流水消息：\n' + str(str_gui_['msg']))
 
     # 根据情况打印提示信息，并闪动
     if len(note_list):

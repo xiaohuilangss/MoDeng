@@ -1,45 +1,23 @@
 # encoding=utf-8
 
 """ 本脚本是用来存储一些与stk息息相关的子函数"""
+
 from pylab import *
-# from Config.GlobalSetting import g_total_stk_info_mysql
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
 from DataSource.auth_info import jq_login, logout
+from Function.GUI.GUI_main.cal_rsv_class import RSV
 from Function.GUI.GUI_main.opt_record_class import OptRecord
 from Function.GUI.GUI_main.reseau_judge_class import ReseauJudge
 from Global_Value.file_dir import opt_record_file_url
+from SDK.MyTimeOPT import minus_date_str, get_current_date_str
 from SDK.Normalize import normal01
-from SDK.PlotOptSub import addXticklabel
-import tushare as ts
+from SDK.PlotOptSub import add_axis
 import pandas as pd
 
-def code2name_dict():
-    """
-	获取stk的code转name字典
-	:return:
-	"""
-    df = ts.get_stock_basics().reset_index()
-    return dict(df.loc[:, ['code', 'name']].to_dict(orient='split')['data'])
+mpl.rcParams['font.sans-serif'] = ['SimHei']
+matplotlib.rcParams['axes.unicode_minus']=False
 
-
-def get_name_by_stk_code(stk_info_df, stk_code):
-    """
-	g_total_stk_info_mysql[g_total_stk_info_mysql['code']=='300508']['name'].values[0]
-	根据代码获取名字
-	:return:
-	"""
-    if stk_code in ['sh', 'sz', 'cyb', 'zxb']:
-        return {
-            'sh': '上证指数',
-            'sz': '深成指',
-            'cyb': '创业板',
-            'zxb': '中小板'
-        }.get(stk_code)
-    else:
-        try:
-            return stk_info_df[stk_info_df['code'] == stk_code]['name'].values[0]
-        except:
-            return stk_code
+from SDK.StdForReseau.Sub import Reseau
 
 
 def bs_opt(stk_code, price, amount, opt, record_info, date, debug=False):
@@ -262,9 +240,9 @@ def plot_op_result(df):
     # 整理x轴label
     x_label = sh_index.apply(lambda x: str(x['date'])[2:].replace('-', ''), axis=1)
 
-    ax[0] = addXticklabel(ax[0], x_label, 40, rotation=45, fontsize=8)
-    ax[1] = addXticklabel(ax[1], x_label, 40, rotation=45, fontsize=8)
-    ax[2] = addXticklabel(ax[2], x_label, 40, rotation=45, fontsize=8)
+    ax[0] = add_axis(ax[0], x_label, 40, rotation=45, fontsize=8)
+    ax[1] = add_axis(ax[1], x_label, 40, rotation=45, fontsize=8)
+    ax[2] = add_axis(ax[2], x_label, 40, rotation=45, fontsize=8)
     # ax[3] = addXticklabel(ax[3], x_label, 40, rotation=45, fontsize=8)
 
     for ax_sig in ax:
@@ -273,52 +251,193 @@ def plot_op_result(df):
     plt.show()
 
 
-def cal_today_ochl(df_m):
+class OptRecordRetest:
     """
-	df_m 应该包含date字段
-	:param df_m:
-	:return:
-	"""
-    list_group = list(df_m.groupby('date'))
-    list_group_sort = sorted(list_group, key=lambda x: x[0], reverse=False)
+    用于回测的OptRecord类
+    """
+    def __init__(self, money, ratio, start_price, money_each):
+        """
 
-    today_df = list_group_sort[-1][1]
+        :param money:   本次回测初始资金
+        :param ratio:   本次回测初始时，现金与股票的比例，比如“初始资金”10万，持仓市值4万，则ratio为4/10=0.4
+        """
 
-    o = today_df.head(1)['open'][0]
-    c = today_df.tail(1)['close'][0]
+        # 用来初始化的格式
+        self.ratio = ratio
+        self.start_price = start_price
 
-    array = today_df.loc[:, ['open', 'close', 'high', 'low']].values
-    h = np.max(array)
-    l = np.min(array)
+        self.amount = math.floor(money_each/start_price/100)*100
 
-    return {
-        'open': o,
-        'close': c,
-        'high': h,
-        'low': l
-    }
+        self.opt_dict = {
+            'b_opt': [],
+            'p_last': start_price,
+            'total_earn': 0,
+        }
+        self.init_money = money
+        self.money = 0
+        self.stk_amount = 0
+
+        self.init_hold()
+
+    def get_last_p(self):
+        return self.opt_dict['p_last']
+
+    def get_min_buy_p(self):
+        if len(self.opt_dict['b_opt']) == 0:
+            return None
+        else:
+            return np.min(self.opt_dict['b_opt'])
+
+    def init_hold(self):
+        """
+        对仓位进行初始化
+        :return:
+        """
+        self.stk_amount = math.floor(self.init_money * self.ratio/self.start_price)
+        self.money = self.init_money - self.stk_amount*self.start_price
+
+    def opt_b(self, p):
+        """
+        登记买入操作
+        :return:
+        """
+        if self.money < self.amount*p:
+            return False
+        else:
+            # 修改json记录
+            self.opt_dict['b_opt'].append(p)
+            self.opt_dict['p_last'] = p
+
+            # 修改持仓和现金
+            self.money = self.money - self.amount*p
+            self.stk_amount = self.stk_amount + self.amount
+
+            return True
+
+    def opt_s(self, p):
+        """
+        登记卖出操作
+        :param p:
+        :return:
+        """
+
+        if self.stk_amount < self.amount:
+            return False
+        else:
+            # 修改持仓和现金
+            self.stk_amount = self.stk_amount - self.amount
+            self.money = self.money + self.amount*p
+
+            # 修改json记录
+            self.opt_dict['p_last'] = p
+
+            if len(self.opt_dict['b_opt']) > 0:
+                self.opt_dict['total_earn'] = self.opt_dict['total_earn'] + self.amount * (p - np.min(self.opt_dict['b_opt']))
+                self.opt_dict['b_opt'].remove(np.min(self.opt_dict['b_opt']))
+
+            return True
 
 
 class RetestReseau:
     """
     与网格策略回测相关子函数的类
     """
-    def __init__(self, stk_code, debug=False):
+
+    def __init__(self, stk_code, retest_span, start_date, end_date=get_current_date_str(), reseau_quick=3, reseau_slow=6, rsv_span=4, debug=False):
+        """
+
+        :param stk_code:
+        :param retest_span:
+        :param start_date:
+        :param end_date:
+        :param reseau_quick:
+        :param reseau_slow:
+        :param rsv_span:
+        :param debug:
+
+        用法举例：
+        r = RetestReseau(stk_code='601398', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
+
+        # 增加动态网格
+        r.add_reseau()
+
+        # 进行回测
+        r.retest()
+
+        # 保存结果（可选）
+        r.save_csv()
+
+        # 画图展示
+        r.plot()
+        """
+        self.start_date = start_date
+        self.end_date = end_date
         self.stk_code = stk_code
         self.debug = debug
+        self.retest_span = retest_span      # 回测精度，单位为分钟
+        self.days = minus_date_str(end_date, start_date)                    # 回测周期
+
+        # 计算网格用的相关参数
+        self.reseau_slow = reseau_slow
+        self.reseau_quick = reseau_quick
+        self.rsv_span = rsv_span
+
+        # 计算起始时因为计算指标而无法回测的数据长度
+        self.max_days = np.max([self.reseau_slow, self.rsv_span])
+        self.i_start = int((self.max_days + 2) * 60 * 4 / self.retest_span)
 
         self.data_day = pd.DataFrame()
         self.data_minute = pd.DataFrame()
 
-    def read_pcr(self):
-        reseau_judge = ReseauJudge(stk_code=self.stk_code,
-                                   opt_record_=OptRecord(opt_record_file_url_=opt_record_file_url, stk_code=self.stk_code),
-                                   debug=self.debug)
+        if self.days < self.max_days:
+            exit('设置天数小于最小天数！')
 
-        return reseau_judge.get_pcr()
+        if not self.prepare_data():
+            exit('数据初始化失败！')
+
+        self.opt_record = OptRecordRetest(
+            money=50000,
+            ratio=0.5,
+            start_price=self.data_minute.head(1)['close'].values[0], money_each=5000)
 
     @staticmethod
-    def judge_single_stk_sub(reseau, rsv, current_price, stk_price_last, min_reseau, sar_diff, sar_diff_day):
+    def cal_today_ochl(df_m):
+        """
+    	df_m 应该包含date字段
+    	:param df_m:
+    	:return:
+    	"""
+        list_group = list(df_m.groupby('date'))
+        list_group_sort = sorted(list_group, key=lambda x: x[0], reverse=False)
+
+        today_df = list_group_sort[-1][1]
+
+        o = today_df.head(1)['open'].values[0]
+        c = today_df.tail(1)['close'].values[0]
+
+        array = today_df.loc[:, ['open', 'close', 'high', 'low']].values
+        h = np.max(array)
+        l = np.min(array)
+
+        return {
+            'open': o,
+            'close': c,
+            'high': h,
+            'low': l
+        }
+
+    def read_pcr(self):
+        reseau_judge = ReseauJudge(stk_code=self.stk_code,
+                                   opt_record_=OptRecord(opt_record_file_url_=opt_record_file_url,
+                                                         stk_code=self.stk_code),
+                                   debug=self.debug)
+
+        reseau_judge.get_pcr()
+
+        return reseau_judge.pcr
+
+    @staticmethod
+    def judge(reseau, rsv, current_price, stk_price_last, min_reseau, sar_diff, sar_diff_day):
 
         # 实时计算价差，用于“波动提示”和“最小网格限制”
         price_diff = current_price - stk_price_last
@@ -337,25 +456,219 @@ class RetestReseau:
         else:
             return -1, 'no opt'
 
-    def prepare_data(self, period='5m', count=48*100):
+    def judge_reseau(self, p_now, thh_sale, thh_buy, pcr):
+
+        thh_sale = np.max([thh_sale, p_now*pcr])
+        thh_buy = np.max([thh_buy, p_now*pcr])
+
+        # 判断是否可以卖出
+        if pd.isnull(self.opt_record.get_min_buy_p()):
+            if (p_now - self.opt_record.get_last_p()) > thh_sale:
+                if self.debug:
+                    print('p_now:%0.3f p_last:%0.3f p_min:%s thh_sale:%0.3f' % (p_now, self.opt_record.get_last_p(), str(self.opt_record.get_min_buy_p()), thh_sale))
+                if self.opt_record.opt_s(p_now):
+                    return 'sale', self.opt_record.money, self.opt_record.stk_amount
+                else:
+                    return 'sale-fail', self.opt_record.money, self.opt_record.stk_amount
+        else:
+            if p_now - self.opt_record.get_min_buy_p() > thh_sale:
+                if self.debug:
+                    print('p_now:%0.3f p_last:%0.3f p_min:%s thh_sale:%0.3f' % (p_now, self.opt_record.get_last_p(), str(self.opt_record.get_min_buy_p()), thh_sale))
+                if self.opt_record.opt_s(p_now):
+                    return 'sale', self.opt_record.money, self.opt_record.stk_amount
+                else:
+                    return 'sale-fail', self.opt_record.money, self.opt_record.stk_amount
+
+        # 判断是否可以买入
+        if self.opt_record.get_last_p() - p_now > thh_buy:
+            if self.opt_record.opt_b(p_now):
+                if self.debug:
+                    print('p_now:%0.3f p_last:%0.3f p_min:%s thh_buy:%0.3f' % (
+                        p_now, self.opt_record.get_last_p(), str(self.opt_record.get_min_buy_p()), thh_buy))
+
+                return 'buy', self.opt_record.money, self.opt_record.stk_amount
+            else:
+                return 'buy-fail', self.opt_record.money, self.opt_record.stk_amount
+        else:
+            return 'no-opt', self.opt_record.money, self.opt_record.stk_amount
+
+    def prepare_data(self):
         """
         准备数据
         :return:
         """
+        if self.debug:
+            print('开始准备数据...')
+
         jq_login()
 
         # 准备数据
-        df_5m = get_k_data_JQ(self.stk_code, count=count, freq=period)
-        df_5m['date'] = df_5m.apply(lambda x: str(x['datetime'])[:10], axis=1)
-        df_day = get_k_data_JQ(self.stk_code, count=8 * 100, freq='30m').sort_index(ascending=True)
+        df_m = get_k_data_JQ(self.stk_code, start_date=self.start_date, end_date=self.end_date, freq=str(self.retest_span) + 'm')
+        df_m['date'] = df_m.apply(lambda x: str(x['datetime'])[:10], axis=1)
+        df_day = get_k_data_JQ(self.stk_code, start_date=self.start_date, end_date=self.end_date).sort_index(ascending=True)
 
-        # 想day data 中 增加必要index
-        self.data_day = add_stk_index_to_df(df_day)
+        if len(df_day) < self.max_days:
+            if self.debug:
+                print('max_days:%d day_data_length:%d minute_data_length:%d' % (self.max_days, len(df_day), len(df_m)))
+            return False
+
+        # 向day data 中 增加必要index
+        self.data_day = add_stk_index_to_df(df_day).reset_index().reset_index()
 
         # 增加必要index
-        self.data_minute = add_stk_index_to_df(df_5m)
+        self.data_minute = add_stk_index_to_df(df_m).reset_index().reset_index()
 
         logout()
+        return True
+
+    def add_reseau(self):
+        """
+        计算动态网格，并添加到数据当中
+        :return:
+        """
+
+        if self.debug:
+            print('开始增加网格信息...')
+
+        # 想day data 中 增加必要index
+        self.data_day = add_stk_index_to_df(self.data_day)
+
+        # 增加必要index
+        self.data_minute = add_stk_index_to_df(self.data_minute)
+
+        # 最初的数天数据不进行回测，开始的部分数据因为数据量原因计算不出网格大小
+        max_days = self.max_days
+        i_start = self.i_start
+        i = len(self.data_minute) - i_start
+
+        # 大循环
+        for idx in self.data_minute[i_start:].index:
+
+            # 获取当天数据
+            df_today = self.cal_today_ochl(self.data_minute.loc[:idx, :].tail(int(60*4/self.retest_span)))
+
+            # 获取时间
+            date = self.data_minute.loc[idx, 'date']
+
+            # 获取该日期之前数天的数据
+            df_day_data = self.data_day[self.data_day['date'] < date].tail(max_days + 2)
+
+            # 增加今天的数据
+            df_day_complete = df_day_data.append(df_today, ignore_index=True)
+
+            # 计算rsv和波动情况
+            rsv = RSV.cal_rsv_rank_sub(df_day_complete, self.rsv_span)
+            reseau_object = Reseau()
+            reseau = reseau_object.get_single_stk_reseau_sub(
+                df_=df_day_complete,
+                slow=self.reseau_slow,
+                quick=self.reseau_quick)
+
+            self.data_minute.loc[idx, 'rsv'] = rsv
+            self.data_minute.loc[idx, 'reseau'] = reseau
+
+            # 调节 buy 和 sale 的 threshold
+            self.data_minute.loc[idx, 'thh_sale'] = reseau * 2 * rsv
+            self.data_minute.loc[idx, 'thh_buy'] = reseau * 2 * (1 - rsv)
+
+            if self.debug:
+                i = i - 1
+                print('还剩%d行' % i)
+
+    def retest(self):
+        """
+        最终进行回测的主函数
+        :return:
+        """
+
+        if self.debug:
+            print('开始回测...')
+
+        pcr = self.read_pcr()
+
+        for idx in self.data_minute.loc[self.i_start:, :].index:
+
+            p_now = self.data_minute.loc[idx, 'close']
+            thh_sale = self.data_minute.loc[idx, 'thh_sale']
+            thh_buy = self.data_minute.loc[idx, 'thh_buy']
+
+            opt_result, money, stk_amount = self.judge_reseau(p_now, thh_sale, thh_buy, pcr)
+
+            self.data_minute.loc[idx, 'opt_result'] = opt_result
+            self.data_minute.loc[idx, 'money'] = money
+            self.data_minute.loc[idx, 'opt_result'] = opt_result
+
+            self.data_minute.loc[idx, 'money_total'] = money + stk_amount*p_now
+            self.data_minute.loc[idx, 'stk_amount'] = stk_amount
+            self.data_minute.loc[idx, 'total_earn'] = self.opt_record.opt_dict['total_earn']
+
+    def save_csv(self):
+        if self.debug:
+            print('开始保存结果为csv...')
+        self.data_minute.to_csv('./temp_data/' + self.stk_code + 'huice.csv')
+
+    def plot(self):
+        if self.debug:
+            print('开始可视化结果...')
+
+        df = self.data_minute.dropna().reset_index(drop=True)
+        df['stk_money_ratio'] = df.apply(lambda x: x['stk_amount']*x['close']/(x['money_total']), axis=1)
+
+        # 筛选买卖点
+        df_b = df[df['opt_result'] == 'buy']
+        df_s = df[df['opt_result'] == 'sale']
+
+        df_opt = df[df.apply(lambda x: (x['opt_result'] == 'buy') | (x['opt_result'] == 'sale'), axis=1)]
+
+        fig, ax = plt.subplots(ncols=1, nrows=4)
+
+        ax[0].plot(df.index, df['close'], 'k*--', label='收盘价')
+        ax[0].plot(df_opt.index, df_opt['close'], 'y-', label=u'买卖阶梯', linewidth=2.5)
+
+        ax[0].plot(df_b.index, df_b['close'], 'g*', label='买入点', markersize=10)
+        ax[0].plot(df_s.index, df_s['close'], 'r*', label='卖出点', markersize=10)
+
+        # ax[0].legend(loc='best')
+
+        # 展示收益比
+        c_origin = np.array(df['close'])
+        ratio_origin = list((c_origin/c_origin[0]))
+
+        c_reseau = np.array(df['money_total'])
+        ratio_reseau = list((c_reseau/c_reseau[0]))
+
+        ax[1].plot(df.index, ratio_origin, 'y--', label=u'不操作收益曲线')
+        ax[1].plot(df.index, ratio_reseau, 'r--', label=u'网格收益曲线')
+        # ax[1].legend(loc='best')
+
+        ax[2].plot(df.index, df['stk_money_ratio'], 'b--', label=u'仓位')
+        # ax[2].legend(loc='best')
+
+        ax[3].plot(df.index, df['total_earn'], 'b--', label=u'网格收益')
+
+        # 增加横轴
+        ax[3] = add_axis(ax[3], df['date'], 20, 8)
+
+        for ax_ in ax:
+            ax_.legend(loc='best')
+
+        plt.show()
+
 
 if __name__ == '__main__':
+
+    r = RetestReseau(stk_code='603421', retest_span=20, start_date='2019-01-01', end_date='2019-03-10', debug=True)
+
+    # 增加动态网格
+    r.add_reseau()
+
+    # 进行回测
+    r.retest()
+
+    # 保存结果
+    r.save_csv()
+
+    # 画图展示
+    r.plot()
+
     end = 0

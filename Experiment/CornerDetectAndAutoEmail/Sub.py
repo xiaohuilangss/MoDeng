@@ -13,7 +13,7 @@ import pandas as pd
 
 
 # 无法显示汉字及负号
-from SDK.PlotOptSub import addXticklabel, addXticklabel_list
+from SDK.PlotOptSub import add_axis, addXticklabel_list
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus']=False
@@ -222,11 +222,11 @@ def genStkIdxPic(stk_df, stk_code, current_date, root_save_dir, pic_name='stk_id
 
     # 准备下标
     xlabel_series = stk_df.apply(lambda x: x['date'][2:].replace('-', ''), axis=1)
-    ax[0] = addXticklabel(ax[0], xlabel_series, 40, rotation=45)
-    ax[1] = addXticklabel(ax[1], xlabel_series, 40, rotation=45)
-    ax[2] = addXticklabel(ax[2], xlabel_series, 40, rotation=45)
-    ax[3] = addXticklabel(ax[3], xlabel_series, 40, rotation=45)
-    ax[4] = addXticklabel(ax[4], xlabel_series, 40, rotation=45)
+    ax[0] = add_axis(ax[0], xlabel_series, 40, rotation=45)
+    ax[1] = add_axis(ax[1], xlabel_series, 40, rotation=45)
+    ax[2] = add_axis(ax[2], xlabel_series, 40, rotation=45)
+    ax[3] = add_axis(ax[3], xlabel_series, 40, rotation=45)
+    ax[4] = add_axis(ax[4], xlabel_series, 40, rotation=45)
 
     for ax_sig in ax:
         ax_sig.legend(loc='best', fontsize=5)
@@ -288,11 +288,11 @@ def genStkIdxPicForQQ(stk_df, stk_code=''):
 
     # 准备下标
     xlabel_series = stk_df.apply(lambda x: x['date'][2:].replace('-', ''), axis=1)
-    ax[0] = addXticklabel(ax[0], xlabel_series, 40, rotation=45)
-    ax[1] = addXticklabel(ax[1], xlabel_series, 40, rotation=45)
-    ax[2] = addXticklabel(ax[2], xlabel_series, 40, rotation=45)
-    ax[3] = addXticklabel(ax[3], xlabel_series, 40, rotation=45)
-    ax[4] = addXticklabel(ax[4], xlabel_series, 40, rotation=45)
+    ax[0] = add_axis(ax[0], xlabel_series, 40, rotation=45)
+    ax[1] = add_axis(ax[1], xlabel_series, 40, rotation=45)
+    ax[2] = add_axis(ax[2], xlabel_series, 40, rotation=45)
+    ax[3] = add_axis(ax[3], xlabel_series, 40, rotation=45)
+    ax[4] = add_axis(ax[4], xlabel_series, 40, rotation=45)
 
     for ax_sig in ax:
         ax_sig.legend(loc='best', fontsize=5)

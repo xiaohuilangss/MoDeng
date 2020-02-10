@@ -18,25 +18,32 @@ class Reseau:
         pass
 
     @staticmethod
-    def df_win_std(df, win):
-        for idx in df.tail(len(df) - win + 1).index:
-            df_part = df.loc[idx - win + 1:idx, :]
-            df.loc[idx, 'std_' + str(win)] = np.std(df_part.loc[:, ['close', 'low', 'high']].values)
-        return df
-
-    def get_single_stk_reseau_sub(self, df, slow=6, quick=3):
+    def df_win_std(df_, win_):
         """
-        :param df:
+        计算给定周期内的“收盘价”、“最高价”、“最低价”的标准差
+        :param df_:
+        :param win_:
         :return:
         """
-        df = df.reset_index()
+        for idx in df_.tail(len(df_) - win_ + 1).index:
+            df_part = df_.loc[idx - win_ + 1:idx, :]
+            df_.loc[idx, 'std_' + str(win_)] = np.std(df_part.loc[:, ['close', 'low', 'high']].values)
+        return df_
 
-        df = self.df_win_std(df, 3)
-        df = self.df_win_std(df, 6)
+    def get_single_stk_reseau_sub(self, df_, slow=6, quick=3):
+        """
+        计算动态网格
+        :param quick:
+        :param slow:
+        :param df_:
+        :return:
+        """
+        df_ = self.df_win_std(df_, quick)
+        df_ = self.df_win_std(df_, slow)
 
-        df['std_m'] = df.apply(lambda x: np.mean([x['std_3'], x['std_6']]), axis=1)
+        df_['std_m'] = df_.apply(lambda x: np.mean([x['std_' + str(quick)], x['std_' + str(slow)]]), axis=1)
 
-        return df.tail(1)['std_m'].values[0]
+        return df_.tail(1)['std_m'].values[0]
 
     def get_single_stk_reseau(self, stk_code):
         """
@@ -44,15 +51,15 @@ class Reseau:
         :return:
         """
         # df = my_pro_bar(stk_code=stk_code, start=add_date_str(get_current_date_str(), -10))
-        df = get_k_data_JQ(stk=stk_code, start_date=add_date_str(get_current_date_str(), -10),
-                           end_date=get_current_date_str())
+        df_ = get_k_data_JQ(stk=stk_code, start_date=add_date_str(get_current_date_str(), -10),
+                            end_date=get_current_date_str())
 
-        if len(df) < 7:
+        if len(df_) < 7:
             # df = my_pro_bar(stk_code=stk_code, start=add_date_str(get_current_date_str(), -30))
-            df = get_k_data_JQ(stk=stk_code, start_date=add_date_str(get_current_date_str(), -30),
-                               end_date=get_current_date_str())
+            df_ = get_k_data_JQ(stk=stk_code, start_date=add_date_str(get_current_date_str(), -30),
+                                end_date=get_current_date_str())
 
-        return self.get_single_stk_reseau_sub(df)
+        return self.get_single_stk_reseau_sub(df_)
 
 
 """

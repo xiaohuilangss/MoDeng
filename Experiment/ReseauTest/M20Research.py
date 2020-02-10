@@ -2,7 +2,7 @@
 import tushare as ts
 import numpy as np
 from pylab import *
-from SDK.PlotOptSub import addXticklabel
+from SDK.PlotOptSub import add_axis
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus']=False
@@ -34,8 +34,8 @@ ax[1].plot(range(0, len(sh_index['date'])), sh_index['C-M20'], 'g*', label='C-20
 ax[1].plot(range(0, len(sh_index['date'])), np.zeros(len(sh_index)), 'b', label='零线')
 
 # 准备下标
-ax[0] = addXticklabel(ax[0], sh_index['date'], 40)
-ax[1] = addXticklabel(ax[1], sh_index['date'], 40)
+ax[0] = add_axis(ax[0], sh_index['date'], 40)
+ax[1] = add_axis(ax[1], sh_index['date'], 40)
 
 for ax_sig in ax:
     ax_sig.legend(loc='best')
