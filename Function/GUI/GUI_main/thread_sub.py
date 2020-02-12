@@ -694,57 +694,94 @@ def pipe_msg_process(win, pipe_to_master, debug=False):
 
 
 def data_process_callback(pipe_proc, debug=False, process=6):
-    # init update pic
-    pool = multiprocessing.Pool(process)
 
-    hour_pic = {
-        'h': gen_kind_pic('h', pool),
-        'h_idx': gen_kind_pic('h_idx', pool)
-    }
-    day_pic = {
-        'd': gen_kind_pic('d', pool),
-        'd_idx': gen_kind_pic('d_idx', pool),
-        'wm': gen_kind_pic('wm', pool)
-    }
-    pool.close()
-    pool.join()
+    def update_all_pic():
+        """
+        更新所有图片
+        :return:
+        """
 
-    # 清空数据，节省管道资源
-    day_pic = clear_data_dic(day_pic)
-    hour_pic = clear_data_dic(hour_pic)
+        # init update pic
+        pool = multiprocessing.Pool(process)
 
-    # 解析分析数据
-    day_pic = get_process_res(day_pic)
-    hour_pic = get_process_res(hour_pic)
+        hour_pic = {
+            'h': gen_kind_pic('h', pool),
+            'h_idx': gen_kind_pic('h_idx', pool)
+        }
+        day_pic = {
+            'd': gen_kind_pic('d', pool),
+            'd_idx': gen_kind_pic('d_idx', pool),
+            'wm': gen_kind_pic('wm', pool)
+        }
+        pool.close()
+        pool.join()
 
-    pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
-    pipe_proc.send((DAY_UPDATE_NUM, day_pic))
+        # 清空数据，节省管道资源
+        day_pic = clear_data_dic(day_pic)
+        hour_pic = clear_data_dic(hour_pic)
+
+        # 解析分析数据
+        day_pic = get_process_res(day_pic)
+        hour_pic = get_process_res(hour_pic)
+
+        pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
+        pipe_proc.send((DAY_UPDATE_NUM, day_pic))
+
+    def update_hour_pic():
+        debug_print_txt('main_log', '', '\n开始半小时分析和更新！')
+
+        # update hour pic
+        pool = multiprocessing.Pool(process)
+        hour_pic = {
+            'h': gen_kind_pic('h', pool),
+            'h_idx': gen_kind_pic('h_idx', pool)
+        }
+        pool.close()
+        pool.join()
+
+        # 清空数据，节省管道资源 & 解析分析数据
+        hour_pic = clear_data_dic(hour_pic)
+        hour_pic = get_process_res(hour_pic)
+
+        pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
+
+        debug_print_txt('main_log', '', '\n完成半小时分析和更新！')
+
+    update_all_pic()
+
+    date_last = get_current_date_str()
 
     # 循环
     while True:
 
+        # 次日更新全部图片
+        if get_current_date_str() != date_last:
+            update_all_pic()
+
+        # 更新半小时图片
         global last_upt_t
         upt_flag, last_upt_t = is_time_h_macd_update(last_upt_t)
 
         if upt_flag | debug:
-            debug_print_txt('main_log', '', '\n开始半小时分析和更新！')
-
-            # update hour pic
-            pool = multiprocessing.Pool(process)
-            hour_pic = {
-                'h': gen_kind_pic('h', pool),
-                'h_idx': gen_kind_pic('h_idx', pool)
-            }
-            pool.close()
-            pool.join()
-
-            # 清空数据，节省管道资源 & 解析分析数据
-            hour_pic = clear_data_dic(hour_pic)
-            hour_pic = get_process_res(hour_pic)
-
-            pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
-
-            debug_print_txt('main_log', '', '\n完成半小时分析和更新！')
+            # debug_print_txt('main_log', '', '\n开始半小时分析和更新！')
+            #
+            # # update hour pic
+            # pool = multiprocessing.Pool(process)
+            # hour_pic = {
+            #     'h': gen_kind_pic('h', pool),
+            #     'h_idx': gen_kind_pic('h_idx', pool)
+            # }
+            # pool.close()
+            # pool.join()
+            #
+            # # 清空数据，节省管道资源 & 解析分析数据
+            # hour_pic = clear_data_dic(hour_pic)
+            # hour_pic = get_process_res(hour_pic)
+            #
+            # pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
+            #
+            # debug_print_txt('main_log', '', '\n完成半小时分析和更新！')
+            update_hour_pic()
 
         time.sleep(5)
 
