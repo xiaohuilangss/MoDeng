@@ -33,6 +33,31 @@ class RSV:
             return False
 
     @staticmethod
+    def add_rsv(df, m, debug=False):
+        """
+        向df中增加rsv数据
+        :return:
+        """
+        # 移动平均线+RSV（未成熟随机值）
+        df['low_M' + str(m)] = df['low'].rolling(window=m).mean()
+        df['high_M' + str(m)] = df['high'].rolling(window=m).mean()
+        df['close_M' + str(m)] = df['close'].rolling(window=m).mean()
+
+        debug_print_txt('rsv_cal', '', df.to_string(), debug)
+
+        for idx in df.index:
+            if (df.loc[idx, 'high_M' + str(m)] - df.loc[idx, 'low_M' + str(m)] == 0) | (
+                    df.loc[idx, 'close_M' + str(m)] - df.loc[idx, 'low_M' + str(m)] == 0):
+                df.loc[idx, 'RSV'] = 0.5
+
+                debug_print_txt('rsv_cal', '', '最高点均值-最低点均值=0,近日可能无波动，rsv设置为0.5', debug)
+
+            else:
+                df.loc[idx, 'RSV'] = (df.loc[idx, 'close_M' + str(m)] - df.loc[idx, 'low_M' + str(m)]) / (
+                        df.loc[idx, 'high_M' + str(m)] - df.loc[idx, 'low_M' + str(m)])
+        return df
+
+    @staticmethod
     def cal_rsv_rank_sub(df, m):
         """
         独立这一函数，主要是为了huice
@@ -41,23 +66,7 @@ class RSV:
         :return:
         """
 
-        # 移动平均线+RSV（未成熟随机值）
-        df['low_M' + str(m)] = df['low'].rolling(window=m).mean()
-        df['high_M' + str(m)] = df['high'].rolling(window=m).mean()
-        df['close_M' + str(m)] = df['close'].rolling(window=m).mean()
-
-        debug_print_txt('rsv_cal', '', df.to_string(), True)
-
-        for idx in df.index:
-            if (df.loc[idx, 'high_M' + str(m)] - df.loc[idx, 'low_M' + str(m)] == 0) | (
-                    df.loc[idx, 'close_M' + str(m)] - df.loc[idx, 'low_M' + str(m)] == 0):
-                df.loc[idx, 'RSV'] = 0.5
-
-                debug_print_txt('rsv_cal', '', '最高点均值-最低点均值=0,近日可能无波动，rsv设置为0.5', True)
-
-            else:
-                df.loc[idx, 'RSV'] = (df.loc[idx, 'close_M' + str(m)] - df.loc[idx, 'low_M' + str(m)]) / (
-                        df.loc[idx, 'high_M' + str(m)] - df.loc[idx, 'low_M' + str(m)])
+        df = RSV.add_rsv(df, m)
 
         return df.tail(1)['RSV'].values[0]
 
