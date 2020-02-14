@@ -258,7 +258,7 @@ class ReseauJudge:
         elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') > self.thh_sale) & \
                 (self.opt_record.get_config_value('last_prompt_point') != -1):
 
-            str_temp = "当前价格距离上次提示的价格的上涨幅度超过卖出网格！\n " + self.stk_code + code2name(self.stk_code) + \
+            str_temp = "波动提示！\n当前价格距离上次提示的价格的上涨幅度超过卖出网格！\n " + self.stk_code + code2name(self.stk_code) + \
                        '\n当前价格:' + str(self.current_price) + \
                        '\n上次买入价格:' + str(self.b_p_min) + \
                        '\n买入网格大小:' + '%0.3f' % self.thh_buy + \
@@ -276,7 +276,7 @@ class ReseauJudge:
         elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') < -self.thh_buy) & \
                 (self.opt_record.get_config_value('last_prompt_point') != -1):
 
-            str_temp = "当前价格距离上次提示的价格的下跌幅度超过买入网格！\n" + self.stk_code + code2name(self.stk_code) + \
+            str_temp = "波动提示！\n当前价格距离上次提示的价格的下跌幅度超过买入网格！\n" + self.stk_code + code2name(self.stk_code) + \
                        '\n当前价格:' + str(self.current_price) + \
                        '\n上次价格:' + str(self.last_p) + \
                        '\n买入网格大小:' + '%0.2f' % self.thh_buy + \
