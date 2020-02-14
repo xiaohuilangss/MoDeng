@@ -5,11 +5,16 @@ import datetime
 
 def minute_reckon(t_s):
     """
-    计时（分钟）
+    计时（分钟） 计算耗时函数
     :param t_s:
     :return:
     """
-    return '%0.2f' %((time.time()-t_s)/60)
+    return '%0.3f' % ((time.time()-t_s)/60)
+
+
+def minute_reckon_print(t_s, note=''):
+    print(note + '总耗时' + minute_reckon(t_s) + '分钟！')
+
 
 def DatetimeStr2Sec(s):
 

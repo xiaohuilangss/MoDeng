@@ -14,6 +14,8 @@ from SDK.Normalize import normal01
 from SDK.PlotOptSub import add_axis
 import pandas as pd
 
+from SDK.TimeAndSeconds import minute_reckon_print
+
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus']=False
 
@@ -530,34 +532,42 @@ class RetestReseau:
         if self.debug:
             print('开始增加网格信息...')
 
+        t_s = time.time()
+
         # 想day data 中 增加必要index
         self.data_day = add_stk_index_to_df(self.data_day)
 
         # 增加必要index
         self.data_minute = add_stk_index_to_df(self.data_minute)
 
+        # 增加rsv数据
+        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span)
+
         # 最初的数天数据不进行回测，开始的部分数据因为数据量原因计算不出网格大小
         max_days = self.max_days
         i_start = self.i_start
         i = len(self.data_minute) - i_start
 
+        data_day = self.data_day.set_index(keys='date')
+
         # 大循环
         for idx in self.data_minute[i_start:].index:
 
             # 获取当天数据
-            df_today = self.cal_today_ochl(self.data_minute.loc[:idx, :].tail(int(60*4/self.retest_span)))
+            df_today = self.cal_today_ochl(self.data_minute.loc[idx-int(60*4/self.retest_span):idx, :])
 
             # 获取时间
             date = self.data_minute.loc[idx, 'date']
 
             # 获取该日期之前数天的数据
-            df_day_data = self.data_day[self.data_day['date'] < date].tail(max_days + 2)
+            df_day_data = self.data_day[self.data_day['date'] < date][1-self.reseau_slow:]
 
             # 增加今天的数据
             df_day_complete = df_day_data.append(df_today, ignore_index=True)
 
             # 计算rsv和波动情况
-            rsv = RSV.cal_rsv_rank_sub(df_day_complete, self.rsv_span)
+            # rsv = RSV.cal_rsv_rank_sub(df_day_complete, self.rsv_span)
+            rsv = data_day.loc[date, 'RSV']
             reseau_object = Reseau()
             reseau = reseau_object.get_single_stk_reseau_sub(
                 df_=df_day_complete,
@@ -574,6 +584,8 @@ class RetestReseau:
             if self.debug:
                 i = i - 1
                 print('还剩%d行' % i)
+
+        minute_reckon_print(t_s, '增加网格')
 
     def retest(self):
         """
@@ -657,7 +669,7 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='603421', retest_span=20, start_date='2019-01-01', end_date='2019-03-10', debug=True)
+    r = RetestReseau(stk_code='000001', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()
