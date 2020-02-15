@@ -78,16 +78,18 @@ class StkData:
         return list((c - np.min(c)) / (np.max(c) - np.min(c)))
 
     @staticmethod
+    def cal_rank_sig(sig, total):
+        total = np.array(total)
+        return len(total[total <= sig]) / len(total) * 100
+
+    @staticmethod
     def cal_rank(list_):
         """
         计算排名
         :return:[0, 100], 排名为0表示为这个序列中的最小值，排名为100表示为这个序列的最大值
         """
-        def cal_rank_sig(sig, total):
-            total = np.array(total)
-            return len(total[total <= sig])/len(total)*100
 
-        return [cal_rank_sig(x, list_) for x in list_]
+        return [StkData.cal_rank_sig(x, list_) for x in list_]
 
 
 class DataProRF(StkData):

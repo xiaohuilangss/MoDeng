@@ -1,6 +1,6 @@
 # encoding=utf-8
 
-""" 本脚本是用来存储一些与stk息息相关的子函数"""
+""" 本脚本是用来存储一些与stk息息相关的子函数 """
 
 from pylab import *
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
@@ -17,7 +17,7 @@ import pandas as pd
 from SDK.TimeAndSeconds import minute_reckon_print
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
-matplotlib.rcParams['axes.unicode_minus']=False
+matplotlib.rcParams['axes.unicode_minus'] = False
 
 from SDK.StdForReseau.Sub import Reseau
 
@@ -669,7 +669,7 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='000001', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
+    r = RetestReseau(stk_code='300183', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()

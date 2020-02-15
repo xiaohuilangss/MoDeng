@@ -241,6 +241,7 @@ def gen_kind_pic(kind, pool):
             if kind is 'h':
                 r_dic[page][stk + '_res'] = pool.apply_async(gen_hour_macd_pic_local, (
                 r_dic[page][stk + '_d'], stk, 'jq', '', save_dir + file_name))
+
             elif kind is 'h_idx':
                 r_dic[page][stk + '_res'] = pool.apply_async(gen_hour_index_pic_local,
                                                              (r_dic[page][stk + '_d'], stk, save_dir + file_name))
@@ -763,24 +764,6 @@ def data_process_callback(pipe_proc, debug=False, process=6):
         upt_flag, last_upt_t = is_time_h_macd_update(last_upt_t)
 
         if upt_flag | debug:
-            # debug_print_txt('main_log', '', '\n开始半小时分析和更新！')
-            #
-            # # update hour pic
-            # pool = multiprocessing.Pool(process)
-            # hour_pic = {
-            #     'h': gen_kind_pic('h', pool),
-            #     'h_idx': gen_kind_pic('h_idx', pool)
-            # }
-            # pool.close()
-            # pool.join()
-            #
-            # # 清空数据，节省管道资源 & 解析分析数据
-            # hour_pic = clear_data_dic(hour_pic)
-            # hour_pic = get_process_res(hour_pic)
-            #
-            # pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
-            #
-            # debug_print_txt('main_log', '', '\n完成半小时分析和更新！')
             update_hour_pic()
 
         time.sleep(5)

@@ -3,14 +3,15 @@ import pandas as pd
 import numpy as np
 
 """
-
 一些与数据处理相关的子函数
 """
 
 
-def relativeRank(v_total, v_now):
+def relative_rank(v_total, v_now):
     """
     计算相对排名子函数
+    :param v_now:
+    :param v_total:
     :param list:
     :return:
     """
@@ -26,9 +27,10 @@ def relativeRank(v_total, v_now):
         return np.nan
 
     # 计算排名
-    v_bigger_amount = len(list(filter(lambda x: x > v_now, v_total)))
+    v_bigger_amount = len(list(filter(lambda x: x < v_now, v_total)))
 
     return v_bigger_amount/(len(v_total)+0.000001)*100
+
 
 def normalize(value_param):
     """

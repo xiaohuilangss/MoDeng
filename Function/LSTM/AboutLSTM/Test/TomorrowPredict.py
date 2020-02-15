@@ -11,7 +11,7 @@ import tensorflow as tf
 from pylab import *
 
 from Global_Value.file_dir import rootPath
-from SDK.DataPro import relativeRank
+from SDK.DataPro import relative_rank
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from SDK.SendMsgByQQ.QQGUI import send_qq
 
@@ -51,7 +51,7 @@ def predict_tomorrow(
     # 增加M9 Rank
     data_now['m9'] = data_now['close'].rolling(window=9).mean()
     data_now['diff_m9'] = data_now.apply(lambda x: (x['close'] - x['m9']) / x['close'], axis=1)
-    data_now['rank'] = data_now.apply(lambda x: relativeRank(max_min_info[stk_code]['m9_history'], x['diff_m9']), axis=1)
+    data_now['rank'] = data_now.apply(lambda x: 100 - relative_rank(max_min_info[stk_code]['m9_history'], x['diff_m9']), axis=1)
 
     # rootPath = 'C:/Users\paul\Desktop\软件代码\Git-Clone'
 
