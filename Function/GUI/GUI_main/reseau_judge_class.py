@@ -45,6 +45,7 @@ class ReseauJudge:
         self.has_flashed_flag = False
         self.pcr = 0
 
+        self.get_pcr()
         self.opt_record_stk = opt_record_.opt_record_stk
 
     def get_current_price(self):
@@ -234,7 +235,7 @@ class ReseauJudge:
         c_p = self.current_price
         thh_b = self.thh_buy
         thh_s = self.thh_sale
-
+        
         str_ = '\n\n------------------------------------------------------------\n' \
                'last_pp:%s current_price:%s b_thh:%s s_thh:%s' % (
                str(l_pp)[:4], str(c_p)[:4], str(thh_b)[:4], str(thh_s)[:4])
@@ -249,16 +250,21 @@ class ReseauJudge:
                             self.debug)
 
             return
+        
+        # 波动幅度不足，直接返回
+        elif math.fabs((self.current_price - self.opt_record.get_config_value('last_prompt_point')/self.current_price)) < self.pcr:
+            return
+        
         elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') > self.thh_sale) & \
                 (self.opt_record.get_config_value('last_prompt_point') != -1):
 
-            str_temp = "当前价格距离上次提示的价格的上涨幅度超过卖出网格！\n " + self.stk_code + code2name(self.stk_code) + \
+            str_temp = "波动提示！\n当前价格距离上次提示的价格的上涨幅度超过卖出网格！\n " + self.stk_code + code2name(self.stk_code) + \
                        '\n当前价格:' + str(self.current_price) + \
                        '\n上次买入价格:' + str(self.b_p_min) + \
                        '\n买入网格大小:' + '%0.3f' % self.thh_buy + \
                        '\n卖出网格大小:' + '%0.3f' % self.thh_sale + \
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
-                       '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
+                       '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:5]
 
             self.add_note(str_temp)
             debug_print_txt('fluctuate_judge', self.stk_code, 'Result: fluctuate is triggered for sale!' + '\n',
@@ -270,13 +276,13 @@ class ReseauJudge:
         elif (self.current_price - self.opt_record.get_config_value('last_prompt_point') < -self.thh_buy) & \
                 (self.opt_record.get_config_value('last_prompt_point') != -1):
 
-            str_temp = "当前价格距离上次提示的价格的下跌幅度超过买入网格！\n" + self.stk_code + code2name(self.stk_code) + \
+            str_temp = "波动提示！\n当前价格距离上次提示的价格的下跌幅度超过买入网格！\n" + self.stk_code + code2name(self.stk_code) + \
                        '\n当前价格:' + str(self.current_price) + \
                        '\n上次价格:' + str(self.last_p) + \
                        '\n买入网格大小:' + '%0.2f' % self.thh_buy + \
                        '\n卖出网格大小:' + '%0.2f' % self.thh_sale + \
                        '\n最小操作幅度:' + '%0.3f' % self.pcr + \
-                       '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:4]
+                       '\n上次闪动价格:' + str(self.opt_record.get_config_value('last_prompt_point'))[:5]
 
             self.add_note(str_temp)
 

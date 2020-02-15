@@ -751,16 +751,21 @@ def data_process_callback(pipe_proc, debug=False, process=6):
     update_all_pic()
 
     date_last = get_current_date_str()
-
+    
+    global last_upt_t
+    
     # 循环
     while True:
 
         # 次日更新全部图片
         if get_current_date_str() != date_last:
             update_all_pic()
+            date_last = get_current_date_str()
+            last_upt_t = 0
+
+        time.sleep(5)
 
         # 更新半小时图片
-        global last_upt_t
         upt_flag, last_upt_t = is_time_h_macd_update(last_upt_t)
 
         if upt_flag | debug:

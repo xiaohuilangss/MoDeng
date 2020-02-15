@@ -38,6 +38,7 @@ class Reseau:
         :param df_:
         :return:
         """
+        df_ = df_.reset_index(drop=True)
         df_ = self.df_win_std(df_, quick)
         df_ = self.df_win_std(df_, slow)
 
