@@ -15,7 +15,7 @@ df['is_train'] = np.random.uniform(0, 1, len(df)) <= .75
 df['species'] = pd.Categorical.from_codes(iris.target, iris.target_names)
 df.head()
 
-train, test = df[df['is_train']==True], df[df['is_train']==False]
+train, test = df[df['is_train'] is True], df[df['is_train'] is False]
 
 # 整理feature和label
 features = df.columns[:4]

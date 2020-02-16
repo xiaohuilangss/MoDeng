@@ -16,11 +16,11 @@ basic_total = basic_total[basic_total.quarter > 201603]
 #             'mbrg', 'nav', 'nprg', 'seg', 'targ','stk_class_num']
 
 features = ['gross_profit_rate', 'net_profit_ratio', 'epsg',
-            'mbrg', 'nav', 'nprg', 'seg', 'targ','roe','pb','pe','stk_class_num']
+            'mbrg', 'nav', 'nprg', 'seg', 'targ', 'roe', 'pb', 'pe', 'stk_class_num']
 
-clf = RandomForestClassifier(n_jobs=2,n_estimators=200)
+clf = RandomForestClassifier(n_jobs=2, n_estimators=200)
 
-X = basic_total.loc[:,features].values
+X = basic_total.loc[:, features].values
 y, target_names = pd.factorize(basic_total['ratio_class'])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
@@ -29,13 +29,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 clf.fit(X_train, y_train)
 probability = clf.predict_proba(X_test)
 pred = clf.predict(X_test)
-df_pre = pd.DataFrame(pred,columns=['pred'])
+df_pre = pd.DataFrame(pred, columns=['pred'])
 df_pre_probability = pd.DataFrame(probability)
-df_pre_probability['probability'] = df_pre_probability.apply(lambda x:x.max(),axis=1)
+df_pre_probability['probability'] = df_pre_probability.apply(lambda x: x.max(), axis=1)
 
-real_df = pd.DataFrame(y_test,columns=['real'])
+real_df = pd.DataFrame(y_test, columns=['real'])
 
-pred_result = pd.concat([df_pre_probability,real_df,df_pre],axis=1)
+pred_result = pd.concat([df_pre_probability, real_df, df_pre], axis=1)
 
 pred_filter = pred_result[pred_result.probability>0.9]
 
