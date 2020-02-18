@@ -127,6 +127,9 @@ def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_st
             df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk), frequency=freq, count=count,
                                      end_date=end_date, start_date=start_date)
 
+        if df.empty:
+            return df
+
         df['datetime'] = df.index
         df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)
 
