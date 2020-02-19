@@ -5,7 +5,7 @@
 """
 
 # jq_login()
-from DataSource.Data_Sub import get_k_data_JQ
+from DataSource.Data_Sub import get_k_data_JQ, get_all_stk
 import os
 import pandas as pd
 
@@ -111,14 +111,31 @@ class LocalData:
         else:
             return False
 
+    @staticmethod
+    def read_stk(stk_, freq_):
+        """
+        读取本地数据
+        :param stk_:
+        :param freq_:
+        :return:
+        """
+        local_data_dir = 'C:/Users\paul\Desktop\localdata/' + freq_ + '/'
+        return pd.read_json(local_data_dir + stk_ + '.json')
+
+
 
 if __name__ == '__main__':
+
+    freq = 'd'
     jq_login()
 
-    ld = LocalData('300183', '10m', './localdatasave/')
-    ld.update()
-    print(ld.log)
+    local_data_dir = 'C:/Users\paul\Desktop\localdata/'+freq+'/'
+    df = pd.read_json(local_data_dir+'300183.json')
 
-    df = get_k_data_JQ('300183', start_date='2020-02-17', freq='10m')
+    for stk in get_all_stk():
+
+        ld = LocalData(stk, freq, local_data_dir)
+        ld.update()
+        print(ld.log)
 
     end = 0

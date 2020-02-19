@@ -9,7 +9,7 @@ import json
 from Global_Value.file_dir import config_path, data_source_url, data_dir, stk_config_url
 
 
-def checkConfigFile():
+def check_config_file():
 
     # 配置文件未准备好 标志位
     configReadyFlag = True
@@ -78,4 +78,4 @@ def checkConfigFile():
 
 if __name__ == '__main__':
 
-    checkConfigFile()
+    check_config_file()

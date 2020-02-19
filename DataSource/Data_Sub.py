@@ -54,6 +54,17 @@ def get_current_price_JQ(stk_code):
 
     return current_price
 
+
+def get_all_stk():
+    """
+    使用tushare获取所有数据列表
+    :return:
+    """
+    df = ts.get_stock_basics()
+
+    return list(df.index)
+
+
 def add_stk_index_to_df(stk_df):
     """
     向含有“收盘价（close）”的df中添加相关stk指标
