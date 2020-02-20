@@ -1,10 +1,12 @@
 # encoding=utf-8
+import random
+
 import numpy as np
 import pandas as pd
 import math
 
 from sklearn.metrics import accuracy_score
-from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
+from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df, get_all_stk
 from DataSource.auth_info import jq_login
 from SDK.DataPro import relative_rank
 from SDK.MyTimeOPT import add_date_str, get_current_date_str
@@ -26,10 +28,10 @@ class StkData:
 
         self.stk_code = stk_code
 
-        self.minute_data = None
-        self.day_data = None
-        self.week_data = None
-        self.month_data = None
+        self.minute_data = pd.DataFrame()
+        self.day_data = pd.DataFrame()
+        self.week_data = pd.DataFrame()
+        self.month_data = pd.DataFrame()
 
         # 通用变量，便于后续功能扩展之用！
         self.general_variable = None
@@ -112,7 +114,7 @@ class DataProRF(StkData):
 
         self.label_col = 'increase_rank'
 
-    def add_day_index(self):
+    def add_index(self):
         """
         向日线数据中增加常用指标
         :return:
@@ -120,21 +122,21 @@ class DataProRF(StkData):
         self.day_data = add_stk_index_to_df(self.day_data)
         # self.day_data = self.day_data.dropna(axis=0)
 
-    def add_day_kd_diff(self):
+    def add_kd_diff(self):
         """
         向日线数据中增加kd的差值值
         :return:
         """
         self.day_data['kd_diff'] = self.day_data.apply(lambda x: (x['slowk'] - x['slowd']), axis=1)
 
-    def add_day_boll_width(self):
+    def add_boll_width(self):
         """
         向日线数据中增加布林线宽度值
         :return:
         """
         self.day_data['boll_width'] = self.day_data.apply(lambda x: x['upper']-x['lower'], axis=1)
 
-    def add_day_rank_col(self, col_name):
+    def add_rank_col(self, col_name):
         """
         对日线数据的某一个字段进行排名华
         :param col_name:
@@ -142,7 +144,7 @@ class DataProRF(StkData):
         """
         self.day_data[col_name + '_rank'] = self.cal_rank(self.day_data[col_name])
 
-    def add_day_rank(self, col_list):
+    def add_rank(self, col_list):
         """
         对日线数据进行排名化
         :param col_list: ['MACD', 'MOM', 'SAR', 'RSI5', 'RSI12', 'RSI30', 'boll_width', 'kd_diff', 'slowd', 'slowk']
@@ -150,9 +152,11 @@ class DataProRF(StkData):
         """
 
         for col_name in col_list:
-            self.add_day_rank_col(col_name)
+            self.add_rank_col(col_name)
+            
+            print('完成%s的rank化' % col_name)
 
-    def add_day_diff_col(self, col_name):
+    def add_diff_col(self, col_name):
         """
         获取日线数据指定列前后两天的差值
         :return:
@@ -162,37 +166,37 @@ class DataProRF(StkData):
         self.day_data[col_name + '_last'] = self.day_data[col_name].shift(1)
         self.day_data[col_name + '_diff'] = self.day_data.apply(lambda x: x[col_name] - x[col_name + '_last'], axis=1)
 
-    def add_day_diff(self, col_list):
+    def add_diff(self, col_list):
         """
         向日线数据中增加相应列的前后两天值之差
         :return:
         """
 
         for col in col_list:
-            self.add_day_diff_col(col)
+            self.add_diff_col(col)
 
-    def add_day_feature(self):
+    def add_feature(self):
         """
         向日线数据中增加标签
         :return:
         """
 
         # 向日线数据中增加常用指标
-        self.add_day_index()
+        self.add_index()
 
         # 增加kd均值
-        self.add_day_kd_diff()
+        self.add_kd_diff()
 
         # 增加布林宽度
-        self.add_day_boll_width()
+        self.add_boll_width()
 
         # 对指标进行rank化
-        self.add_day_rank(self.feature_col)
+        self.add_rank(self.feature_col)
 
         # 增加前后差值
-        self.add_day_diff(self.feature_rank)
+        self.add_diff(self.feature_rank)
 
-    def add_day_label(self):
+    def add_label(self):
         """
         向日线数据中增加“标签”数据,
         计算未来20日收盘价相较于当前的增长率，计算中位数
@@ -216,12 +220,13 @@ class DataProRF(StkData):
         self.day_data.loc[:, ['close', 'm_median_origin', 'm_median']]
         """
 
-        self.add_day_rank_col('m_median')
+        self.add_rank_col('m_median')
 
         # 清空空值行
         self.day_data = self.day_data.dropna(axis=0)
-
-        self.day_data[self.label_col] = self.day_data.apply(lambda x: math.ceil(x['m_median_rank']/10), axis=1)
+        
+        if not self.day_data.empty:
+            self.day_data[self.label_col] = self.day_data.apply(lambda x: math.ceil(x['m_median_rank']/10), axis=1)
 
     def pro(self):
         """
@@ -233,10 +238,10 @@ class DataProRF(StkData):
         self.down_day_data(count=self.count)
 
         # 增加“特征”数据
-        self.add_day_feature()
+        self.add_feature()
 
         # 增加“标签”数据
-        self.add_day_label()
+        self.add_label()
 
         # 删除空值
         self.day_data = self.day_data.dropna(axis=0)
@@ -250,7 +255,7 @@ class RF:
     """
     生成随机森林进行海选的类
     """
-    def __init__(self, df_origin, feature_col, label_col):
+    def __init__(self, df_origin=None, feature_col=None, label_col=None):
 
         self.label_col = label_col
         self.feature_col = feature_col
@@ -268,7 +273,7 @@ class RF:
         训练模型
         :return:
         """
-        self.rf = RandomForestClassifier(n_jobs=3, n_estimators=400)
+        self.rf = RandomForestClassifier(n_jobs=4, n_estimators=800, max_depth=5)
         self.rf.fit(self.train_feature, self.train_label)
 
     def splice_data(self, ratio=0.3):
@@ -312,8 +317,11 @@ class RF:
         """
 
         # 计算预测精度
-        return accuracy_score(pred_filter['increase_rank'], pred_filter['pred'])
-
+        # return accuracy_score(pred_filter['increase_rank'], pred_filter['pred'])
+        # return np.sum((pred_filter['increase_rank'].values - pred_filter['pred'].values)**2)/(2*len(pred_filter))
+        
+        return np.sum(np.abs(pred_filter['increase_rank'].values - pred_filter['pred'].values))/len(pred_filter)
+        
     def save_model(self, save_dir='./', name='rf.m'):
         """
         模型保存
@@ -323,28 +331,38 @@ class RF:
         """
         joblib.dump(self.rf, save_dir + name)
 
-    def load_model(self, save_dir, name):
+    def load_model(self, save_dir='./', name='rf.m'):
         self.rf = joblib.load(save_dir + name)
 
 
 if __name__ == '__main__':
 
     jq_login()
-    data_pro_obj = DataProRF('300183', count=2000)
-    data_pro_obj.pro()
+    
+    def get_stk_data(stk):
+        data_pro_obj = DataProRF(stk, count=400)
+        data_pro_obj.pro()
+        print('完成%s的训练数据预处理' % stk)
+        return data_pro_obj.day_data
+    
+    train_stk_list = random.sample(get_all_stk(), 100)
+    
+    df = pd.concat(list(filter(lambda x: not x.empty, [get_stk_data(x) for x in train_stk_list])))
+    
+    fl = DataProRF(None)
 
     # 生成随机森林模型
-    rf = RF(data_pro_obj.day_data, data_pro_obj.feature_col, data_pro_obj.label_col)
+    rf = RF(df, fl.feature_col, fl.label_col)
 
     # 分割数据
-    rf.splice_data()
+    rf.splice_data(ratio=0)
+
+    rf.load_model()
 
     # 训练模型
     rf.train()
-
+    
     # 评估
-    rf.evaluate(confidence_threshold=0.5)
-
-
+    # print(str(rf.evaluate(confidence_threshold=0.5)))
 
     end = 0
