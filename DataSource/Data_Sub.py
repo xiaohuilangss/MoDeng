@@ -54,6 +54,17 @@ def get_current_price_JQ(stk_code):
 
     return current_price
 
+
+def get_all_stk():
+    """
+    使用tushare获取所有数据列表
+    :return:
+    """
+    df = ts.get_stock_basics()
+
+    return list(df.index)
+
+
 def add_stk_index_to_df(stk_df):
     """
     向含有“收盘价（close）”的df中添加相关stk指标
@@ -126,6 +137,9 @@ def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_st
         else:
             df = jqdatasdk.get_price(jqdatasdk.normalize_code(stk), frequency=freq, count=count,
                                      end_date=end_date, start_date=start_date)
+
+        if df.empty:
+            return df
 
         df['datetime'] = df.index
         df['date'] = df.apply(lambda x: str(x['datetime'])[:10], axis=1)

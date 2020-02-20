@@ -493,7 +493,7 @@ class ExecuteSelectRole:
             df_rule = rule_group_priority[1]
 
             for idx in df_rule.index:
-                text_append_color(tc, '\n开始执行过滤规则 <%s> ...\n' % df_rule.loc[idx, 'describe'] )
+                text_append_color(tc, '\n开始执行过滤规则 <%s> ...\n' % df_rule.loc[idx, 'describe'])
                 text_append_color(tc, self.rule_execute(df_rule.loc[idx, 'kind'], df_rule.loc[idx, 'data'], tc))
                 text_append_color(tc, '\n经过以上筛选后剩余的标的：\n' + self.get_filter_result())
 

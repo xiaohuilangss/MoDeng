@@ -22,9 +22,9 @@ if __name__ == '__main__':
     sys.path.append(rootPath)
 
     # 检查配置文件,需要首先检查，因为后面的import操作会用到配置文件！
-    from Config.AutoGenerateConfigFile import checkConfigFile
+    from Config.AutoGenerateConfigFile import check_config_file
 
-    checkConfigFile()
+    check_config_file()
 
     import multiprocessing as mp
 

@@ -10,6 +10,7 @@ from SDK.DataPro import relative_rank
 from SDK.MyTimeOPT import add_date_str, get_current_date_str
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.externals import joblib
 
 """
 使用随机森林对股票进行预测
@@ -245,7 +246,7 @@ class DataProRF(StkData):
         """
 
 
-class GenRF:
+class RF:
     """
     生成随机森林进行海选的类
     """
@@ -313,6 +314,18 @@ class GenRF:
         # 计算预测精度
         return accuracy_score(pred_filter['increase_rank'], pred_filter['pred'])
 
+    def save_model(self, save_dir='./', name='rf.m'):
+        """
+        模型保存
+        :param save_dir:
+        :param name:
+        :return:
+        """
+        joblib.dump(self.rf, save_dir + name)
+
+    def load_model(self, save_dir, name):
+        self.rf = joblib.load(save_dir + name)
+
 
 if __name__ == '__main__':
 
@@ -321,7 +334,7 @@ if __name__ == '__main__':
     data_pro_obj.pro()
 
     # 生成随机森林模型
-    rf = GenRF(data_pro_obj.day_data, data_pro_obj.feature_col, data_pro_obj.label_col)
+    rf = RF(data_pro_obj.day_data, data_pro_obj.feature_col, data_pro_obj.label_col)
 
     # 分割数据
     rf.splice_data()

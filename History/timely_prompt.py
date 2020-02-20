@@ -15,8 +15,8 @@ sys.path.append('..')
 sys.path.append(rootPath)
 
 # 对配置文件进行检测
-from Config.AutoGenerateConfigFile import checkConfigFile
-checkConfigFile()
+from Config.AutoGenerateConfigFile import check_config_file
+check_config_file()
 
 import matplotlib
 matplotlib.use('agg')
@@ -369,7 +369,7 @@ sched.add_job(func=autoShutdown, trigger='cron', day_of_week='sat', hour=1, minu
 if __name__ == '__main__':
 
     # 对配置文件进行检测
-    checkConfigFile()
+    check_config_file()
 
     # 导入聚宽数据
     from DataSource.auth_info import *
