@@ -11,34 +11,35 @@ from SDK.SendMsgByQQ.QQGUI import send_qq
 
 
 def myPrint(str_gui, str_temp, method='n', towho=''):
-	"""
-	gn:note消息
-	gm:msg消息
-	
-	:param gui:
-	:param str_gui:
-	:param method:
-	:param towho:
-	:return:
-	"""
-	if method is 'n':
-		print(str_temp)
+    """
+    gn:note消息
+    gm:msg消息
+    
+    :param gui:
+    :param str_gui:
+    :param method:
+    :param towho:
+    :return:
+    """
+    if method is 'n':
+        print(str_temp)
 
-	elif method is 'gm':
-		str_gui['msg'] = str_gui['msg'] + str_temp + '\n\n'
+    elif method is 'gm':
+        str_gui['msg'] = str_gui['msg'] + str_temp + '\n\n'
 
-	elif method is 'gn':
-		str_gui['note'] = str_gui['note'] + str_temp + '\n\n'
+    elif method is 'gn':
+        str_gui['note'] = str_gui['note'] + str_temp + '\n\n'
 
-	elif method is 'qq':
-		send_qq(towho, str_temp)
+    elif method is 'qq':
+        send_qq(towho, str_temp)
 
-	return str_gui
+    return str_gui
 
 
-def debug_print_txt(file_name, stk, value, enable=True):
+def debug_print_txt(file_name, stk, value, enable=False):
     """
 
+    :param enable:
     :param file_name:
     :param stk:
     :param value:
