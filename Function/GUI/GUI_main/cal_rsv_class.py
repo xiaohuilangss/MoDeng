@@ -70,15 +70,15 @@ class RSV:
 
         return df.tail(1)['RSV'].values[0]
 
-    def cal_stk_rsv_rank(self, stk_code, m_days, history_length=400):
+    def cal_stk_rsv_rank(self, stk_code, m_days, history_length=400, debug=False):
 
         df = get_k_data_JQ(stk_code, count=history_length, end_date=get_current_date_str())
 
-        debug_print_txt('rsv_cal', '', code2name(stk_code) + '开始计算rsv:', True)
+        debug_print_txt('rsv_cal', '', code2name(stk_code) + '开始计算rsv:', debug)
 
         rsv = self.cal_rsv_rank_sub(df, m_days)
 
-        debug_print_txt('rsv_cal', '', '最终rsv：' + '%0.3f' % rsv, True)
+        debug_print_txt('rsv_cal', '', '最终rsv：' + '%0.3f' % rsv, debug)
 
         return rsv
 

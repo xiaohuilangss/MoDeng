@@ -88,7 +88,7 @@ def read_opt_json(stk_code, json_file_url_):
             opt_record_lock.release()
 
 
-def cal_rsv_rank_sub(df, m):
+def cal_rsv_rank_sub(df, m, debug=False):
     """
 	独立这一函数，主要是为了huice
 	:param df:
@@ -101,7 +101,7 @@ def cal_rsv_rank_sub(df, m):
     df['high_M' + str(m)] = df['high'].rolling(window=m).mean()
     df['close_M' + str(m)] = df['close'].rolling(window=m).mean()
 
-    debug_print_txt('rsv_cal', '', df.to_string(), True)
+    debug_print_txt('rsv_cal', '', df.to_string(), debug)
 
     for idx in df.index:
         if (df.loc[idx, 'high_M' + str(m)] - df.loc[idx, 'low_M' + str(m)] == 0) | (
@@ -117,14 +117,14 @@ def cal_rsv_rank_sub(df, m):
     return df.tail(1)['RSV'].values[0]
 
 
-def cal_rsv_rank(stk_code, m_days, history_length=400):
+def cal_rsv_rank(stk_code, m_days, history_length=400, debug=False):
     df = get_k_data_JQ(stk_code, count=history_length, end_date=get_current_date_str())
 
     debug_print_txt('rsv_cal', '', code2name(stk_code) + '开始计算rsv:', True)
 
     rsv = cal_rsv_rank_sub(df, m_days)
 
-    debug_print_txt('rsv_cal', '', '最终rsv：' + '%0.3f' % rsv, True)
+    debug_print_txt('rsv_cal', '', '最终rsv：' + '%0.3f' % rsv, debug)
 
     return rsv
 
