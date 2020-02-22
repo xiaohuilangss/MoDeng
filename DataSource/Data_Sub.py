@@ -65,6 +65,57 @@ def get_all_stk():
     return list(df.index)
 
 
+class Index:
+    """
+    指标计算类
+    """
+    def __init__(self, stk_df):
+        self.stk_df = stk_df
+        
+    def add_cci(self, time_period):
+        self.stk_df['cci' + str(time_period)] = talib.CCI(
+            self.stk_df['high'].values,
+            self.stk_df['low'].values,
+            self.stk_df['close'].values,
+            timeperiod=time_period)
+        
+    def add_rsi(self, time_period):
+        self.stk_df['RSI' + str(time_period)] = talib.RSI(self.stk_df.close, timeperiod=time_period)
+
+    def add_macd(self):
+        self.stk_df['MACD'], self.stk_df['MACDsignal'], self.stk_df['MACDhist'] = talib.MACD(self.stk_df.close,
+                                                                              fastperiod=12, slowperiod=26,
+                                                                              signalperiod=9)
+
+    def add_sar(self):
+        self.stk_df['SAR'] = talib.SAR(self.stk_df.high, self.stk_df.low, acceleration=0.05, maximum=0.2)
+        
+    def add_mom(self, time_period=5):
+        self.stk_df['MOM'] = talib.MOM(self.stk_df['close'], timeperiod=time_period)
+        
+    def add_boll(self):
+        self.stk_df['upper'], self.stk_df['middle'], self.stk_df['lower'] = talib.BBANDS(self.stk_df['close'], matype=MA_Type.T3)
+        
+    def add_kd(self):
+        self.stk_df['slowk'], self.stk_df['slowd'] = talib.STOCH(self.stk_df.high,
+                                                                   self.stk_df.low,
+                                                                   self.stk_df.close,
+                                                                   fastk_period=9,
+                                                                   slowk_period=3,
+                                                                   slowk_matype=0,
+                                                                   slowd_period=3,
+                                                                   slowd_matype=0)
+        
+    def add_ad(self):
+        self.stk_df['AD'] = talib.AD(self.stk_df.high, self.stk_df.low, self.stk_df.close, self.stk_df.volume)
+        
+    def add_adosc(self, fast_period=3, slow_period=10):
+        self.stk_df['ADOSC'] = talib.ADOSC(self.stk_df.high, self.stk_df.low, self.stk_df.close, self.stk_df.volume, fastperiod=fast_period, slowperiod=slow_period)
+
+    def add_obv(self):
+        self.stk_df['OBV'] = talib.OBV(self.stk_df.close, self.stk_df.volume)
+        
+        
 def add_stk_index_to_df(stk_df):
     """
     向含有“收盘价（close）”的df中添加相关stk指标
