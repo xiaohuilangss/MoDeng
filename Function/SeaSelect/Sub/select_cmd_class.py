@@ -509,6 +509,7 @@ class SelectCmd:
         _ = rt.withdraw()
         dir_ = filedialog.askdirectory()
         rt.destroy()
+        self.config['save_dir'] = dir_
         self.save_json_file()
         return dir_
 
