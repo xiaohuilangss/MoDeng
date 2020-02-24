@@ -22,16 +22,15 @@ from sklearn.externals import joblib
 本文件存储“数据预处理”相关的类
 """
 
-temp_dir = 'C:/Users\Administrator\Desktop/rf_model/'
-
 
 class StkData:
 	"""
 	本类用来为“随机森林预测价格走势”算法提供“数据预处理”
 	"""
 	
-	def __init__(self, stk_code):
+	def __init__(self, stk_code, freq='d'):
 		
+		self.freq = freq
 		self.stk_code = stk_code
 		
 		self.minute_data = pd.DataFrame()
@@ -47,7 +46,12 @@ class StkData:
 		                                 end_date=add_date_str(get_current_date_str(), 1), freq=str(m) + 'm')
 	
 	def down_day_data(self, count=150, start_date=None, end_date=None):
-		self.day_data = get_k_data_JQ(self.stk_code, count=count, start_date=start_date, end_date=end_date)
+		self.day_data = get_k_data_JQ(
+			self.stk_code,
+			count=count,
+			start_date=start_date,
+			end_date=end_date,
+			freq=self.freq)
 	
 	def add_week_month_data(self):
 		"""
@@ -111,14 +115,42 @@ class DataProRF(StkData):
 	为随机森林模型提供“数据预处理”的类
 	"""
 	
-	def __init__(self, stk_code, count=400):
-		super().__init__(stk_code)
+	def __init__(self, stk_code, count=400, freq='d'):
+		super().__init__(stk_code, freq=freq)
 		
 		self.count = count
-		self.feature_col_origin = ['MACD', 'MOM', 'SAR', 'RSI5', 'RSI12', 'RSI30', 'boll_width', 'kd_diff', 'slowd', 'slowk']
-		self.feature_col_finale = []
-		# self.feature_rank = [x + '_rank' for x in self.feature_col_origin]
-		# self.feature_diff = [x + '_diff' for x in self.feature_rank]
+
+		# 总结feature
+		self.feature_col = [
+			'kd_diff',
+			'kd_diff_diff',
+			'slowk',
+			'slowk_diff',
+			'slowd',
+			'slowd_diff',
+
+			'boll_width_self_std',
+			'boll_width_self_std_diff',
+
+			'middle_self_std',
+			'middle_self_std_diff',
+
+			'sar_close_diff_self_std',
+			'sar_close_diff_self_std_diff',
+
+			'MACD_self_std',
+			'MACD_self_std_diff',
+
+			'RSI5',
+			'RSI5_diff',
+			'RSI12',
+			'RSI12_diff',
+			'RSI30',
+			'RSI30_diff',
+
+			'MOM',
+			'MOM_diff'
+		]
 		
 		self.label_col = 'increase_rank'
 	
@@ -140,10 +172,7 @@ class DataProRF(StkData):
 		idx = Index(self.day_data)
 		
 		idx.add_cci(5)
-		self.feature_col_origin.append('CCI5')
-		
 		idx.add_cci(20)
-		self.feature_col_origin.append('CCI20')
 		
 		self.day_data = idx.stk_df
 		
@@ -248,39 +277,7 @@ class DataProRF(StkData):
 			
 			'MOM'
 		])
-		
-		# 总结feature
-		self.feature_col_finale = [
-			'kd_diff',
-			'kd_diff_diff',
-			'slowk',
-			'slowk_diff',
-			'slowd',
-			'slowd_diff',
-			
-			'boll_width_self_std',
-			'boll_width_self_std_diff',
-			
-			'middle_self_std',
-			'middle_self_std_diff',
-			
-			'sar_close_diff_self_std',
-			'sar_close_diff_self_std_diff',
-			
-			'MACD_self_std',
-			'MACD_self_std_diff',
-			
-			'RSI5',
-			'RSI5_diff',
-			'RSI12',
-			'RSI12_diff',
-			'RSI30',
-			'RSI30_diff',
-			
-			'MOM',
-			'MOM_diff'
-		]
-	
+
 	def add_label(self):
 		"""
 		向日线数据中增加“标签”数据,
@@ -313,14 +310,19 @@ class DataProRF(StkData):
 		if not self.day_data.empty:
 			self.day_data[self.label_col] = self.day_data.apply(lambda x: math.ceil(x['m_median_rank'] / 10), axis=1)
 	
-	def pro(self):
+	def train_pro(self):
 		"""
-		生成训练数据的主函数
+		为训练进行预处理
 		:return:
 		"""
 		
 		# 准备数据
 		self.down_day_data(count=self.count)
+
+		self.day_data.dropna(axis=0)
+
+		if self.day_data.empty:
+			return
 		
 		# 增加“特征”数据
 		self.add_feature()
@@ -334,6 +336,25 @@ class DataProRF(StkData):
 		self.day_data.plot('datetime', ['close', 'label', 'm_median'], subplots=True, style=['*--', '*--', '*--'])
 		self.day_data.plot('datetime', self.feature_rank + self.feature_diff, subplots=True)
 		"""
+
+	def predict_pro(self):
+		"""
+		为预测进行预处理
+		:return:
+		"""
+		# 准备数据
+		self.down_day_data(count=self.count)
+
+		self.day_data.dropna(axis=0)
+
+		if self.day_data.empty:
+			return
+
+		# 增加“特征”数据
+		self.add_feature()
+
+		# 删除空值
+		self.day_data = self.day_data.dropna(axis=0)
 
 
 class RF:
@@ -352,14 +373,19 @@ class RF:
 		self.test_label = None
 		
 		self.rf = None
+		self.log = ''
 	
 	def train(self):
 		"""
 		训练模型
 		:return:
 		"""
-		self.rf = RandomForestClassifier(n_jobs=4, n_estimators=800, max_depth=5)
+		if self.rf is None:
+			self.rf = RandomForestClassifier(n_jobs=4, n_estimators=800, max_depth=5)
+		else:
+			self.log = self.log + '模型已存在，继续训练！\n'
 		self.rf.fit(self.train_feature, self.train_label)
+		self.log = self.log + '完成训练！\n'
 	
 	def splice_data(self, ratio=0.3):
 		"""
@@ -373,13 +399,13 @@ class RF:
 		self.train_feature, self.test_feature, self.train_label, self.test_label = train_test_split(f, l,
 		                                                                                            test_size=ratio)
 		
-	def predict(self, df):
+	def predict(self, feature):
 		"""
 		计算预测值及预测可信度
-		:param df:
+		:param feature:
 		:return:
 		"""
-		return self.rf.predict(df), self.rf.predict_proba(df)
+		return self.rf.predict(feature), np.max(self.rf.predict_proba(feature))
 	
 	def evaluate(self, confidence_threshold):
 		"""
@@ -415,7 +441,7 @@ class RF:
 		# return np.sum((pred_filter['increase_rank'].values - pred_filter['pred'].values)**2)/(2*len(pred_filter))
 		# 按可信度对预测结果进行排序
 		pred_result = pred_result.sort_values(by='probability', ascending=False)
-		print(pred_result.loc[:, ['probability', 'increase_rank', 'pred']].to_string())
+		print(pred_result.loc[:, ['probability', 'increase_rank', 'pred']].head(100).to_string())
 		
 		return np.sum(np.abs(pred_filter['increase_rank'].values - pred_filter['pred'].values)) / len(pred_filter)
 	
@@ -426,70 +452,18 @@ class RF:
 		:param name:
 		:return:
 		"""
+		if not os.path.exists(save_dir):
+			os.makedirs(save_dir)
 		joblib.dump(self.rf, save_dir + name)
 	
 	def load_model(self, save_dir='./', name='rf.m'):
-		self.rf = joblib.load(save_dir + name)
+		if os.path.exists(save_dir + name):
+			self.rf = joblib.load(save_dir + name)
+			self.log = self.log + '模型加载成功！\n'
 
 
 if __name__ == '__main__':
 	import threading
-	jq_login()
-	import gc
 
-	def get_stk_data(stk):
-		data_pro_obj = DataProRF(stk, count=400)
-		data_pro_obj.pro()
-		data_pro_obj.day_data.to_json(temp_dir + stk + '.json')
-		print('完成%s的训练数据预处理' % stk)
-
-		return data_pro_obj.day_data
-
-	def save(s, a):
-		file_url = temp_dir + s + '.json'
-		if not os.path.exists(file_url):
-			df = get_stk_data(s)
-			df.to_json()
-
-			del df
-			gc.collect()
-
-			a = a - 1
-			print('还剩%d个\n\n' % a)
-		else:
-			print('%s数据已存在\n\n' % s)
-
-	s_all = get_all_stk()
-
-	# a = len(s_all)
-	# [save(s, a) for s in s_all]
-	
-	# 将所有数据保存下来
-	# for s in s_all:
-	# 	df = get_stk_data(s)
-	# 	df.to_json(temp_dir + s + '.json')
-	# 	a = a - 1
-	# 	print('还剩%d个\n\n' % a)
-	
-	train_stk_list = get_all_stk()[201:300]
-	
-	# train_stk_list = random.sample(get_all_stk(), 100)
-	df = pd.concat(list(filter(lambda x: not x.empty, [get_stk_data(x) for x in train_stk_list])))
-	
-	fl = DataProRF(None)
-	
-	# 生成随机森林模型
-	rf = RF(df, fl.feature_col_origin, fl.label_col)
-	
-	# 分割数据
-	rf.splice_data(ratio=0.3)
-	
-	rf.load_model()
-	
-	# 训练模型
-	rf.train()
-	
-	# 评估
-	print(str(rf.evaluate(confidence_threshold=0.6)))
 	
 	end = 0
