@@ -10,4 +10,5 @@ SQLAlchemy==1.2.12
 tensorflow==1.13.1
 tushare==1.2.35
 wxPython==4.0.6
+scikit-learn==0.22.1
 
