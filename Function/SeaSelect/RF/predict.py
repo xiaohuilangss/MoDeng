@@ -15,6 +15,7 @@ from DataSource.Data_Sub import get_all_stk
 from DataSource.auth_info import jq_login
 from Function.SeaSelect.RF.global_values import freq, temp_dir
 from Function.SeaSelect.RF.rf_data_pre_class import DataProRF, RF
+from Function.SeaSelect.Sub.Sub import gen_pdf
 
 
 class RFPre:
@@ -119,4 +120,8 @@ if __name__ == '__main__':
 	p = sorted(p_f2, key=lambda x: x[1][1], reverse=True)
 
 	pprint.pprint([(x[0], code2name(x[0]), x[1][0][0], x[1][1]) for x in p[:50]])
+
+	# 打印pdf文件
+	gen_pdf([x[0] for x in p[:50]])
+
 	end = 0

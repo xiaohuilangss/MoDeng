@@ -8,7 +8,7 @@ import talib
 import tushare as ts
 import jqdatasdk as jq
 
-from SDK.MyTimeOPT import get_current_date_str
+from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from talib import MA_Type
 import pandas as pd
 
@@ -170,6 +170,9 @@ def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_st
     :param amount:
     :return:
     """
+    if 'm' in freq:
+        end_date = add_date_str(get_current_date_str(), 1)
+
     if pd.isnull(end_date):
         end_date = get_current_date_str()
     try:

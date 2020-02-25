@@ -268,69 +268,21 @@ def cal_stk_p_level_sub(c):
     }
 
 
-# def sea_select():
-#
-#     df_total = ts.get_stock_basics()[2000:]
-#
-#     # 过滤掉年龄小于四岁的
-#     df_stk = df_total[df_total.apply(lambda x: int(str(x['timeToMarket'])[:4]) <= int(get_current_date_str()[:4])-4, axis=1)]
-#     print('已过滤掉上市小于4年的股票！')
-#     stk_list = list(df_stk.index)
-#
-#     """ --------------------------------- 根据日线rsi筛选数据 ------------------------------- """
-#     tic = time.time()
-#     stk_day_data = download_stk_list_day_data(stk_list, days=400)
-#     print('已下载day数据！耗时%0.2f分钟' % ((time.time()-tic)/60))
-#
-#     tic = time.time()
-#     pool = multiprocessing.Pool(4)
-#     stk_list = pool.apply_async(judge_rsi, (stk_day_data, 5, [0, 30],)).get()
-#     pool.close()
-#     pool.join()
-#     print('已过符合RSI条件的股票！耗时%0.2f分钟' % ((time.time()-tic)/60) + '\n筛选结果为：\n' + str(stk_list))
-#
-#     """ --------------------------------- 半小时sar反转的股票 ------------------------------- """
-#
-#     # 下载半小时数据
-#     tic = time.time()
-#     stk_hour_data = download_stk_list_hour_data(stk_list)
-#     print('已下载完小时数据！耗时%0.2f分钟' % ((time.time()-tic)/60.0))
-#
-#     tic = time.time()
-#     pool = multiprocessing.Pool(4)
-#     stk_list = pool.apply_async(hour_sar_judge, (stk_hour_data,)).get()
-#     pool.close()
-#     pool.join()
-#     print('已过滤出半小时sar转折的股票！耗时%0.2f分钟' % ((time.time()-tic)/60))
-#
-#     """ --------------------------------- 根据week反转情况进行过滤，保留有反转的股票 ------------------------------- """
-#     # tic = time.time()
-#     # stk_day_data = download_stk_list_day_data(stk_list, days=300)
-#     # print('已下载day数据！耗时%0.2f分钟' % ((time.time()-tic)/60))
-#     #
-#     # tic = time.time()
-#     # pool = multiprocessing.Pool(4)
-#     # stk_list = pool.apply_async(week_macd_judge, (stk_day_data,)).get()
-#     # pool.close()
-#     # pool.join()
-#     # print('已过滤出周线macd转折的股票！耗时%0.2f分钟' % ((time.time()-tic)/60))
-#
-#     print('最终筛选的股票为：' + str(stk_list))
-#
-#     for stk in stk_list:
-#
-#         # 将选定的股票的走势图打印到本地
-#         gen_stk_sea_select_pic(stk)
-#
-#     print('开始生成pdf...')
-#
-#     # 生成pdf
-#     c = canvas.Canvas(U"魔灯海选" + get_current_date_str() + ".pdf", pagesize=letter)
-#     c = add_front(c, '魔灯每日股票海选结果' + get_current_date_str(), '本文档由免费开源的量化投资软件“魔灯”自动生成 末尾公众号内有软件介绍', pagesize=letter)
-#     for stk in stk_list:
-#         c = print_k_to_pdf(c, stk, get_current_date_str())
-#     c = add_tail_page(c)
-#     c.save()
+def gen_pdf(stk_list_):
+    for stk_ in stk_list_:
+
+        # 将选定的股票的走势图打印到本地
+        gen_stk_sea_select_pic(stk_)
+
+    print('开始生成pdf...')
+
+    # 生成pdf
+    c_ = canvas.Canvas(U"魔灯海选" + get_current_date_str() + ".pdf", pagesize=letter)
+    c_ = add_front(c_, '魔灯每日股票海选结果' + get_current_date_str(), '本文档由免费开源的量化投资软件“魔灯”自动生成 末尾公众号内有软件介绍', pagesize=letter)
+    for stk_ in stk_list_:
+        c_ = print_k_to_pdf(c_, stk_, get_current_date_str())
+    c_ = add_tail_page(c_)
+    c_.save()
 
 
 if __name__ == '__main__':
