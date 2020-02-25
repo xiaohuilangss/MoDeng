@@ -10,6 +10,7 @@ import math
 
 from sklearn.metrics import accuracy_score
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df, get_all_stk, Index
+from DataSource.LocalData.update_local_data import LocalData
 from DataSource.auth_info import jq_login
 from SDK.DataPro import relative_rank
 from SDK.MyTimeOPT import add_date_str, get_current_date_str
@@ -40,6 +41,9 @@ class StkData:
 		
 		# 通用变量，便于后续功能扩展之用！
 		self.general_variable = None
+
+	def read_local_data(self, local_dir):
+		self.day_data = LocalData.read_stk(local_dir=local_dir, stk_=self.stk_code).tail(40)
 	
 	def down_minute_data(self, m, count=400):
 		self.minute_data = get_k_data_JQ(self.stk_code, count=count,
@@ -337,13 +341,17 @@ class DataProRF(StkData):
 		self.day_data.plot('datetime', self.feature_rank + self.feature_diff, subplots=True)
 		"""
 
-	def predict_pro(self):
+	def predict_pro(self, local_data=False):
 		"""
 		为预测进行预处理
 		:return:
 		"""
+
 		# 准备数据
-		self.down_day_data(count=self.count)
+		if local_data:
+			self.read_local_data('C:/localdata/'+self.freq+'/')
+		else:
+			self.down_day_data(count=self.count)
 
 		self.day_data.dropna(axis=0)
 

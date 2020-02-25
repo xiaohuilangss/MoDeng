@@ -420,6 +420,7 @@ class SelectCmd:
 
         elif ipt_[0] == '规则-设置报告存放路径':
             try:
+
                 r = '路径设置成功！存放路径为：\n' + self.select_pdf_save_dir() + '\n'
             except Exception as e_:
                 r = '\n设置报告存放路径出错！原因：\n%s\n请重试\n' % str(e_)
