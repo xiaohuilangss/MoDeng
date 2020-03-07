@@ -40,149 +40,149 @@ def genMIMEImageList(pic_dir_list):
     return msgImage_list
 
 
-def genStkPicForQQ(stk_df, stk_code=''):
-    """
-    函数功能：给定stk的df，已经确定stk当前处于拐点状态，需要将当前stk的信息打印成图片，便于人工判断！
-    :param stk_df           从tushare下载下来的原生df
-    :param root_save_dir    配置文件中定义的存储路径
-    :return:                返回生成图片的路径
-    """
-    """
-    规划一下都画哪些图
-    1、该stk整体走势，包括60日均线、20日均线和收盘价
-    2、stk近几天的MACD走势
-    """
+# def genStkPicForQQ(stk_df, stk_code=''):
+#     """
+#     函数功能：给定stk的df，已经确定stk当前处于拐点状态，需要将当前stk的信息打印成图片，便于人工判断！
+#     :param stk_df           从tushare下载下来的原生df
+#     :param root_save_dir    配置文件中定义的存储路径
+#     :return:                返回生成图片的路径
+#     """
+#     """
+#     规划一下都画哪些图
+#     1、该stk整体走势，包括60日均线、20日均线和收盘价
+#     2、stk近几天的MACD走势
+#     """
+#
+#     """
+#     在原数据的基础上增加均线和MACD
+#     """
+#
+#     # 按升序排序
+#     stk_df = stk_df.sort_values(by='date', ascending=True)
+#
+#     stk_df['M20'] = stk_df['close'].rolling(window=20).mean()
+#     stk_df['M60'] = stk_df['close'].rolling(window=60).mean()
+#     stk_df['MACD'], stk_df['MACDsignal'], stk_df['MACDhist'] = talib.MACD(stk_df.close,
+#                                                                                 fastperiod=12, slowperiod=26,
+#                                                                                 signalperiod=9)
+#
+#     fig, ax = plt.subplots(nrows=4, ncols=1)
+#
+#     ax[0].plot(range(0, len(stk_df['date'])), stk_df['M20'], 'b--', label='20日均线', linewidth=1)
+#     ax[0].plot(range(0, len(stk_df['date'])), stk_df['M60'], 'r--', label='60日均线', linewidth=1)
+#     ax[0].plot(range(0, len(stk_df['date'])), stk_df['close'], 'g*--', label='收盘价', linewidth=0.5, markersize=1)
+#
+#     ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
+#
+#     # 准备下标
+#     xticklabels_all_list = list(stk_df['date'].sort_values(ascending=True))
+#     xticklabels_all_list = [x.replace('-', '')[2:] for x in xticklabels_all_list]
+#
+#     for ax_sig in ax[0:2]:
+#         ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 30, rotation=45)
+#         ax_sig.legend(loc='best', fontsize=5)
+#
+#     # 画出最近几天的情况（均线以及MACD）
+#     stk_df_current = stk_df.tail(plot_current_days_amount)
+#     ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M20'], 'b--', label='20日均线', linewidth=2)
+#     ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M60'], 'r--', label='60日均线', linewidth=2)
+#     ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['close'], 'g*-', label='收盘价', linewidth=1, markersize=5)
+#     ax[3].bar(range(0, len(stk_df_current['date'])), stk_df_current['MACD'], label='MACD')
+#
+#     # 准备下标
+#     xticklabels_all_list = list(stk_df_current['date'].sort_values(ascending=True))
+#     xticklabels_all_list = [x.replace('-', '')[2:] for x in xticklabels_all_list]
+#
+#     for ax_sig in ax[2:4]:
+#         ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 30, rotation=45)
+#         ax_sig.legend(loc='best', fontsize=5)
+#
+#     fig.tight_layout()                          # 调整整体空白
+#     plt.subplots_adjust(wspace=0, hspace=1)     # 调整子图间距
+#
+#     # 检查日级别的MACD是否有异常
+#     attention = False
+#     MACD_list = stk_df_current.tail(3)['MACD'].values
+#
+#     if MACD_list[1] == np.min(MACD_list):
+#         plt.title(stk_code + '日级别 MACD 见底了！')
+#         attention = True
+#     elif MACD_list[1] == np.max(MACD_list):
+#         plt.title(stk_code + '日级别 MACD 到顶了！')
+#         attention = True
+#
+#     return fig, ax, attention
 
-    """
-    在原数据的基础上增加均线和MACD
-    """
 
-    # 按升序排序
-    stk_df = stk_df.sort_values(by='date', ascending=True)
-
-    stk_df['M20'] = stk_df['close'].rolling(window=20).mean()
-    stk_df['M60'] = stk_df['close'].rolling(window=60).mean()
-    stk_df['MACD'], stk_df['MACDsignal'], stk_df['MACDhist'] = talib.MACD(stk_df.close,
-                                                                                fastperiod=12, slowperiod=26,
-                                                                                signalperiod=9)
-
-    fig, ax = plt.subplots(nrows=4, ncols=1)
-
-    ax[0].plot(range(0, len(stk_df['date'])), stk_df['M20'], 'b--', label='20日均线', linewidth=1)
-    ax[0].plot(range(0, len(stk_df['date'])), stk_df['M60'], 'r--', label='60日均线', linewidth=1)
-    ax[0].plot(range(0, len(stk_df['date'])), stk_df['close'], 'g*--', label='收盘价', linewidth=0.5, markersize=1)
-
-    ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
-
-    # 准备下标
-    xticklabels_all_list = list(stk_df['date'].sort_values(ascending=True))
-    xticklabels_all_list = [x.replace('-', '')[2:] for x in xticklabels_all_list]
-
-    for ax_sig in ax[0:2]:
-        ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 30, rotation=45)
-        ax_sig.legend(loc='best', fontsize=5)
-
-    # 画出最近几天的情况（均线以及MACD）
-    stk_df_current = stk_df.tail(plot_current_days_amount)
-    ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M20'], 'b--', label='20日均线', linewidth=2)
-    ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M60'], 'r--', label='60日均线', linewidth=2)
-    ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['close'], 'g*-', label='收盘价', linewidth=1, markersize=5)
-    ax[3].bar(range(0, len(stk_df_current['date'])), stk_df_current['MACD'], label='MACD')
-
-    # 准备下标
-    xticklabels_all_list = list(stk_df_current['date'].sort_values(ascending=True))
-    xticklabels_all_list = [x.replace('-', '')[2:] for x in xticklabels_all_list]
-
-    for ax_sig in ax[2:4]:
-        ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 30, rotation=45)
-        ax_sig.legend(loc='best', fontsize=5)
-
-    fig.tight_layout()                          # 调整整体空白
-    plt.subplots_adjust(wspace=0, hspace=1)     # 调整子图间距
-
-    # 检查日级别的MACD是否有异常
-    attention = False
-    MACD_list = stk_df_current.tail(3)['MACD'].values
-
-    if MACD_list[1] == np.min(MACD_list):
-        plt.title(stk_code + '日级别 MACD 见底了！')
-        attention = True
-    elif MACD_list[1] == np.max(MACD_list):
-        plt.title(stk_code + '日级别 MACD 到顶了！')
-        attention = True
-
-    return fig, ax, attention
-
-
-def genStkPic(stk_df, stk_code, current_date, root_save_dir, pic_name='stk_A_C_M.png'):
-    """
-    函数功能：给定stk的df，已经确定stk当前处于拐点状态，需要将当前stk的信息打印成图片，便于人工判断！
-    :param stk_df           从tushare下载下来的原生df
-    :param root_save_dir    配置文件中定义的存储路径
-    :return:                返回生成图片的路径
-    """
-    """
-    规划一下都画哪些图
-    1、该stk整体走势，包括60日均线、20日均线和收盘价
-    2、stk近几天的MACD走势
-    """
-
-    """
-    在原数据的基础上增加均线和MACD
-    """
-
-    # 按升序排序
-    stk_df = stk_df.sort_values(by='date', ascending=True)
-
-    stk_df['M20'] = stk_df['close'].rolling(window=20).mean()
-    stk_df['M60'] = stk_df['close'].rolling(window=60).mean()
-    stk_df['MACD'], stk_df['MACDsignal'], stk_df['MACDhist'] = talib.MACD(stk_df.close,
-                                                                                fastperiod=12, slowperiod=26,
-                                                                                signalperiod=9)
-
-    fig, ax = plt.subplots(nrows=4, ncols=1)
-
-    ax[0].plot(range(0, len(stk_df['date'])), stk_df['M20'], 'b--', label='20日均线', linewidth=1)
-    ax[0].plot(range(0, len(stk_df['date'])), stk_df['M60'], 'r--', label='60日均线', linewidth=1)
-    ax[0].plot(range(0, len(stk_df['date'])), stk_df['close'], 'g*--', label='收盘价', linewidth=0.5, markersize=1)
-
-    ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
-
-    # 准备下标
-    xticks = range(0, len(stk_df['date']), int(math.ceil(len(stk_df['date']) / 40)))
-    xticklabels_all_list = list(stk_df['date'].sort_values(ascending=True))
-    xticklabels_all = [xticklabels_all_list[n] for n in xticks]
-
-    for ax_sig in ax[0:2]:
-        ax_sig.set_xticks(xticks)
-        ax_sig.set_xticklabels(xticklabels_all, rotation=90, fontsize=5)
-        ax_sig.legend(loc='best', fontsize=5)
-
-    # 画出最近几天的情况（均线以及MACD）
-    stk_df_current = stk_df.tail(plot_current_days_amount)
-    ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M20'], 'b--', label='20日均线', linewidth=2)
-    ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M60'], 'r--', label='60日均线', linewidth=2)
-    ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['close'], 'g*-', label='收盘价', linewidth=1, markersize=5)
-
-    ax[2].set_xticks(list(range(0, len(stk_df_current['date']))))
-    ax[2].set_xticklabels(list(stk_df_current['date']), rotation=90, fontsize=5)
-    ax[2].legend(loc='best')
-
-    ax[3].bar(range(0, len(stk_df_current['date'])), stk_df_current['MACD'], label='MACD')
-    ax[3].set_xticks(list(range(0, len(stk_df_current['date']))))
-    ax[3].set_xticklabels(list(stk_df_current['date']), rotation=90, fontsize=5)
-    ax[3].legend(loc='best')
-
-    # 保存图片
-    save_dir = root_save_dir+current_date+'/'+str(stk_code)+'/'
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-
-    plt.tight_layout()
-    plt.savefig(save_dir+pic_name, dpi=300)
-    plt.close()
-
-    return save_dir+pic_name
+# def genStkPic(stk_df, stk_code, current_date, root_save_dir, pic_name='stk_A_C_M.png'):
+#     """
+#     函数功能：给定stk的df，已经确定stk当前处于拐点状态，需要将当前stk的信息打印成图片，便于人工判断！
+#     :param stk_df           从tushare下载下来的原生df
+#     :param root_save_dir    配置文件中定义的存储路径
+#     :return:                返回生成图片的路径
+#     """
+#     """
+#     规划一下都画哪些图
+#     1、该stk整体走势，包括60日均线、20日均线和收盘价
+#     2、stk近几天的MACD走势
+#     """
+#
+#     """
+#     在原数据的基础上增加均线和MACD
+#     """
+#
+#     # 按升序排序
+#     stk_df = stk_df.sort_values(by='date', ascending=True)
+#
+#     stk_df['M20'] = stk_df['close'].rolling(window=20).mean()
+#     stk_df['M60'] = stk_df['close'].rolling(window=60).mean()
+#     stk_df['MACD'], stk_df['MACDsignal'], stk_df['MACDhist'] = talib.MACD(stk_df.close,
+#                                                                                 fastperiod=12, slowperiod=26,
+#                                                                                 signalperiod=9)
+#
+#     fig, ax = plt.subplots(nrows=4, ncols=1)
+#
+#     ax[0].plot(range(0, len(stk_df['date'])), stk_df['M20'], 'b--', label='20日均线', linewidth=1)
+#     ax[0].plot(range(0, len(stk_df['date'])), stk_df['M60'], 'r--', label='60日均线', linewidth=1)
+#     ax[0].plot(range(0, len(stk_df['date'])), stk_df['close'], 'g*--', label='收盘价', linewidth=0.5, markersize=1)
+#
+#     ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
+#
+#     # 准备下标
+#     xticks = range(0, len(stk_df['date']), int(math.ceil(len(stk_df['date']) / 40)))
+#     xticklabels_all_list = list(stk_df['date'].sort_values(ascending=True))
+#     xticklabels_all = [xticklabels_all_list[n] for n in xticks]
+#
+#     for ax_sig in ax[0:2]:
+#         ax_sig.set_xticks(xticks)
+#         ax_sig.set_xticklabels(xticklabels_all, rotation=90, fontsize=5)
+#         ax_sig.legend(loc='best', fontsize=5)
+#
+#     # 画出最近几天的情况（均线以及MACD）
+#     stk_df_current = stk_df.tail(plot_current_days_amount)
+#     ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M20'], 'b--', label='20日均线', linewidth=2)
+#     ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M60'], 'r--', label='60日均线', linewidth=2)
+#     ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['close'], 'g*-', label='收盘价', linewidth=1, markersize=5)
+#
+#     ax[2].set_xticks(list(range(0, len(stk_df_current['date']))))
+#     ax[2].set_xticklabels(list(stk_df_current['date']), rotation=90, fontsize=5)
+#     ax[2].legend(loc='best')
+#
+#     ax[3].bar(range(0, len(stk_df_current['date'])), stk_df_current['MACD'], label='MACD')
+#     ax[3].set_xticks(list(range(0, len(stk_df_current['date']))))
+#     ax[3].set_xticklabels(list(stk_df_current['date']), rotation=90, fontsize=5)
+#     ax[3].legend(loc='best')
+#
+#     # 保存图片
+#     save_dir = root_save_dir+current_date+'/'+str(stk_code)+'/'
+#     if not os.path.exists(save_dir):
+#         os.makedirs(save_dir)
+#
+#     plt.tight_layout()
+#     plt.savefig(save_dir+pic_name, dpi=300)
+#     plt.close()
+#
+#     return save_dir+pic_name
 
 
 def genStkIdxPic(stk_df, stk_code, current_date, root_save_dir, pic_name='stk_idx.png'):

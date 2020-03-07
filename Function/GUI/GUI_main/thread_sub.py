@@ -5,6 +5,7 @@ import multiprocessing
 from Function.GUI.GUI_main.cal_rsv_class import RSV
 from Function.GUI.GUI_main.opt_record_class import OptRecord
 from Function.GUI.GUI_main.reseau_judge_class import ReseauJudge
+from Function.GenPic.gen_pic_class import GenPic
 
 multiprocessing.freeze_support()
 
@@ -29,8 +30,8 @@ from DataSource.Data_Sub import get_k_data_JQ, get_current_price_JQ, add_stk_ind
 from Global_Value.file_dir import opt_record_file_url, hist_pic_dir, opt_record, json_file_url
 from SDK.Debug_Sub import debug_print_txt, myPrint
 from SDK.Gen_Stk_Pic_Sub import \
-    gen_hour_macd_values, set_background_color, gen_hour_macd_pic_local, \
-    gen_hour_index_pic_local, gen_day_pic_local, gen_w_m_macd_pic_local, gen_idx_pic_local
+    gen_hour_macd_values, gen_hour_macd_pic_local, gen_hour_index_pic_local, gen_day_pic_local, gen_w_m_macd_pic_local, \
+    gen_idx_pic_local
 from SDK.MyTimeOPT import get_current_datetime_str, add_date_str, get_current_date_str
 
 from DataSource.auth_info import *
@@ -216,9 +217,9 @@ def gen_kind_pic(kind, pool):
         for stk_info in dict_stk_list[page]:
             stk = stk_info[1]
             if kind is 'h':
-                r_dic[page][stk + '_d'] = gen_hour_macd_values(stk)
+                r_dic[page][stk + '_d'] = GenPic.gen_hour_macd_values(stk)
             elif kind is 'h_idx':
-                r_dic[page][stk + '_d'] = gen_hour_macd_values(stk)[0]
+                r_dic[page][stk + '_d'] = GenPic.gen_hour_macd_values(stk)[0]
             elif kind is 'd':
                 r_dic[page][stk + '_d'] = get_k_data_JQ(stk, 400)
             elif kind is 'wm':
@@ -239,21 +240,38 @@ def gen_kind_pic(kind, pool):
                 os.makedirs(save_dir)
 
             if kind is 'h':
-                r_dic[page][stk + '_res'] = pool.apply_async(gen_hour_macd_pic_local, (
-                r_dic[page][stk + '_d'], stk, 'jq', '', save_dir + file_name))
+                r_dic[page][stk + '_res'] = pool.apply_async(GenPic.gen_hour_macd_pic_local, (
+                    r_dic[page][stk + '_d'], stk, save_dir + file_name))
 
             elif kind is 'h_idx':
-                r_dic[page][stk + '_res'] = pool.apply_async(gen_hour_index_pic_local,
-                                                             (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+                r_dic[page][stk + '_res'] = pool.apply_async(GenPic.gen_hour_index_pic_local,
+                                                       (r_dic[page][stk + '_d'], stk, save_dir + file_name))
             elif kind is 'd':
-                r_dic[page][stk + '_res'] = pool.apply_async(gen_day_pic_local,
-                                                             (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+                r_dic[page][stk + '_res'] = pool.apply_async(GenPic.gen_day_pic_local,
+                                                       (r_dic[page][stk + '_d'], stk, save_dir + file_name))
             elif kind is 'wm':
-                r_dic[page][stk + '_res'] = pool.apply_async(gen_w_m_macd_pic_local,
-                                                             (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+                r_dic[page][stk + '_res'] = pool.apply_async(GenPic.gen_w_m_macd_pic_local,
+                                                       (r_dic[page][stk + '_d'], stk, save_dir + file_name))
             elif kind is 'd_idx':
-                r_dic[page][stk + '_res'] = pool.apply_async(gen_idx_pic_local,
-                                                             (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+                r_dic[page][stk + '_res'] = pool.apply_async(GenPic.gen_idx_pic_local,
+                                                       (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+
+            # if kind is 'h':
+            #     r_dic[page][stk + '_res'] = pool.apply_async(gen_hour_macd_pic_local, (
+            #     r_dic[page][stk + '_d'], stk, 'jq', '', save_dir + file_name))
+            #
+            # elif kind is 'h_idx':
+            #     r_dic[page][stk + '_res'] = pool.apply_async(gen_hour_index_pic_local,
+            #                                                  (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+            # elif kind is 'd':
+            #     r_dic[page][stk + '_res'] = pool.apply_async(gen_day_pic_local,
+            #                                                  (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+            # elif kind is 'wm':
+            #     r_dic[page][stk + '_res'] = pool.apply_async(gen_w_m_macd_pic_local,
+            #                                                  (r_dic[page][stk + '_d'], stk, save_dir + file_name))
+            # elif kind is 'd_idx':
+            #     r_dic[page][stk + '_res'] = pool.apply_async(gen_idx_pic_local,
+            #                                                  (r_dic[page][stk + '_d'], stk, save_dir + file_name))
 
             # 在字典中保存图片路径
             r_dic[page][stk + '_url'] = save_dir + file_name
@@ -374,7 +392,7 @@ def check_single_stk_hour_idx_sub(stk_df, stk_code, debug=False):
         if sar_tail.tail(1)['SAR'].values[0] < sar_tail.tail(1)['close'].values[0]:
             title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数小时可能上涨！'
             result_analysis.append(title_tmp)
-            set_background_color(bc='b_r')
+            GenPic.set_background_color(bc='b_r')
         else:
             title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数小时可能下跌！'
             result_analysis.append(title_tmp)
@@ -428,7 +446,7 @@ def check_single_stk_hour_idx_wx(stk_code, source='jq', debug=False):
         if sar_tail.tail(1)['SAR'].values[0] < sar_tail.tail(1)['close'].values[0]:
             title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数小时可能上涨！'
             result_analysis.append(title_tmp)
-            set_background_color(bc='b_r')
+            GenPic.set_background_color(bc='b_r')
         else:
             title_tmp = stk_code + ' ' + code2name(stk_code) + ' 注意 SAR 指标翻转，后续数小时可能下跌！'
             result_analysis.append(title_tmp)
