@@ -10,6 +10,6 @@ from jqdatasdk import bond, query
 if __name__ == '__main__':
     jq_login()
 
-    df = bond.run_query(query(bond.BOND_BASIC_INFO).filter(bond.BOND_BASIC_INFO.bond_form_id == '703013'))
+    df = bond.run_query(query(bond.CONBOND_BASIC_INFO).filter(bond.CONBOND_BASIC_INFO.bond_form_id == '703011'))
 
     end = 0
