@@ -45,8 +45,8 @@ class GenPic:
     @staticmethod
     def plot_macd(ax, df, label):
         ax.bar(range(0, len(df)), df['MACD'], label='MACD_' + label)
-        ax.plot(range(0, len(df)), df['MACDsignal'], 'g--')
-        ax.plot(range(0, len(df)), df['MACDhist'], 'y--')
+        ax.plot(range(0, len(df)), df['MACDsignal'], 'g-', linewidth=1)
+        ax.plot(range(0, len(df)), df['MACDhist'], 'y-', linewidth=1)
 
         return ax
 
@@ -94,6 +94,9 @@ class GenPic:
         ax[2].plot(range(0, len(df_m['date'])), df_m['close'], 'g*--', label='close')
         ax[3] = GenPic.plot_macd(ax[3], df_m, 'month')
         ax[3].plot(range(0, len(df_m['date'])), [0 for x in range(0, len(df_m['date']))], 'r--', label='month_MACD')
+
+        fig.tight_layout()  # 调整整体空白
+        plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
 
         return fig, ax
 
@@ -193,7 +196,7 @@ class GenPic:
         ax[0].plot(range(0, len(stk_df['date'])), stk_df['M60'], 'r--', label='60日均线', linewidth=1)
         ax[0].plot(range(0, len(stk_df['date'])), stk_df['close'], 'g*--', label='收盘价', linewidth=0.5, markersize=1)
 
-        ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
+        # ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
         ax[1] = GenPic.plot_macd(ax[1], stk_df, 'day')
 
         # 准备下标
@@ -229,8 +232,8 @@ class GenPic:
         xticklabels_all_list = [x.replace('-', '')[4:] for x in xticklabels_all_list]
 
         for ax_sig in ax[2:4]:
-            ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 30, rotation=45)
-            ax_sig.legend(loc='best', fontsize=5)
+            ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 25, rotation=0)
+            ax_sig.legend(loc='best', fontsize=2.5)
 
         fig.tight_layout()  # 调整整体空白
         plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
