@@ -329,7 +329,6 @@ class GenPic:
 
         elif m60[1] == np.max(m60):
             title = stk_code + '小时MACD高点！'
-
         else:
             title = stk_code
 
