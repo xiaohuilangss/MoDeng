@@ -226,14 +226,14 @@ class GenPic:
 
         # 准备下标
         xticklabels_all_list = list(stk_df_current['date'].sort_values(ascending=True))
-        xticklabels_all_list = [x.replace('-', '')[2:] for x in xticklabels_all_list]
+        xticklabels_all_list = [x.replace('-', '')[4:] for x in xticklabels_all_list]
 
         for ax_sig in ax[2:4]:
             ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 30, rotation=45)
             ax_sig.legend(loc='best', fontsize=5)
 
         fig.tight_layout()  # 调整整体空白
-        plt.subplots_adjust(wspace=0, hspace=1)  # 调整子图间距
+        plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
         # plt.close()
 
         return fig, ax, attention, result_analysis
@@ -301,17 +301,17 @@ class GenPic:
         ax[1] = GenPic.plot_macd(ax[1], df_30, '30min')
 
         ax[2].plot(range(0, len(df_60)), df_60['close'], 'g*--', label='close_60min')
-        ax[3] = GenPic.plot_macd(ax[1], df_60, '60min')
+        ax[3] = GenPic.plot_macd(ax[3], df_60, '60min')
 
         # 设置下标
         ax[1] = addXticklabel_list(
             ax[1],
-            list([str(x)[-11:-3] for x in df_30['datetime']]),
+            list([str(x)[-9:-3] for x in df_30['datetime']]),
             15, rotation=0, fontsize=6)
 
         ax[3] = addXticklabel_list(
             ax[3],
-            list([str(x)[-11:-3] for x in df_60['datetime']]),
+            list([str(x)[-9:-3] for x in df_60['datetime']]),
             15, rotation=0, fontsize=6)
 
         for ax_sig in ax:
@@ -338,7 +338,7 @@ class GenPic:
             debug_print_txt('macd_hour_pic', stk_code, '结论:' + title + '\n\n')
 
         fig.tight_layout()
-        plt.subplots_adjust(wspace=0, hspace=0.3)  # 调整子图间距
+        plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
 
         return fig
 
