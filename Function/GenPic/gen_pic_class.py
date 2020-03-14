@@ -19,13 +19,15 @@ from DataSource.Code2Name import code2name
 from PIL import Image
 from io import BytesIO
 from pylab import *
-from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df, my_pro_bar
+from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
 from SDK.Debug_Sub import debug_print_txt
-from SDK.Gen_Stk_Pic_Sub import RankNote
 from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str, add_date_str
 from SDK.PlotOptSub import addXticklabel_list, add_axis
 
 import matplotlib
+
+from SDK.rank_note_class import RankNote
+
 matplotlib.use('agg')
 
 # 解决无法显示汉字和符号的问题
@@ -38,43 +40,41 @@ class GenPic:
     图片生成的基类
     """
     def __init__(self):
-        pass
+        self.log = ''
 
     @staticmethod
-    def gen_hour_macd_values(stk_code, source='jq', title='', debug=False):
+    def plot_macd(ax, df, label):
+        ax.bar(range(0, len(df)), df['MACD'], label='MACD_' + label)
+        ax.plot(range(0, len(df)), df['MACDsignal'], 'g-', linewidth=1)
+        ax.plot(range(0, len(df)), df['MACDhist'], 'y-', linewidth=1)
 
-        if debug:
-            print('开始下载' + str(stk_code) + '的小时数据！')
+        return ax
 
-        if source == 'jq':
-            df_30 = get_k_data_JQ(stk_code, count=300,
-                                  end_date=add_date_str(get_current_date_str(), 1), freq='30m')
-            df_60 = get_k_data_JQ(stk_code, count=300,
-                                  end_date=add_date_str(get_current_date_str(), 1), freq='60m')
+    @staticmethod
+    def down_minute_data(stk_code, freq):
+        try:
+            df = get_k_data_JQ(stk_code, count=300,
+                                  end_date=add_date_str(get_current_date_str(), 1), freq=freq)
 
-        elif source == 'ts':
-            df_30 = my_pro_bar(stk_code, start=add_date_str(get_current_date_str(), -20), freq='30min')
-            df_60 = my_pro_bar(stk_code, start=add_date_str(get_current_date_str(), -20), freq='60min')
+            # 去掉volume为空的行
+            df = df.loc[df.apply(lambda x: not (x['volume'] == 0), axis=1), :]
 
-        # 去掉volume为空的行
-        df_30 = df_30.loc[df_30.apply(lambda x: not (x['volume'] == 0), axis=1), :]
-        df_60 = df_60.loc[df_60.apply(lambda x: not (x['volume'] == 0), axis=1), :]
+            # 增加指标计算
+            df = add_stk_index_to_df(df)
 
-        # 增加指标计算
-        df_30 = add_stk_index_to_df(df_30)
-        df_60 = add_stk_index_to_df(df_60)
+            if str(df.index[-1]) > get_current_datetime_str():
+                df = df[:-1]
+            return df
 
-        # 生成图片
-        df_30 = df_30.dropna()
-        df_60 = df_60.dropna()
+        except Exception as e_:
+            # self.log = self.log + '函数down_minute_data：\n %s\n' % str(e_)
+            print('函数down_minute_data：\n %s\n' % str(e_))
+            return pd.DataFrame()
 
-        if str(df_60.index[-1]) > get_current_datetime_str():
-            df_60 = df_60[:-1]
+    @staticmethod
+    def gen_hour_macd_values(stk_code, debug=False):
 
-        if str(df_30.index[-1]) > get_current_datetime_str():
-            df_30 = df_30[:-1]
-
-        return df_30, df_60
+        return GenPic.down_minute_data(stk_code, '30m'), GenPic.down_minute_data(stk_code, '60m')
 
     @staticmethod
     def plot_w_m(df_w, df_m):
@@ -88,12 +88,15 @@ class GenPic:
         fig, ax = subplots(ncols=1, nrows=4)
 
         ax[0].plot(range(0, len(df_w['date'])), df_w['close'], 'g*--', label='close')
-        ax[1].bar(range(0, len(df_w['date'])), df_w['MACD'], label='week_MACD')
+        ax[1] = GenPic.plot_macd(ax[1], df_w, 'week')
         ax[1].plot(range(0, len(df_w['date'])), [0 for x in range(0, len(df_w['date']))], 'r--', label='week_MACD')
 
         ax[2].plot(range(0, len(df_m['date'])), df_m['close'], 'g*--', label='close')
-        ax[3].bar(range(0, len(df_m['date'])), df_m['MACD'], label='month_MACD')
+        ax[3] = GenPic.plot_macd(ax[3], df_m, 'month')
         ax[3].plot(range(0, len(df_m['date'])), [0 for x in range(0, len(df_m['date']))], 'r--', label='month_MACD')
+
+        fig.tight_layout()  # 调整整体空白
+        plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
 
         return fig, ax
 
@@ -193,7 +196,8 @@ class GenPic:
         ax[0].plot(range(0, len(stk_df['date'])), stk_df['M60'], 'r--', label='60日均线', linewidth=1)
         ax[0].plot(range(0, len(stk_df['date'])), stk_df['close'], 'g*--', label='收盘价', linewidth=0.5, markersize=1)
 
-        ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
+        # ax[1].bar(range(0, len(stk_df['date'])), stk_df['MACD'], label='MACD')
+        ax[1] = GenPic.plot_macd(ax[1], stk_df, 'day')
 
         # 准备下标
         xticklabels_all_list = list(stk_df['date'].sort_values(ascending=True))
@@ -209,7 +213,7 @@ class GenPic:
         ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['M60'], 'r--', label='60日均线', linewidth=2)
         ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['close'], 'g*-', label='收盘价', linewidth=1,
                    markersize=5)
-        ax[3].bar(range(0, len(stk_df_current['date'])), stk_df_current['MACD'], label='MACD')
+        ax[3] = GenPic.plot_macd(ax[3], stk_df_current, 'day')
 
         # 设置标题并返回分析结果
         result_analysis = []
@@ -225,14 +229,14 @@ class GenPic:
 
         # 准备下标
         xticklabels_all_list = list(stk_df_current['date'].sort_values(ascending=True))
-        xticklabels_all_list = [x.replace('-', '')[2:] for x in xticklabels_all_list]
+        xticklabels_all_list = [x.replace('-', '')[4:] for x in xticklabels_all_list]
 
         for ax_sig in ax[2:4]:
-            ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 30, rotation=45)
-            ax_sig.legend(loc='best', fontsize=5)
+            ax_sig = addXticklabel_list(ax_sig, xticklabels_all_list, 25, rotation=0)
+            ax_sig.legend(loc='best', fontsize=2.5)
 
         fig.tight_layout()  # 调整整体空白
-        plt.subplots_adjust(wspace=0, hspace=1)  # 调整子图间距
+        plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
         # plt.close()
 
         return fig, ax, attention, result_analysis
@@ -257,7 +261,9 @@ class GenPic:
 
     @staticmethod
     def gen_hour_macd_pic(stk_data, debug=False, stk_code=''):
+
         if debug:
+            print('进入GenPic.gen_hour_macd_pic函数！')
             debug_print_txt('macd_hour_pic', stk_code, '\n----------------------\n\n', enable=debug)
 
         # 生成小时macd数据
@@ -269,12 +275,12 @@ class GenPic:
                             'df_30原始数据:\n' + str(df_30) + '\n\n' + 'df_60原始数据:\n' + str(df_60) + '\n\n', enable=debug)
 
         # 根据情况设置背景色
-        attention = False
         m30 = df_30.tail(3)['MACD'].values
         m60 = df_60.tail(3)['MACD'].values
 
         if debug:
-            debug_print_txt('macd_hour_pic', stk_code, 'm30原始数据:\n' + str(m30) + '\n\n' + 'm60原始数据:\n' + str(m60) + '\n\n')
+            debug_print_txt('macd_hour_pic', stk_code,
+                            'm30原始数据:\n' + str(m30) + '\n\n' + 'm60原始数据:\n' + str(m60) + '\n\n')
 
         if (m30[1] == np.min(m30)) | (m60[1] == np.min(m60)):
 
@@ -288,22 +294,27 @@ class GenPic:
         else:
             GenPic.set_background_color()
 
+        # 调整显示长度
+        df_30 = df_30.tail(40)
+        df_60 = df_60.tail(40)
+
         fig, ax = plt.subplots(ncols=1, nrows=4)
 
         ax[0].plot(range(0, len(df_30)), df_30['close'], 'g*--', label='close_30min')
-        ax[1].bar(range(0, len(df_30)), df_30['MACD'], label='MACD_30min')
+        ax[1] = GenPic.plot_macd(ax[1], df_30, '30min')
+
         ax[2].plot(range(0, len(df_60)), df_60['close'], 'g*--', label='close_60min')
-        ax[3].bar(range(0, len(df_60)), df_60['MACD'], label='MACD_60min')
+        ax[3] = GenPic.plot_macd(ax[3], df_60, '60min')
 
         # 设置下标
         ax[1] = addXticklabel_list(
             ax[1],
-            list([str(x)[-11:-3] for x in df_30['datetime']]),
+            list([str(x)[-9:-3] for x in df_30['datetime']]),
             15, rotation=0, fontsize=6)
 
         ax[3] = addXticklabel_list(
             ax[3],
-            list([str(x)[-11:-3] for x in df_60['datetime']]),
+            list([str(x)[-9:-3] for x in df_60['datetime']]),
             15, rotation=0, fontsize=6)
 
         for ax_sig in ax:
@@ -321,7 +332,6 @@ class GenPic:
 
         elif m60[1] == np.max(m60):
             title = stk_code + '小时MACD高点！'
-
         else:
             title = stk_code
 
@@ -331,12 +341,12 @@ class GenPic:
             debug_print_txt('macd_hour_pic', stk_code, '结论:' + title + '\n\n')
 
         fig.tight_layout()
-        plt.subplots_adjust(wspace=0, hspace=0.3)  # 调整子图间距
+        plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
 
         return fig
 
     @staticmethod
-    def gen_hour_macd_pic_local(stk_data, stk_code, source='jq', title='', save_dir=''):
+    def gen_hour_macd_pic_local(stk_data, stk_code, save_dir=''):
         """
         采用将图片保存到本地的方式
         :param stk_data:
@@ -462,6 +472,9 @@ class GenPic:
         :param save_dir:
         :return:
         """
+        if stk_data.empty:
+            return '输入数据为空，无法生成图片！'
+
         r = GenPic.gen_hour_idx_pic(stk_data, stk_code=stk_code, debug=True)
         fig_tmp = r[0]
         analysis_str = r[3]
@@ -755,6 +768,8 @@ class GenListPic:
         self.pool = pool
         self.stk_list = stk_list
 
+        self.log = ''
+
     def update_all_pic(self):
         """
         更新所有图片
@@ -821,22 +836,27 @@ class GenListPic:
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
 
-            if kind is 'h':
-                r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_hour_macd_pic_local, (
-                    r_dic[stk + '_d'], stk, 'jq', '', save_dir + file_name))
+            try:
+                if kind is 'h':
+                    r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_hour_macd_pic_local, (
+                        r_dic[stk + '_d'], stk, save_dir + file_name))
 
-            elif kind is 'h_idx':
-                r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_hour_index_pic_local,
-                                                             (r_dic[stk + '_d'], stk, save_dir + file_name))
-            elif kind is 'd':
-                r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_day_pic_local,
-                                                             (r_dic[stk + '_d'], stk, save_dir + file_name))
-            elif kind is 'wm':
-                r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_w_m_macd_pic_local,
-                                                             (r_dic[stk + '_d'], stk, save_dir + file_name))
-            elif kind is 'd_idx':
-                r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_idx_pic_local,
-                                                             (r_dic[stk + '_d'], stk, save_dir + file_name))
+                elif kind is 'h_idx':
+                    r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_hour_index_pic_local,
+                                                                 (r_dic[stk + '_d'], stk, save_dir + file_name))
+                elif kind is 'd':
+                    r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_day_pic_local,
+                                                                 (r_dic[stk + '_d'], stk, save_dir + file_name))
+                elif kind is 'wm':
+                    r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_w_m_macd_pic_local,
+                                                                 (r_dic[stk + '_d'], stk, save_dir + file_name))
+                elif kind is 'd_idx':
+                    r_dic[stk + '_res'] = pool.apply_async(GenPic.gen_idx_pic_local,
+                                                                 (r_dic[stk + '_d'], stk, save_dir + file_name))
+
+            except Exception as e_:
+                self.log = self.log + '函数 gen_stk_list_kind_pic：\n%s\n' % str(e_)
+                print('函数 gen_stk_list_kind_pic：\n%s\n' % str(e_))
 
             # 在字典中保存图片路径
             r_dic[stk + '_url'] = save_dir + file_name
@@ -870,11 +890,16 @@ class GenPicPdf:
 
 
 if __name__ == '__main__':
+    # jq_login()
+    # GenPic.gen_hour_macd_pic_local(
+    #     (GenPic.down_minute_data('300183', '30m'), GenPic.down_minute_data('300183', '60m')),
+    #     '300183', save_dir='C:/Users\paul\Desktop\新建文件夹 (2)/')
+
     pool = multiprocessing.Pool(4)
     stk_list = ['300183', '000001', '603421']
-
-
+    g = GenListPic(stk_list, pool, 'C:/Users\paul\Desktop\新建文件夹 (2)/')
     r = g.update_all_pic()
+    print(g.log)
 
     # 总结图片路径
     pic_url = {}

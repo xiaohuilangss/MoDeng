@@ -13,10 +13,11 @@ from reportlab.pdfgen import canvas
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
 from DataSource.auth_info import jq_login, logout
+from Function.GenPic.gen_pic_class import GenPic
 from Global_Value.file_dir import sea_select_pic_dir, rootPath
 
 from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
-from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_pic_local, gen_hour_index_pic_local, gen_day_pic_local, \
+from SDK.Gen_Stk_Pic_Sub import gen_hour_index_pic_local, gen_day_pic_local, \
     gen_w_m_macd_pic_local, gen_idx_pic_local, gen_hour_macd_values
 from SDK.MyTimeOPT import Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
@@ -1075,7 +1076,7 @@ class SeaSelectPdf:
             file_name = stk_code + '.png'
 
             # 生成小时图片
-            gen_hour_macd_pic_local(df_hour, stk_code, 'jq', '', save_dir + 'h_' + file_name)
+            GenPic.gen_hour_macd_pic_local(df_hour, stk_code, save_dir + 'h_' + file_name)
             gen_hour_index_pic_local(df_hour[0], stk_code, save_dir + 'h_idx_' + file_name)
             gen_day_pic_local(df_day, stk_code, save_dir + 'd_' + file_name)
             gen_w_m_macd_pic_local(df_day, stk_code, save_dir + 'wm_' + file_name)
