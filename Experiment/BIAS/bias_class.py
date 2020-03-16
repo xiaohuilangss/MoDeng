@@ -112,5 +112,7 @@ class BIAS:
         df_bias = self.add_bias(df)
         
         return df_bias.tail(1)['bias'].values[0]
-    
+
+
 if __name__ == '__main__':
+    pass
