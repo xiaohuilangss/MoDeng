@@ -4,6 +4,7 @@
 bias相关的类
 """
 from DataSource.Data_Sub import get_k_data_JQ
+from DataSource.auth_info import jq_login
 from Global_Value.file_dir import data_dir
 
 import json
@@ -25,6 +26,7 @@ class BIAS:
         self.json_file_name = self.local_data_dir + \
                    'bias' + \
                    self.stk_code + \
+                    '_' + self.freq + \
                    '_' + \
                    str(self.span_q) + \
                    '_' + str(self.span_s) + \
@@ -59,7 +61,7 @@ class BIAS:
         
         self.bias_dict = {
             'bias_p': bias_p,
-            'bias_q': bias_n
+            'bias_n': bias_n
         }
     
     def save_bias_to_json(self, name=''):
@@ -71,7 +73,7 @@ class BIAS:
         if not os.path.exists(self.local_data_dir):
             os.makedirs(self.local_data_dir)
             
-        with open(self.json_file_name) as f:
+        with open(self.json_file_name, 'w') as f:
             json.dump(self.bias_dict, f)
             
     def load_bias_from_json(self):
@@ -90,18 +92,19 @@ class BIAS:
         else:
             return False
     
-    def cal_rank_now(self):
+    def cal_rank_now(self, bias_now=None):
         """
         给定一个值，计算相对bias
         :param bias_now:
         :return:
         """
-        bias_now = self.cal_rt_bias()
+        if bias_now is None:
+            bias_now = self.cal_rt_bias()
         
         if bias_now >= 0:
             return relative_rank(self.bias_dict['bias_p'], bias_now)
         else:
-            return relative_rank(self.bias_dict['bias_n'], bias_now)
+            return relative_rank(self.bias_dict['bias_n'], bias_now) - 100
         
     def cal_rt_bias(self):
         """
@@ -112,5 +115,28 @@ class BIAS:
         df_bias = self.add_bias(df)
         
         return df_bias.tail(1)['bias'].values[0]
-    
+
+    def plot_test(self):
+        """
+        用以测试效果
+        :return:
+        """
+        df = get_k_data_JQ(stk=self.stk_code, freq=self.freq, count=self.hist_count)
+        df_bias = self.add_bias(df)
+
+        # 增加rank数据
+        df_bias['rank'] = df_bias.apply(lambda x: self.cal_rank_now(x['bias']), axis=1)
+
+        df_bias.reset_index().reset_index().plot('level_0', ['close', 'rank'], subplots=True, style='*--')
+
+
 if __name__ == '__main__':
+    jq_login()
+
+    # bias_obj_1m = BIAS(stk_code='300183', freq='1m')
+    # bias_obj_1m.plot_test()
+
+    bias_obj_1d = BIAS(stk_code='300183', freq='1d')
+    bias_obj_1d.plot_test()
+
+    end = 0
