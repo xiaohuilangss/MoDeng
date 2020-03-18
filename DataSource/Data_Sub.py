@@ -163,7 +163,7 @@ def add_stk_index_to_df(stk_df):
     return stk_df
 
 
-def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
+def get_k_data_JQ(stk, count=None, start_date=None, end_date=None, freq='daily'):
     """
     使用JQData来下载stk的历史数据
     :param stk_code:
