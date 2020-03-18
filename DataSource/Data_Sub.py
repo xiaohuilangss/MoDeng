@@ -3,14 +3,18 @@
 """
 与数据源相关的一些子函数
 """
+import calendar
+
 import jqdatasdk
 import talib
 import tushare as ts
 import jqdatasdk as jq
+import numpy as np
+import pandas as pd
 
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 from talib import MA_Type
-import pandas as pd
+
 
 
 def get_RT_price(stk_code, source='jq'):
@@ -163,7 +167,7 @@ def add_stk_index_to_df(stk_df):
     return stk_df
 
 
-def get_k_data_JQ(stk, count=None, start_date=None, end_date=get_current_date_str(), freq='daily'):
+def get_k_data_JQ(stk, count=None, start_date=None, end_date=None, freq='daily'):
     """
     使用JQData来下载stk的历史数据
     :param stk_code:
@@ -263,6 +267,9 @@ class JQMethod:
         return index_str_2_jq_dict.get(index_str, index_str)
 
 
+
+    
+    
 if __name__ == '__main__':
     df = my_pro_bar('300183', start='2019-01-01')
     df.plot('date', ['close'])
