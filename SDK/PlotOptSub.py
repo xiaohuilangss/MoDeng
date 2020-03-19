@@ -36,7 +36,6 @@ def plot_x_date(code_param, data_df_param, y_axis_info_param):
 
 
 def add_axis(ax, df_date_s, x_amount, fontsize=5, rotation=90):
-
     """
     将字符串列用作x轴标签
     :param ax:
@@ -47,7 +46,7 @@ def add_axis(ax, df_date_s, x_amount, fontsize=5, rotation=90):
     xticks = list(range(0, len(df_date_s), int(math.ceil(len(df_date_s) / x_amount))))
     ax.set_xticks(xticks)
 
-    xticklabels_all_list = [x.replace('-', '') for x in list(df_date_s.sort_values(ascending=True))]
+    xticklabels_all_list = [str(x).replace('-', '') for x in df_date_s]
     xticklabels_all = [xticklabels_all_list[n] for n in xticks]
     ax.set_xticklabels(xticklabels_all, rotation=rotation, fontsize=fontsize)
 

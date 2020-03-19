@@ -38,6 +38,22 @@ class BIAS:
         if not self.load_bias_from_json():
             self.gen_hist_data()
             self.save_bias_to_json()
+    
+    @ staticmethod
+    def add_bias_rank_public(df, span_q, span_s):
+        """
+        供外部调用的公共函数，因此最后没有“去除空值行”的操作
+        :param df:
+        :param span_q:
+        :param span_s:
+        :return:
+        """
+        df['line_q'] = df['close'].rolling(window=span_q).mean()
+        df['line_s'] = df['close'].rolling(window=span_s).mean()
+    
+        df['bias'] = df.apply(lambda x: x['line_q'] - x['line_s'], axis=1)
+        
+        return df
         
     def add_bias(self, df):
         
