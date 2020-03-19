@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import math
 
-from DataSource.Data_Sub import get_k_data_JQ
+from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df, Index
 from DataSource.LocalData.update_local_data import LocalData
 from SDK.DataPro import relative_rank
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
@@ -103,3 +103,43 @@ class StkData:
         """
         
         return [StkData.cal_rank_sig(x, list_) for x in list_]
+
+    def add_index(self):
+        """
+        向日线数据中增加常用指标
+        :return:
+        """
+        self.data = add_stk_index_to_df(self.data)
+
+        # 增加其他指标
+        idx = Index(self.data)
+
+        idx.add_cci(5)
+        idx.add_cci(20)
+
+        self.data = idx.stk_df
+
+    def add_sar_diff(self):
+        self.data['sar_close_diff'] = self.data.apply(lambda x: x['SAR'] - x['close'], axis=1)
+
+    def add_kd_diff(self):
+        """
+        向日线数据中增加kd的差值值
+        :return:
+        """
+        self.data['kd_diff'] = self.data.apply(lambda x: (x['slowk'] - x['slowd']), axis=1)
+
+    def add_boll_width(self):
+        """
+        向日线数据中增加布林线宽度值
+        :return:
+        """
+        self.data['boll_width'] = self.data.apply(lambda x: x['upper'] - x['lower'], axis=1)
+
+    def add_rank_col(self, col_name):
+        """
+        对日线数据的某一个字段进行排名华
+        :param col_name:
+        :return:
+        """
+        self.data[col_name + '_rank'] = self.cal_rank(self.data[col_name])

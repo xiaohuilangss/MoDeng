@@ -5,6 +5,7 @@ bias相关的类
 """
 from DataSource.Data_Sub import get_k_data_JQ
 from DataSource.auth_info import jq_login
+from DataSource.data_pro import cal_df_col_rank
 from Global_Value.file_dir import data_dir
 
 import json
@@ -51,8 +52,9 @@ class BIAS:
         df['line_q'] = df['close'].rolling(window=span_q).mean()
         df['line_s'] = df['close'].rolling(window=span_s).mean()
     
-        df['bias'] = df.apply(lambda x: x['line_q'] - x['line_s'], axis=1)
-        
+        df['bias'+str(span_q)+str(span_s)] = df.apply(lambda x: x['line_q'] - x['line_s'], axis=1)
+
+        df = cal_df_col_rank(df, 'bias'+str(span_q)+str(span_s))
         return df
         
     def add_bias(self, df):
