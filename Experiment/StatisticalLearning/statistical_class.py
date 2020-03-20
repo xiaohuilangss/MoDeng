@@ -18,8 +18,8 @@ import pandas as pd
 
 
 class AverageStatics(StkData):
-    def __init__(self, stk_code):
-        super().__init__(stk_code)
+    def __init__(self, stk_code, freq='1d'):
+        super().__init__(stk_code, freq=freq)
         self.down_day_data()
         
     def add_average_line(self, m):
@@ -134,8 +134,8 @@ class AverageStatics(StkData):
 if __name__ == '__main__':
     
     jq_login()
-    self = AverageStatics('000001')
-    self.down_day_data(count=1000)
+    self = AverageStatics('000001', freq='30m')
+    self.down_day_data(count=8000)
     self.plot_average(20)
     df = self.splice_m_seg(20)
 

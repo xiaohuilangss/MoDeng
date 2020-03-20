@@ -223,7 +223,7 @@ def gen_kind_pic(kind, pool):
             elif kind is 'd':
                 r_dic[page][stk + '_d'] = get_k_data_JQ(stk, 400)
             elif kind is 'wm':
-                r_dic[page][stk + '_d'] = get_k_data_JQ(stk, count=400, end_date=get_current_date_str()).reset_index()
+                r_dic[page][stk + '_d'] = get_k_data_JQ(stk, count=400).reset_index()
             elif kind is 'd_idx':
                 r_dic[page][stk + '_d'] = get_k_data_JQ(stk, 400)
     jq.logout()
@@ -660,7 +660,7 @@ def pipe_msg_process(win, pipe_to_master, debug=False):
         # day 图 更新处理
         elif pipe_data[0] == DAY_UPDATE_NUM:
 
-            debug_print_txt('pipe_msg_pro', '', '\n收到日线图片更新命令！\n', debug)
+            debug_print_txt('pipe_msg_pro', '', '\n收到日线图片更新命令！具体内容如下：\n\n%s \n\n' % str(pipe_data[1]), debug)
 
             win.on_update_msg_tc_a('开始打印日线图片...\n')
             pic = load_local_pic_for_wx(pipe_data[1])
@@ -742,9 +742,11 @@ def data_process_callback(pipe_proc, debug=False, process=6):
         # 解析分析数据
         day_pic = get_process_res(day_pic)
         hour_pic = get_process_res(hour_pic)
-
+  
         pipe_proc.send((HOUR_UPDATE_NUM, hour_pic))
         pipe_proc.send((DAY_UPDATE_NUM, day_pic))
+        
+        debug_print_txt('pipe_msg_pro', '', '数据处理模块：向GUI模块发送了全部更新命令！\n', debug)
 
     def update_hour_pic():
         debug_print_txt('main_log', '', '\n开始半小时分析和更新！')
@@ -777,6 +779,7 @@ def data_process_callback(pipe_proc, debug=False, process=6):
 
         # 次日更新全部图片
         if get_current_date_str() != date_last:
+            debug_print_txt('pipe_msg_pro', '', '数据处理模块：新的一天，全部更新pic\n', debug)
             update_all_pic()
             date_last = get_current_date_str()
             last_upt_t = 0
@@ -786,7 +789,7 @@ def data_process_callback(pipe_proc, debug=False, process=6):
         # 更新半小时图片
         upt_flag, last_upt_t = is_time_h_macd_update(last_upt_t)
 
-        if upt_flag | debug:
+        if upt_flag:
             update_hour_pic()
 
         time.sleep(5)
@@ -942,6 +945,9 @@ def judge_single_stk(stk_code, rsv_, debug=False):
 
 if __name__ == '__main__':
     jq_login()
+    
+    df = get_k_data_JQ('000001', 400)
+
     buy_stk_list = list(set(read_config()['buy_stk'] + read_config()['index_stk']))
 
     # 局部变量

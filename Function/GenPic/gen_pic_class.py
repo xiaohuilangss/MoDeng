@@ -95,6 +95,10 @@ class GenPic:
         ax[3] = GenPic.plot_macd(ax[3], df_m, 'month')
         ax[3].plot(range(0, len(df_m['date'])), [0 for x in range(0, len(df_m['date']))], 'r--', label='month_MACD')
 
+        # 设置默认标题
+        title_tmp = '上次更新时间：%s' % str(get_current_datetime_str())
+        ax[0].set_title(title_tmp)
+
         fig.tight_layout()  # 调整整体空白
         plt.subplots_adjust(wspace=0, hspace=0.15)  # 调整子图间距
 
@@ -214,6 +218,10 @@ class GenPic:
         ax[2].plot(range(0, len(stk_df_current['date'])), stk_df_current['close'], 'g*-', label='收盘价', linewidth=1,
                    markersize=5)
         ax[3] = GenPic.plot_macd(ax[3], stk_df_current, 'day')
+        
+        # 设置默认标题
+        title_tmp = stk_code + ' ' + code2name(stk_code) + '/上次更新时间：%s' % str(get_current_datetime_str())
+        ax[0].set_title(title_tmp)
 
         # 设置标题并返回分析结果
         result_analysis = []
@@ -320,6 +328,9 @@ class GenPic:
         for ax_sig in ax:
             ax_sig.legend(loc='best')
 
+        # 设置默认标题
+        title = stk_code + ' ' + code2name(stk_code) + '/上次更新时间：%s' % str(get_current_datetime_str())
+
         # 设置标题
         if m30[1] == np.min(m30):
             title = stk_code + '半小时MACD低点！'
@@ -332,8 +343,6 @@ class GenPic:
 
         elif m60[1] == np.max(m60):
             title = stk_code + '小时MACD高点！'
-        else:
-            title = stk_code
 
         ax[0].set_title(title)
 
@@ -390,7 +399,8 @@ class GenPic:
         sar_tail = sar_tail_origin.copy()
         sar_tail['compare'] = sar_tail_origin.apply(lambda x: x['SAR'] - x['close'], axis=1)
 
-        title_tmp = stk_code + ' ' + code2name(stk_code)
+        # 设置默认标题
+        title_tmp = stk_code + ' ' + code2name(stk_code) + '/上次更新时间：%s' % str(get_current_datetime_str())
 
         if sar_tail.head(1)['compare'].values[0] * sar_tail.tail(1)['compare'].values[0] < 0:
             if sar_tail.tail(1)['SAR'].values[0] < sar_tail.tail(1)['close'].values[0]:
@@ -441,7 +451,7 @@ class GenPic:
 
         # 准备下标
         xlabel_series = stk_df_.apply(lambda x: str(x['datetime'])[2:16].replace('-', ''), axis=1)
-        ax[4] = add_axis(ax[4], xlabel_series, 15, rotation=15, fontsize=7)
+        ax[4] = add_axis(ax[4], xlabel_series, 15, rotation=15, fontsize=10)
 
         for ax_sig in ax:
             ax_sig.legend(loc='best', fontsize=7)
@@ -626,11 +636,12 @@ class GenPic:
 
         # 准备下标
         xlabel_series = stk_df_.apply(lambda x: x['date'][2:].replace('-', ''), axis=1)
-        ax[0] = add_axis(ax[0], xlabel_series, 40, rotation=45)
-        ax[1] = add_axis(ax[1], xlabel_series, 40, rotation=45)
-        ax[2] = add_axis(ax[2], xlabel_series, 40, rotation=45)
-        ax[3] = add_axis(ax[3], xlabel_series, 40, rotation=45)
-        ax[4] = add_axis(ax[4], xlabel_series, 40, rotation=45)
+
+        ax[4] = add_axis(ax[4], xlabel_series, 40, rotation=45, fontsize=10)
+
+        # 设置默认标题
+        title_tmp = stk_code + ' ' + code2name(stk_code) + '/上次更新时间：%s' % str(get_current_datetime_str())
+        ax[0].set_title(title_tmp)
 
         for ax_sig in ax:
             ax_sig.legend(loc='best', fontsize=5)
