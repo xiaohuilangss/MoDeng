@@ -187,6 +187,14 @@ def minus_date_str(pos_date, net_date):
     return (convert_str_to_date(pos_date) - convert_str_to_date(net_date)).days
 
 
+def minus_datetime_str(pos_date, net_date):
+    sec = (convert_str_to_date(pos_date) - convert_str_to_date(net_date)).seconds
+    days = sec % (60*60*24)
+    minutes = (sec - days*60*60*24) % (60*60)
+    secs = sec-days*60*60*24-minutes*60*60
+    return days, minutes, secs
+
+
 """ ------------------------------- timestamp与datetime之间的转换 --------------------------------- """
 
 

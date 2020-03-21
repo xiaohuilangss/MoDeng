@@ -17,7 +17,7 @@ from SDK.MyTimeOPT import get_current_date_str, add_date_str
 
 class StkData:
     """
-    本类用来为“随机森林预测价格走势”算法提供“数据预处理”
+    stk数据基础类，用来准备一些基本的数据
     """
     
     def __init__(self, stk_code, freq='1d'):
@@ -35,10 +35,10 @@ class StkData:
     
     def read_local_data(self, local_dir):
         self.data = LocalData.read_stk(local_dir=local_dir, stk_=self.stk_code).tail(40)
-    
-    def down_minute_data(self, m, count=400):
+        
+    def down_minute_data(self, count=400):
         self.minute_data = get_k_data_JQ(self.stk_code, count=count,
-                                         end_date=add_date_str(get_current_date_str(), 1), freq=str(m) + 'm')
+                                         end_date=add_date_str(get_current_date_str(), 1), freq=self.freq)
     
     def down_day_data(self, count=150, start_date=None, end_date=None):
         self.data = get_k_data_JQ(
