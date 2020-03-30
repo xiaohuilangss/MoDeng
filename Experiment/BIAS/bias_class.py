@@ -154,7 +154,7 @@ if __name__ == '__main__':
     # bias_obj_1m = BIAS(stk_code='300183', freq='1m')
     # bias_obj_1m.plot_test()
 
-    bias_obj_1d = BIAS(stk_code='300183', freq='1d')
+    bias_obj_1d = BIAS(stk_code='000001', freq='1m', span_q=1, span_s=20)
     bias_obj_1d.plot_test()
 
     end = 0
