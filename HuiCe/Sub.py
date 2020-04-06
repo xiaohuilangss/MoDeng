@@ -672,6 +672,22 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
+    """ =========================== 将当前路径及工程的跟目录添加到路径中，必须在文件头部，否则易出错 ============================ """
+
+    import sys
+    import os
+
+    curPath = os.path.abspath(os.path.dirname(__file__))
+    if "MoDeng" in curPath:
+        rootPath = curPath[:curPath.find("MoDeng\\") + len("MoDeng\\")]  # 获取myProject，也就是项目的根路径
+    elif "MoDeng-master" in curPath:
+        rootPath = curPath[:curPath.find("MoDeng-master\\") + len("MoDeng-master\\")]  # 获取myProject，也就是项目的根路径
+    else:
+        input('没有找到项目的根目录！请检查项目根文件夹的名字！')
+        exit(1)
+
+    """============================ 以上部分代码与回测无关，忽略即可 ============================================="""
+
     r = RetestReseau(stk_code='603421', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
 
     # 增加动态网格
