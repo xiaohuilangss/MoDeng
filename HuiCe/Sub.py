@@ -701,7 +701,7 @@ if __name__ == '__main__':
     r.retest()
 
     # 保存结果
-    r.save_csv()
+    # r.save_csv()
 
     # 画图展示
     r.plot()
