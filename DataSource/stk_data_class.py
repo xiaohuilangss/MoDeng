@@ -11,6 +11,7 @@ import math
 
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df, Index
 from DataSource.LocalData.update_local_data import LocalData
+from DataSource.auth_info import jq_login
 from DataSource.data_pro import cal_df_col_rank
 from SDK.DataPro import relative_rank
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
@@ -45,9 +46,13 @@ class StkData:
     def read_local_data(self, local_dir):
         self.data = LocalData.read_stk(local_dir=local_dir, stk_=self.stk_code).tail(40)
         
-    def down_minute_data(self, count=400):
-        self.data = get_k_data_JQ(self.stk_code, count=count,
-                                  end_date=add_date_str(get_current_date_str(), 1), freq=self.freq)
+    def down_minute_data(self, count=400, freq=None):
+        if pd.isnull(freq):
+            self.data = get_k_data_JQ(self.stk_code, count=count,
+                                      end_date=add_date_str(get_current_date_str(), 1), freq=self.freq)
+        else:
+            self.data = get_k_data_JQ(self.stk_code, count=count,
+                                      end_date=add_date_str(get_current_date_str(), 1), freq=freq)
     
     def down_day_data(self, count=150, start_date=None, end_date=None):
         self.data = get_k_data_JQ(
@@ -166,3 +171,56 @@ class StkData:
         :return:
         """
         self.data[col+'_m'+str(m)] = self.data[col].rolling(window=m).mean()
+
+
+class StkDataRT(StkData):
+    """
+    包含对一只股票进行实时计算的方法
+    """
+    def __init__(self, stk_code):
+        super().__init__(stk_code)
+        # 记录上次sar的状态，在close之上为True，反之为Flase，初始化为None
+        self.sar_last = None
+
+    def check_sar_status_change(self):
+        """
+        检查sar指标的波动情况
+        :return:
+        0: sar状态没有变化
+        1：向上突破
+        -1：向下突破
+        """
+        # 下载实时数据
+        self.down_minute_data(count=20, freq='1m')
+
+        # 计算sar指数
+        self.data['sar'] = talib.SAR(self.data.high, self.data.low, acceleration=0.05, maximum=0.2)
+
+        # 获取sar最新状态
+        row_tail = self.data.tail(1)
+        sar_status_now = row_tail['sar'].values[0] > row_tail['close'].values[0]
+
+        if pd.isnull(self.sar_last):
+            self.sar_last = sar_status_now
+            return 0
+
+        if sar_status_now != self.sar_last:
+            if sar_status_now:
+                return 1
+            else:
+                return -1
+        else:
+            return 0
+
+
+if __name__ == '__main__':
+
+    jq_login()
+    sd = StkDataRT('300183')
+
+    sd.down_minute_data(count=1000, freq='1m')
+    sd.add_index()
+    sd.data.plot('datetime', ['close', 'sar'])
+
+    for i in range(10):
+        print(str(sd.check_sar_status_change()))
