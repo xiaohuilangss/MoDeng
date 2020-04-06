@@ -11,6 +11,7 @@ import math
 
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df, Index
 from DataSource.LocalData.update_local_data import LocalData
+from DataSource.data_pro import cal_df_col_rank
 from SDK.DataPro import relative_rank
 from SDK.MyTimeOPT import get_current_date_str, add_date_str
 
@@ -18,6 +19,7 @@ from SDK.MyTimeOPT import get_current_date_str, add_date_str
 class StkData:
     """
     stk数据基础类，用来准备一些基本的数据
+    数据预处理所用函数皆在于此
     """
     
     def __init__(self, stk_code, freq='1d'):
@@ -25,20 +27,27 @@ class StkData:
         self.freq = freq
         self.stk_code = stk_code
         
-        self.minute_data = pd.DataFrame()
+        self.data = pd.DataFrame()
         self.data = pd.DataFrame()
         self.week_data = pd.DataFrame()
         self.month_data = pd.DataFrame()
         
         # 通用变量，便于后续功能扩展之用！
         self.general_variable = None
+        
+    def add_col_rank(self, col):
+        """
+        对某一列进行排名化
+        :return:
+        """
+        self.data = cal_df_col_rank(self.data, col)
     
     def read_local_data(self, local_dir):
         self.data = LocalData.read_stk(local_dir=local_dir, stk_=self.stk_code).tail(40)
         
     def down_minute_data(self, count=400):
-        self.minute_data = get_k_data_JQ(self.stk_code, count=count,
-                                         end_date=add_date_str(get_current_date_str(), 1), freq=self.freq)
+        self.data = get_k_data_JQ(self.stk_code, count=count,
+                                  end_date=add_date_str(get_current_date_str(), 1), freq=self.freq)
     
     def down_day_data(self, count=150, start_date=None, end_date=None):
         self.data = get_k_data_JQ(
@@ -103,6 +112,11 @@ class StkData:
         """
         
         return [StkData.cal_rank_sig(x, list_) for x in list_]
+    
+    def cal_diff_col(self, col):
+        df = self.data
+        df[col + '_last'] = df[col].shift(1)
+        self.data[col+'_diff'] = df.apply(lambda x: x[col] - x[col + '_last'], axis=1)
 
     def add_index(self):
         """
@@ -143,3 +157,12 @@ class StkData:
         :return:
         """
         self.data[col_name + '_rank'] = self.cal_rank(self.data[col_name])
+        
+    def add_mean_col(self, col, m):
+        """
+        求某一列的mean
+        :param col:
+        :param m:
+        :return:
+        """
+        self.data[col+'_m'+str(m)] = self.data[col].rolling(window=m).mean()

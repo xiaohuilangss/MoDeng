@@ -6,6 +6,7 @@ bias相关的类
 from DataSource.Data_Sub import get_k_data_JQ
 from DataSource.auth_info import jq_login
 from DataSource.data_pro import cal_df_col_rank
+from DataSource.stk_data_class import StkData
 from Global_Value.file_dir import data_dir
 
 import json
@@ -14,8 +15,9 @@ import os
 from SDK.DataPro import relative_rank
 
 
-class BIAS:
+class BIAS(StkData):
     def __init__(self, stk_code, freq, hist_count=2000, span_q=3, span_s=15, local_data_dir=data_dir + 'BIAS/'):
+        super().__init__(stk_code, freq)
         self.hist_count = hist_count
         self.span_s = span_s
         self.span_q = span_q
@@ -71,8 +73,8 @@ class BIAS:
         :return:
         """
         df = get_k_data_JQ(stk=self.stk_code, freq=self.freq, count=self.hist_count)
-        
-        bias_values = self.add_bias(df)['bias'].values
+        self.data = self.add_bias(df)
+        bias_values = self.data['bias'].values
         
         bias_p = list(filter(lambda x: x >= 0, bias_values))
         bias_n = list(filter(lambda x: x < 0, bias_values))
@@ -156,8 +158,7 @@ class BIAS:
         用以测试效果
         :return:
         """
-        df = get_k_data_JQ(stk=self.stk_code, freq=self.freq, count=self.hist_count)
-        df_bias = self.add_bias(df)
+        df_bias = self.data
 
         # 增加rank数据
         df_bias['rank'] = df_bias.apply(lambda x: self.cal_rank_now(x['bias']), axis=1)
