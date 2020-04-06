@@ -218,9 +218,10 @@ if __name__ == '__main__':
     jq_login()
     sd = StkDataRT('300183')
 
-    sd.down_minute_data(count=1000, freq='1m')
+    sd.down_minute_data(count=1000, freq='5m')
     sd.add_index()
-    sd.data.plot('datetime', ['close', 'sar'])
+    sd.data['id'] = list(range(len(sd.data)))
+    sd.data.plot('id', ['close', 'SAR'], style=['*--', '*--'])
 
     for i in range(10):
         print(str(sd.check_sar_status_change()))
