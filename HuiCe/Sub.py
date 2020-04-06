@@ -567,7 +567,10 @@ class RetestReseau:
 
             # 计算rsv和波动情况
             # rsv = RSV.cal_rsv_rank_sub(df_day_complete, self.rsv_span)
-            rsv = data_day.loc[date, 'RSV']
+            try:
+                rsv = data_day.loc[date, 'RSV']
+            except:
+                print()
             reseau_object = Reseau()
             reseau = reseau_object.get_single_stk_reseau_sub(
                 df_=df_day_complete,
@@ -669,7 +672,7 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='300183', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
+    r = RetestReseau(stk_code='603421', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()

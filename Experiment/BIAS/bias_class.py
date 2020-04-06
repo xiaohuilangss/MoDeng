@@ -134,6 +134,23 @@ class BIAS:
         
         return df_bias.tail(1)['bias'].values[0]
 
+    def average_line_compensates(self):
+        """
+        乖离度是判断股价偏离很重要的指标，但是仅此不够，若是单纯使用乖离度判断，
+        可能在乖离度很大的地方进行操作，后续不见得有较好收益，因为还有趋势的问题。
+
+        比如，均线在大斜度向下走的时候，如果我们在负向乖离度很高的时候入场，那么很有可能没有任何盈利空间，
+        因为后续乖离度恢复正常不是因为价格的反弹，而是随着时间推移，价格下降导致的。
+
+        以房价举例，在房价大幅下跌的时候，我们在房价急速下跌，偏离均线很大的地方入手，后续不见得短期房价会反弹，
+        很有可能是房价慢慢下跌到了我们入手的价格，导致乖离度的恢复。
+
+        所以，我们应该使用均线的斜度来修正乖离度指标。
+
+        思路：使用某种均线的斜度，在历时数据中的排名进行补偿！
+        :return:
+        """
+
     def plot_test(self):
         """
         用以测试效果
@@ -154,7 +171,7 @@ if __name__ == '__main__':
     # bias_obj_1m = BIAS(stk_code='300183', freq='1m')
     # bias_obj_1m.plot_test()
 
-    bias_obj_1d = BIAS(stk_code='000001', freq='1m', span_q=1, span_s=20)
+    bias_obj_1d = BIAS(stk_code='000001', freq='1m', span_q=15, span_s=30)
     bias_obj_1d.plot_test()
 
     end = 0
