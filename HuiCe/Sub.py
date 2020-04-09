@@ -11,9 +11,10 @@ from Function.GUI.GUI_main.reseau_judge_class import ReseauJudge
 from Global_Value.file_dir import opt_record_file_url
 from SDK.MyTimeOPT import minus_date_str, get_current_date_str
 from SDK.Normalize import normal01
+from SDK.ParallelCalculateForDf.parallel_calculate_for_df import ParallelCalculateDf
 from SDK.PlotOptSub import add_axis
 import pandas as pd
-
+import copy
 from SDK.TimeAndSeconds import minute_reckon_print
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
@@ -340,6 +341,34 @@ class OptRecordRetest:
             return True
 
 
+class MyPc(ParallelCalculateDf):
+    def __init__(self, df, obj):
+        super().__init__(df, obj)
+
+    @staticmethod
+    def seg_process(df, seg, obj):
+        def lmd(x):
+            """
+            重现此函数实现并行计算
+            :param x:
+            :return:
+            """
+            # 获取近日数据并计算网格
+            df_day_complete = pd.DataFrame(x['ochl_days'])
+
+            reseau_object = Reseau()
+            reseau = reseau_object.get_single_stk_reseau_sub(
+                df_=df_day_complete,
+                slow=obj[0],
+                quick=obj[1])
+            
+            print('完成1行：%s' % str(x['close']))
+            
+            return reseau
+
+        return df.loc[seg[0]:seg[1], :].apply(lambda x: lmd(x), axis=1)
+
+
 class RetestReseau:
     """
     与网格策略回测相关子函数的类
@@ -401,6 +430,23 @@ class RetestReseau:
             money=50000,
             ratio=0.5,
             start_price=self.data_minute.head(1)['close'].values[0], money_each=5000)
+    
+    @staticmethod
+    def cal_days_ochl(df_ipt, days):
+        df = copy.deepcopy(df_ipt)
+        
+        # 将每一天的ochl转为字典
+        df['ochl'] = df.apply(
+            lambda x: {'open': x['open'], 'close': x['close'], 'high': x['high'], 'low': x['low']}, axis=1)
+        
+        # 下移
+        for i in range(days):
+            df['ochl_' + str(i)] = df['ochl'].shift(i)
+    
+        # 合并
+        df_ipt['ochl_days'] = df.apply(lambda x: [x['ochl_' + str(i)] for i in range(days)], axis=1)
+    
+        return df_ipt
 
     @staticmethod
     def cal_today_ochl(df_m):
@@ -538,46 +584,47 @@ class RetestReseau:
         self.data_day = add_stk_index_to_df(self.data_day)
 
         # 增加必要index
-        self.data_minute = add_stk_index_to_df(self.data_minute)
+        self.data_minute = add_stk_index_to_df(self.data_minute).set_index('datetime')
 
         # 增加rsv数据
-        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span)
-
+        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span).reset_index(drop=True)
+        
+        # 增加最近指定周期的ochl
+        self.data_day = self.cal_days_ochl(self.data_day, 6).set_index('datetime')
+        
+        # 将天数据合并到分钟数据中
+        self.data_minute = pd.concat([self.data_minute, self.data_day.loc[:, ['RSV', 'ochl_days']]], axis=1)
+        self.data_minute = self.data_minute.fillna(method='ffill')
+        
         # 最初的数天数据不进行回测，开始的部分数据因为数据量原因计算不出网格大小
-        max_days = self.max_days
         i_start = self.i_start
         i = len(self.data_minute) - i_start
 
-        data_day = self.data_day.set_index(keys='date')
-
         # 大循环
-        for idx in self.data_minute[i_start:].index:
+        df = self.data_minute[i_start:]
+        
+        # 向df中增加网格
+        # mypc = MyPc(df, [self.reseau_slow, self.reseau_quick])
+        # df['reseau'] = mypc.apply_pl()
+        
+        for idx in df.index:
+    
+            """
+            此处为提高速度，做了部分简化，没有使用当天的
+            实际效果应当不低于测试效果
+            """
+            # 获取近日数据并计算网格
+            df_day_complete = pd.DataFrame(self.data_minute.loc[idx, 'ochl_days'])
 
-            # 获取当天数据
-            df_today = self.cal_today_ochl(self.data_minute.loc[idx-int(60*4/self.retest_span):idx, :])
-
-            # 获取时间
-            date = self.data_minute.loc[idx, 'date']
-
-            # 获取该日期之前数天的数据
-            df_day_data = self.data_day[self.data_day['date'] < date][1-self.reseau_slow:]
-
-            # 增加今天的数据
-            df_day_complete = df_day_data.append(df_today, ignore_index=True)
-
-            # 计算rsv和波动情况
-            # rsv = RSV.cal_rsv_rank_sub(df_day_complete, self.rsv_span)
-            rsv = data_day.loc[date, 'RSV']
             reseau_object = Reseau()
             reseau = reseau_object.get_single_stk_reseau_sub(
                 df_=df_day_complete,
                 slow=self.reseau_slow,
                 quick=self.reseau_quick)
-
-            self.data_minute.loc[idx, 'rsv'] = rsv
             self.data_minute.loc[idx, 'reseau'] = reseau
 
             # 调节 buy 和 sale 的 threshold
+            rsv = self.data_minute.loc[idx, 'RSV']
             self.data_minute.loc[idx, 'thh_sale'] = reseau * 2 * rsv
             self.data_minute.loc[idx, 'thh_buy'] = reseau * 2 * (1 - rsv)
 
