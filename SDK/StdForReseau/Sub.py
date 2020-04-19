@@ -25,7 +25,10 @@ class Reseau:
         :param win_:
         :return:
         """
-        for idx in df_.tail(len(df_) - win_ + 1).index:
+        if len(df_) > win_:
+            df_ = df_.tail(win_)
+
+        for idx in df_.index:
             df_part = df_.loc[idx - win_ + 1:idx, :]
             df_.loc[idx, 'std_' + str(win_)] = np.std(df_part.loc[:, ['close', 'low', 'high']].values)
         return df_
@@ -41,7 +44,6 @@ class Reseau:
         df_ = df_.reset_index(drop=True)
         df_ = self.df_win_std(df_, quick)
         df_ = self.df_win_std(df_, slow)
-
         df_['std_m'] = df_.apply(lambda x: np.mean([x['std_' + str(quick)], x['std_' + str(slow)]]), axis=1)
 
         return df_.tail(1)['std_m'].values[0]

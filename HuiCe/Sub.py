@@ -268,7 +268,8 @@ class OptRecordRetest:
         self.ratio = ratio
         self.start_price = start_price
 
-        self.amount = math.floor(money_each/start_price/100)*100
+        # 至少买1单位（手）
+        self.amount = np.max([1, math.floor(money_each/start_price/100)*100])
 
         self.opt_dict = {
             'b_opt': [],
@@ -403,6 +404,27 @@ class RetestReseau:
             start_price=self.data_minute.head(1)['close'].values[0], money_each=5000)
 
     @staticmethod
+    def cal_df_ochl(df_m):
+        """
+        给定一个分钟数据，计算其当天的ochl
+        :param df_m:
+        :return:
+        """
+        o = df_m.head(1)['open'].values[0]
+        c = df_m.tail(1)['close'].values[0]
+
+        array = df_m.loc[:, ['open', 'close', 'high', 'low']].values
+        h = np.max(array)
+        l = np.min(array)
+
+        return {
+            'open': o,
+            'close': c,
+            'high': h,
+            'low': l
+        }
+
+    @staticmethod
     def cal_today_ochl(df_m):
         """
     	df_m 应该包含date字段
@@ -523,6 +545,24 @@ class RetestReseau:
         logout()
         return True
 
+    def cal_day_ohlc_by_minute_data(self, df_minute):
+        """
+        给一个分钟级别的df数据（持续可能超过一天），计算转换成天的ohlc
+        :param df_minute:
+        :return:
+        """
+
+        l_group = list(df_minute.groupby(by='date'))
+
+        # 计算每一天的olch
+        l_ochl = [(x[0], RetestReseau.cal_df_ochl(x[1])) for x in l_group]
+        for t in l_ochl:
+            t[1].update({'date': t[0]})
+
+        df = pd.DataFrame([x[1] for x in l_ochl])
+        df = df.sort_values(by='date', ascending=True)
+        return df
+
     def add_reseau(self):
         """
         计算动态网格，并添加到数据当中
@@ -538,46 +578,55 @@ class RetestReseau:
         self.data_day = add_stk_index_to_df(self.data_day)
 
         # 增加必要index
-        self.data_minute = add_stk_index_to_df(self.data_minute)
+        self.data_minute = add_stk_index_to_df(self.data_minute).set_index('datetime')
 
         # 增加rsv数据
-        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span)
+        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span).loc[:, ['datetime', 'RSV']].set_index('datetime')
+
+        # 将分钟数据与日数据合并
+        self.data_minute = pd.concat([self.data_minute, self.data_day], axis=1)
+        self.data_minute['rsv'] = self.data_minute['RSV'].fillna(method='ffill')
+        self.data_minute = self.data_minute.reset_index(drop=True)
+        # self.data_minute['id'] = list(range(len(self.data_minute)))
 
         # 最初的数天数据不进行回测，开始的部分数据因为数据量原因计算不出网格大小
-        max_days = self.max_days
         i_start = self.i_start
         i = len(self.data_minute) - i_start
-
-        data_day = self.data_day.set_index(keys='date')
 
         # 大循环
         for idx in self.data_minute[i_start:].index:
 
-            # 获取当天数据
-            df_today = self.cal_today_ochl(self.data_minute.loc[idx-int(60*4/self.retest_span):idx, :])
+            """
+            提高回测速度的思路：在日线中计算好每天的前几天的ochl，存入当天的某个字段中，然后与分钟数据合并
+            """
 
             # 获取时间
-            date = self.data_minute.loc[idx, 'date']
-
+            # date = self.data_minute.loc[idx, 'date']
             # 获取该日期之前数天的数据
-            df_day_data = self.data_day[self.data_day['date'] < date][1-self.reseau_slow:]
-
+            # df_day_data = self.data_day[self.data_day['date'] < date][1-self.reseau_slow:]
             # 增加今天的数据
-            df_day_complete = df_day_data.append(df_today, ignore_index=True)
+            # df_day_complete = df_day_data.append(df_today, ignore_index=True)
 
-            # 计算rsv和波动情况
+            """
             # rsv = RSV.cal_rsv_rank_sub(df_day_complete, self.rsv_span)
-            try:
-                rsv = data_day.loc[date, 'RSV']
-            except:
-                print()
+            # rsv = data_day.loc[date, 'RSV']
+            在期货回测中，使用上述语句，会有出错，
+            因为在分钟线中某天有数据，而日线中没有的情况
+            # 计算rsv和波动情况
+            rsv = self.data_day[self.data_day['date'] <= date].tail(1)['RSV'].values[0]
+            """
+
+            # 获取前几天的数据，用于计算网格
+            df_days = self.data_minute.loc[idx-int(60*4*(self.max_days+3)/self.retest_span):idx, :]
+            df_days_ochl = self.cal_day_ohlc_by_minute_data(df_days)
+
             reseau_object = Reseau()
             reseau = reseau_object.get_single_stk_reseau_sub(
-                df_=df_day_complete,
+                df_=df_days_ochl.loc[-6:, :],
                 slow=self.reseau_slow,
                 quick=self.reseau_quick)
 
-            self.data_minute.loc[idx, 'rsv'] = rsv
+            rsv = self.data_minute.loc[idx, 'rsv']
             self.data_minute.loc[idx, 'reseau'] = reseau
 
             # 调节 buy 和 sale 的 threshold
@@ -672,7 +721,7 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='603421', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
+    r = RetestReseau(stk_code='AG2006.XSGE', retest_span=5, start_date='2019-07-01', end_date='2019-08-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()
