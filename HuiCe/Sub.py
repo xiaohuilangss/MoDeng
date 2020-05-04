@@ -11,9 +11,10 @@ from Function.GUI.GUI_main.reseau_judge_class import ReseauJudge
 from Global_Value.file_dir import opt_record_file_url
 from SDK.MyTimeOPT import minus_date_str, get_current_date_str
 from SDK.Normalize import normal01
+from SDK.ParallelCalculateForDf.parallel_calculate_for_df import ParallelCalculateDf
 from SDK.PlotOptSub import add_axis
 import pandas as pd
-
+import copy
 from SDK.TimeAndSeconds import minute_reckon_print
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
@@ -341,6 +342,34 @@ class OptRecordRetest:
             return True
 
 
+class MyPc(ParallelCalculateDf):
+    def __init__(self, df, obj):
+        super().__init__(df, obj)
+
+    @staticmethod
+    def seg_process(df, seg, obj):
+        def lmd(x):
+            """
+            重现此函数实现并行计算
+            :param x:
+            :return:
+            """
+            # 获取近日数据并计算网格
+            df_day_complete = pd.DataFrame(x['ochl_days'])
+
+            reseau_object = Reseau()
+            reseau = reseau_object.get_single_stk_reseau_sub(
+                df_=df_day_complete,
+                slow=obj[0],
+                quick=obj[1])
+
+            print('完成1行：%s' % str(x['close']))
+
+            return reseau
+
+        return df.loc[seg[0]:seg[1], :].apply(lambda x: lmd(x), axis=1)
+
+
 class RetestReseau:
     """
     与网格策略回测相关子函数的类
@@ -402,6 +431,23 @@ class RetestReseau:
             money=50000,
             ratio=0.5,
             start_price=self.data_minute.head(1)['close'].values[0], money_each=5000)
+
+    @staticmethod
+    def cal_days_ochl(df_ipt, days):
+        df = copy.deepcopy(df_ipt)
+
+        # 将每一天的ochl转为字典
+        df['ochl'] = df.apply(
+            lambda x: {'open': x['open'], 'close': x['close'], 'high': x['high'], 'low': x['low']}, axis=1)
+
+        # 下移
+        for i in range(days):
+            df['ochl_' + str(i)] = df['ochl'].shift(i)
+
+        # 合并
+        df_ipt['ochl_days'] = df.apply(lambda x: [x['ochl_' + str(i)] for i in range(days)], axis=1)
+
+        return df_ipt
 
     @staticmethod
     def cal_df_ochl(df_m):
@@ -545,7 +591,8 @@ class RetestReseau:
         logout()
         return True
 
-    def cal_day_ohlc_by_minute_data(self, df_minute):
+    @staticmethod
+    def cal_day_ohlc_by_minute_data(df_minute):
         """
         给一个分钟级别的df数据（持续可能超过一天），计算转换成天的ohlc
         :param df_minute:
@@ -580,56 +627,41 @@ class RetestReseau:
         # 增加必要index
         self.data_minute = add_stk_index_to_df(self.data_minute).set_index('datetime')
 
+        # 增加最近指定周期的ochl
+        self.data_day = self.cal_days_ochl(self.data_day, 6)
+
         # 增加rsv数据
-        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span).loc[:, ['datetime', 'RSV']].set_index('datetime')
+        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span).loc[:, ['datetime', 'RSV', 'ochl_days']].set_index('datetime')
 
         # 将分钟数据与日数据合并
         self.data_minute = pd.concat([self.data_minute, self.data_day], axis=1)
         self.data_minute['rsv'] = self.data_minute['RSV'].fillna(method='ffill')
-        self.data_minute = self.data_minute.reset_index(drop=True)
-        # self.data_minute['id'] = list(range(len(self.data_minute)))
+        self.data_minute = self.data_minute.reset_index(drop=True).fillna(method='ffill')
 
         # 最初的数天数据不进行回测，开始的部分数据因为数据量原因计算不出网格大小
         i_start = self.i_start
         i = len(self.data_minute) - i_start
+        df = self.data_minute[i_start:]
 
-        # 大循环
-        for idx in self.data_minute[i_start:].index:
-
-            """
-            提高回测速度的思路：在日线中计算好每天的前几天的ochl，存入当天的某个字段中，然后与分钟数据合并
-            """
-
-            # 获取时间
-            # date = self.data_minute.loc[idx, 'date']
-            # 获取该日期之前数天的数据
-            # df_day_data = self.data_day[self.data_day['date'] < date][1-self.reseau_slow:]
-            # 增加今天的数据
-            # df_day_complete = df_day_data.append(df_today, ignore_index=True)
+        for idx in df.index:
 
             """
-            # rsv = RSV.cal_rsv_rank_sub(df_day_complete, self.rsv_span)
-            # rsv = data_day.loc[date, 'RSV']
-            在期货回测中，使用上述语句，会有出错，
-            因为在分钟线中某天有数据，而日线中没有的情况
-            # 计算rsv和波动情况
-            rsv = self.data_day[self.data_day['date'] <= date].tail(1)['RSV'].values[0]
+            此处为提高速度，做了部分简化，没有使用当天的
+            实际效果应当不低于测试效果
             """
-
-            # 获取前几天的数据，用于计算网格
-            df_days = self.data_minute.loc[idx-int(60*4*(self.max_days+3)/self.retest_span):idx, :]
-            df_days_ochl = self.cal_day_ohlc_by_minute_data(df_days)
+            # 获取近日数据并计算网格
+            df_day_complete = pd.DataFrame(list(filter(lambda x: not pd.isnull(x), self.data_minute.loc[idx, 'ochl_days'])))
 
             reseau_object = Reseau()
             reseau = reseau_object.get_single_stk_reseau_sub(
-                df_=df_days_ochl.loc[-6:, :],
+                df_=df_day_complete,
                 slow=self.reseau_slow,
                 quick=self.reseau_quick)
 
-            rsv = self.data_minute.loc[idx, 'rsv']
             self.data_minute.loc[idx, 'reseau'] = reseau
 
             # 调节 buy 和 sale 的 threshold
+            rsv = self.data_minute.loc[idx, 'RSV']
             self.data_minute.loc[idx, 'thh_sale'] = reseau * 2 * rsv
             self.data_minute.loc[idx, 'thh_buy'] = reseau * 2 * (1 - rsv)
 
@@ -650,11 +682,18 @@ class RetestReseau:
 
         pcr = self.read_pcr()
 
+        # 根据仓位对网格进行二次处理逻辑
+        hold_ratio = 0.5                                                    # 初始仓位0.5
+
         for idx in self.data_minute.loc[self.i_start:, :].index:
 
+            # 根据仓位对网格进行加权
+            hold_ratio_buy = hold_ratio / ((1 - hold_ratio) + 1e-20)  # 买入加权
+            hold_ratio_sale = (1 - hold_ratio) / (hold_ratio + 1e-20)  # 买入加权
+
             p_now = self.data_minute.loc[idx, 'close']
-            thh_sale = self.data_minute.loc[idx, 'thh_sale']
-            thh_buy = self.data_minute.loc[idx, 'thh_buy']
+            thh_sale = self.data_minute.loc[idx, 'thh_sale'] * hold_ratio_sale
+            thh_buy = self.data_minute.loc[idx, 'thh_buy'] * hold_ratio_buy
 
             opt_result, money, stk_amount = self.judge_reseau(p_now, thh_sale, thh_buy, pcr)
 
@@ -665,6 +704,14 @@ class RetestReseau:
             self.data_minute.loc[idx, 'money_total'] = money + stk_amount*p_now
             self.data_minute.loc[idx, 'stk_amount'] = stk_amount
             self.data_minute.loc[idx, 'total_earn'] = self.opt_record.opt_dict['total_earn']
+
+            # 记录仓位以及根据仓位修正后的买卖网格大小
+            self.data_minute.loc[idx, 'hold_ratio'] = hold_ratio
+            self.data_minute.loc[idx, 'thh_sale_modify'] = thh_sale
+            self.data_minute.loc[idx, 'thh_buy_modify'] = thh_buy
+
+            # 更新仓位
+            hold_ratio = stk_amount*p_now/(money + stk_amount*p_now)
 
     def save_csv(self):
         if self.debug:
@@ -721,7 +768,7 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='AG2006.XSGE', retest_span=5, start_date='2019-07-01', end_date='2019-08-10', debug=True)
+    r = RetestReseau(stk_code='AG2006.XSGE', retest_span=60*4, start_date='2019-05-01', end_date='2019-08-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()

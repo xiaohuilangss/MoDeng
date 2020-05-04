@@ -8,6 +8,7 @@ import numpy as np
 
 from DataSource.Data_Sub import get_k_data_JQ
 from SDK.MyTimeOPT import add_date_str, get_current_date_str
+from SDK.debug_function import print_run_time
 
 
 class Reseau:
@@ -32,7 +33,8 @@ class Reseau:
             df_part = df_.loc[idx - win_ + 1:idx, :]
             df_.loc[idx, 'std_' + str(win_)] = np.std(df_part.loc[:, ['close', 'low', 'high']].values)
         return df_
-
+    
+    # @print_run_time
     def get_single_stk_reseau_sub(self, df_, slow=6, quick=3):
         """
         计算动态网格
