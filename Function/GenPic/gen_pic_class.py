@@ -28,7 +28,7 @@ import matplotlib
 
 from SDK.rank_note_class import RankNote
 
-matplotlib.use('agg')
+# matplotlib.use('agg')
 
 # 解决无法显示汉字和符号的问题
 mpl.rcParams['font.sans-serif'] = ['SimHei']

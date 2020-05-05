@@ -1,6 +1,7 @@
 # encoding=utf-8
 import calendar
 
+import copy
 import jqdatasdk
 import talib
 import tushare as ts
@@ -35,14 +36,38 @@ class StkData:
         
         # 通用变量，便于后续功能扩展之用！
         self.general_variable = None
-        
-    def add_col_rank(self, col):
+
+    @staticmethod
+    def add_rank_to_col_smart_public(df_origin, col):
         """
-        对某一列进行排名化
+        将df中的一列排名话
+        :param df:
+        :param col:
         :return:
         """
-        self.data = cal_df_col_rank(self.data, col)
-    
+        df = copy.deepcopy(df_origin)
+        l = len(df)
+
+        df = df.sort_values(by=col, ascending=True)
+        df[col + '_rank_abs'] = list(range(l))
+        df_origin[col + '_rank'] = df.apply(lambda x: x[col + '_rank_abs'] / l, axis=1)
+
+        return df_origin
+
+    def add_rank_to_col_smart(self, col):
+        """
+        将df中的一列排名话
+        :param df:
+        :param col:
+        :return:
+        """
+        df = copy.deepcopy(self.data)
+        l = len(df)
+
+        df = df.sort_values(by=col, ascending=True)
+        df[col + '_rank_abs'] = list(range(l))
+        self.data[col + '_rank'] = df.apply(lambda x: x[col + '_rank_abs'] / l, axis=1)
+
     def read_local_data(self, local_dir):
         self.data = LocalData.read_stk(local_dir=local_dir, stk_=self.stk_code).tail(40)
         

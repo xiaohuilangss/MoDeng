@@ -11,7 +11,6 @@ from SDK.MyTimeOPT import minus_date_str, get_current_date_str
 from SDK.PlotOptSub import add_axis
 import pandas as pd
 
-
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus'] = False
 
@@ -82,62 +81,6 @@ class OptInDay:
             ratio=0.5,
             start_price=self.data_minute.head(1)['close'].values[0], money_each=5000)
 
-    @staticmethod
-    def judge(reseau, rsv, current_price, stk_price_last, min_reseau, sar_diff, sar_diff_day):
-
-        # 实时计算价差，用于“波动提示”和“最小网格限制”
-        price_diff = current_price - stk_price_last
-        price_diff_ratio = price_diff / stk_price_last
-
-        # 调节 buy 和 sale 的 threshold
-        thh_sale = reseau * 2 * rsv
-        thh_buy = reseau * 2 * (1 - rsv)
-
-        if math.fabs((current_price - stk_price_last) / stk_price_last) < min_reseau:
-            return 0, '未触及reseau'
-        elif (sar_diff >= 0) & (sar_diff_day >= 0) & ((current_price - stk_price_last) / stk_price_last > min_reseau):
-            return 1, 'sale'
-        elif (sar_diff <= 0) & (sar_diff_day <= 0) & ((current_price - stk_price_last) / stk_price_last < -min_reseau):
-            return 2, 'buy'
-        else:
-            return -1, 'no opt'
-
-    def judge_reseau(self, p_now, thh_sale, thh_buy, pcr):
-
-        thh_sale = np.max([thh_sale, p_now*pcr])
-        thh_buy = np.max([thh_buy, p_now*pcr])
-
-        # 判断是否可以卖出
-        if pd.isnull(self.opt_record.get_min_buy_p()):
-            if (p_now - self.opt_record.get_last_p()) > thh_sale:
-                if self.debug:
-                    print('p_now:%0.3f p_last:%0.3f p_min:%s thh_sale:%0.3f' % (p_now, self.opt_record.get_last_p(), str(self.opt_record.get_min_buy_p()), thh_sale))
-                if self.opt_record.opt_s(p_now):
-                    return 'sale', self.opt_record.money, self.opt_record.stk_amount
-                else:
-                    return 'sale-fail', self.opt_record.money, self.opt_record.stk_amount
-        else:
-            if p_now - self.opt_record.get_min_buy_p() > thh_sale:
-                if self.debug:
-                    print('p_now:%0.3f p_last:%0.3f p_min:%s thh_sale:%0.3f' % (p_now, self.opt_record.get_last_p(), str(self.opt_record.get_min_buy_p()), thh_sale))
-                if self.opt_record.opt_s(p_now):
-                    return 'sale', self.opt_record.money, self.opt_record.stk_amount
-                else:
-                    return 'sale-fail', self.opt_record.money, self.opt_record.stk_amount
-
-        # 判断是否可以买入
-        if self.opt_record.get_last_p() - p_now > thh_buy:
-            if self.opt_record.opt_b(p_now):
-                if self.debug:
-                    print('p_now:%0.3f p_last:%0.3f p_min:%s thh_buy:%0.3f' % (
-                        p_now, self.opt_record.get_last_p(), str(self.opt_record.get_min_buy_p()), thh_buy))
-
-                return 'buy', self.opt_record.money, self.opt_record.stk_amount
-            else:
-                return 'buy-fail', self.opt_record.money, self.opt_record.stk_amount
-        else:
-            return 'no-opt', self.opt_record.money, self.opt_record.stk_amount
-
     def prepare_data(self):
         """
         准备数据
@@ -153,7 +96,7 @@ class OptInDay:
         df_m['date'] = df_m.apply(lambda x: str(x['datetime'])[:10], axis=1)
 
         # 增加必要index
-        # self.data_minute = add_stk_index_to_df(df_m).reset_index().reset_index()
+        self.data_minute = add_stk_index_to_df(df_m)
 
         # 增加乖离度
         df_m = BIAS.add_bias_rank_public(df=df_m, span_q=5, span_s=30)
@@ -163,16 +106,18 @@ class OptInDay:
         logout()
         return True
 
+    def judge(self):
+        """
+        在此函数中进行买卖判断
+        :return:
+        """
+        pass
+
     def retest(self):
         """
         最终进行回测的主函数
         :return:
         """
-
-        if self.debug:
-            print('开始回测...')
-
-        pcr = self.read_pcr()
 
         # 根据仓位对网格进行二次处理逻辑
         hold_ratio = 0.5                                                    # 初始仓位0.5
@@ -187,7 +132,7 @@ class OptInDay:
             thh_sale = self.data_minute.loc[idx, 'thh_sale'] * hold_ratio_sale
             thh_buy = self.data_minute.loc[idx, 'thh_buy'] * hold_ratio_buy
 
-            opt_result, money, stk_amount = self.judge_reseau(p_now, thh_sale, thh_buy, pcr)
+            opt_result, money, stk_amount = self.judge(p_now, thh_sale, thh_buy, pcr)
 
             self.data_minute.loc[idx, 'opt_result'] = opt_result
             self.data_minute.loc[idx, 'money'] = money
@@ -260,7 +205,7 @@ class OptInDay:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='AG2006.XSGE', retest_span=60*4, start_date='2019-05-01', end_date='2019-08-10', debug=True)
+    r = OptInDay(stk_code='AG2006.XSGE', retest_span=60*4, start_date='2019-05-01', end_date='2019-08-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()

@@ -2,11 +2,9 @@
 """
 展示Reseau结果
 """
-from ReseauTest.Sub import SingleReseauJudge
+
 import tushare as ts
 from pylab import *
-
-from SDK.Normalize import normal01
 from SDK.PlotOptSub import add_axis
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']

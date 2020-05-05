@@ -11,7 +11,7 @@ from Function.GenPic.gen_pic_class import GenPic
 from pylab import *
 
 
-class AverageLine(StkData):
+class HaiGui(StkData):
     def __init__(self, stk_code):
         super().__init__(stk_code)
 
@@ -26,6 +26,17 @@ class AverageLine(StkData):
         data_df['c_m'+str(m)+'_diff'] = data_df.apply(lambda x: x['close']-x['close'+'_m'+str(m)], axis=1)
         self.data['c_m'+str(m)+'_diff_sum'+str(win)] = data_df['c_m'+str(m)+'_diff'].rolling(window=win).sum()
 
+    def add_taq_channel(self):
+        """
+        增加唐安琪通道，即近20日最高点和近20日最低点
+        :return:
+        """
+        df = self.data
+        df['pos_line'] = df['close'].rolling(window=20).max()
+        self.data['pos_line'] = df['pos_line'].shift(1)
+        df['neg_line'] = df['close'].rolling(window=20).min()
+        self.data['neg_line'] = df['neg_line'].shift(1)
+
     def plot(self):
         df = self.data
 
@@ -33,7 +44,8 @@ class AverageLine(StkData):
         fig, ax = plt.subplots(nrows=2, sharex=True)
 
         ax[0].plot(df['idx'], df['close'], 'g*--', label='close')
-        ax[0].plot(df['idx'], df['SAR'], 'r-', label='sar')
+        # ax[0].plot(df['idx'], df['pos_line'], 'r-', label='pos_line')
+        # ax[0].plot(df['idx'], df['neg_line'], 'y-', label='neg_line')
         # ax[0].plot(df['idx'], df['close_m5'], 'y-', label='close')
         # ax[0].plot(df['idx'], df['close_m30'], 'r-', label='close')
 
@@ -43,21 +55,23 @@ class AverageLine(StkData):
 
 if __name__ == '__main__':
     jq_login()
-    al = AverageLine('RB2010.XSGE')
+    al = HaiGui('RB2010.XSGE')
 
     # 下载数据
-    al.down_minute_data(count=2000, freq='1m')
+    al.down_minute_data(count=2000, freq='5m')
 
     # 增加相关均线
-    al.add_mean_col('close', 5)
-    al.add_mean_col('close', 10)
-    al.add_mean_col('close', 20)
-    al.add_mean_col('close', 30)
-    al.add_mean_col('close', 60)
-    al.add_mean_col('close', 720)
+    # al.add_mean_col('close', 5)
+    # al.add_mean_col('close', 10)
+    # al.add_mean_col('close', 20)
+    # al.add_mean_col('close', 30)
+    # al.add_mean_col('close', 60)
+    # al.add_mean_col('close', 720)
 
     # 增加指标
     al.add_index()
+
+    # al.add_taq_channel()
 
     al.plot()
 
@@ -65,7 +79,7 @@ if __name__ == '__main__':
     al.cal_close_ml_diff_sum(60, 120)
 
     # 对均线进行排名
-    al.add_rank_to_col('c_m60_diff_sum120')
+    al.add_rank_to_col_smart('c_m60_diff_sum120')
 
     # 展示均线
     al.data['idx'] = list(range(len(al.data)))

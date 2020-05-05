@@ -19,6 +19,7 @@ class Reseau:
         pass
 
     @staticmethod
+    @print_run_time
     def df_win_std(df_, win_):
         """
         计算给定周期内的“收盘价”、“最高价”、“最低价”的标准差
@@ -33,8 +34,7 @@ class Reseau:
             df_part = df_.loc[idx - win_ + 1:idx, :]
             df_.loc[idx, 'std_' + str(win_)] = np.std(df_part.loc[:, ['close', 'low', 'high']].values)
         return df_
-    
-    # @print_run_time
+
     def get_single_stk_reseau_sub(self, df_, slow=6, quick=3):
         """
         计算动态网格
@@ -43,12 +43,8 @@ class Reseau:
         :param df_:
         :return:
         """
-        df_ = df_.reset_index(drop=True)
-        df_ = self.df_win_std(df_, quick)
-        df_ = self.df_win_std(df_, slow)
-        df_['std_m'] = df_.apply(lambda x: np.mean([x['std_' + str(quick)], x['std_' + str(slow)]]), axis=1)
-
-        return df_.tail(1)['std_m'].values[0]
+        return np.mean([np.std(df_.tail(quick).loc[:, ['close', 'low', 'high']].values),
+                        np.std(df_.tail(slow).loc[:, ['close', 'low', 'high']].values)])
 
     def get_single_stk_reseau(self, stk_code):
         """
