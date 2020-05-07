@@ -174,7 +174,7 @@ def get_k_data_JQ(stk, count=None, start_date=None, end_date=None, freq='daily')
     :param amount:
     :return:
     """
-    if 'm' in freq:
+    if ('m' in freq) & pd.isnull(end_date):
         end_date = add_date_str(get_current_date_str(), 1)
 
     if pd.isnull(end_date):

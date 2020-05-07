@@ -6,6 +6,7 @@ bias相关的类
 from DataSource.Data_Sub import get_k_data_JQ
 from DataSource.auth_info import jq_login
 from DataSource.data_pro import cal_df_col_rank
+from DataSource.stk_data_class import StkData
 from Global_Value.file_dir import data_dir
 
 import json
@@ -14,8 +15,9 @@ import os
 from sdk.DataPro import relative_rank
 
 
-class BIAS:
+class BIAS(StkData):
     def __init__(self, stk_code, freq, hist_count=2000, span_q=3, span_s=15, local_data_dir=data_dir + 'BIAS/'):
+        super().__init__(stk_code, freq)
         self.hist_count = hist_count
         self.span_s = span_s
         self.span_q = span_q
@@ -67,12 +69,17 @@ class BIAS:
         
     def gen_hist_data(self):
         """
+        在内存测试时，应该先运行此函数，此函数会向类的成员变量self.data中注入数据!
         将历史bias数据保存到本地
         :return:
         """
         df = get_k_data_JQ(stk=self.stk_code, freq=self.freq, count=self.hist_count)
-        
-        bias_values = self.add_bias(df)['bias'].values
+        self.data = self.add_bias(df)
+
+        # 增加bias排名
+        self.add_col_rank('bias')
+
+        bias_values = self.data['bias'].values
         
         bias_p = list(filter(lambda x: x >= 0, bias_values))
         bias_n = list(filter(lambda x: x < 0, bias_values))
@@ -134,18 +141,46 @@ class BIAS:
         
         return df_bias.tail(1)['bias'].values[0]
 
+    def average_line_compensates(self):
+        """
+        乖离度是判断股价偏离很重要的指标，但是仅此不够，若是单纯使用乖离度判断，
+        可能在乖离度很大的地方进行操作，后续不见得有较好收益，因为还有趋势的问题。
+
+        比如，均线在大斜度向下走的时候，如果我们在负向乖离度很高的时候入场，那么很有可能没有任何盈利空间，
+        因为后续乖离度恢复正常不是因为价格的反弹，而是随着时间推移，价格下降导致的。
+
+        以房价举例，在房价大幅下跌的时候，我们在房价急速下跌，偏离均线很大的地方入手，后续不见得短期房价会反弹，
+        很有可能是房价慢慢下跌到了我们入手的价格，导致乖离度的恢复。
+
+        所以，我们应该使用均线的斜度来修正乖离度指标。
+
+        思路：使用某种均线的斜度，在历时数据中的排名进行补偿！
+        :return:
+        """
+
+        # 向乖离度数据中增加均线
+        self.add_mean_col('close', self.span_s)
+
+        # 计算当前斜率
+        self.cal_diff_col('close_m' + str(self.span_s))
+
+        # 对斜率进行排名
+        self.add_col_rank('close_m' + str(self.span_s) + '_diff')
+
+        # 斜率排名减去50，让中心点落在0点附近
+        self.data['close_m' + str(self.span_s) + '_diff_rank_base0'] = self.data.apply(lambda x:x['close_m' + str(self.span_s) + '_diff_rank']-0.5, axis=1)
+
+        # 根据斜率对bias进行补偿
+        self.data['bias_rank_modify'] = self.data.apply(lambda x: x['bias_rank'] - x['close_m' + str(self.span_s) + '_diff_rank_base0'], axis=1)
+
     def plot_test(self):
         """
         用以测试效果
         :return:
         """
-        df = get_k_data_JQ(stk=self.stk_code, freq=self.freq, count=self.hist_count)
-        df_bias = self.add_bias(df)
-
-        # 增加rank数据
-        df_bias['rank'] = df_bias.apply(lambda x: self.cal_rank_now(x['bias']), axis=1)
-
-        df_bias.reset_index().reset_index().plot('level_0', ['close', 'rank'], subplots=True, style='*--')
+        self.average_line_compensates()
+        df_bias = self.data
+        df_bias.reset_index().reset_index().plot('level_0', ['close', 'bias_rank', 'bias_rank_modify'], subplots=True, style='*--')
 
 
 if __name__ == '__main__':
@@ -154,7 +189,8 @@ if __name__ == '__main__':
     # bias_obj_1m = BIAS(stk_code='300183', freq='1m')
     # bias_obj_1m.plot_test()
 
-    bias_obj_1d = BIAS(stk_code='000001', freq='1m', span_q=1, span_s=20)
+    bias_obj_1d = BIAS(stk_code='000001', freq='1m', span_q=15, span_s=30)
+    bias_obj_1d.gen_hist_data()
     bias_obj_1d.plot_test()
 
     end = 0

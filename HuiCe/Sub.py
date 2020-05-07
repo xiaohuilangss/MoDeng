@@ -269,7 +269,8 @@ class OptRecordRetest:
         self.ratio = ratio
         self.start_price = start_price
 
-        self.amount = math.floor(money_each/start_price/100)*100
+        # 至少买1单位（手）
+        self.amount = np.max([1, math.floor(money_each/start_price/100)*100])
 
         self.opt_dict = {
             'b_opt': [],
@@ -361,9 +362,9 @@ class MyPc(ParallelCalculateDf):
                 df_=df_day_complete,
                 slow=obj[0],
                 quick=obj[1])
-            
+
             print('完成1行：%s' % str(x['close']))
-            
+
             return reseau
 
         return df.loc[seg[0]:seg[1], :].apply(lambda x: lmd(x), axis=1)
@@ -430,23 +431,44 @@ class RetestReseau:
             money=50000,
             ratio=0.5,
             start_price=self.data_minute.head(1)['close'].values[0], money_each=5000)
-    
+
     @staticmethod
     def cal_days_ochl(df_ipt, days):
         df = copy.deepcopy(df_ipt)
-        
+
         # 将每一天的ochl转为字典
         df['ochl'] = df.apply(
             lambda x: {'open': x['open'], 'close': x['close'], 'high': x['high'], 'low': x['low']}, axis=1)
-        
+
         # 下移
         for i in range(days):
             df['ochl_' + str(i)] = df['ochl'].shift(i)
-    
+
         # 合并
         df_ipt['ochl_days'] = df.apply(lambda x: [x['ochl_' + str(i)] for i in range(days)], axis=1)
-    
+
         return df_ipt
+
+    @staticmethod
+    def cal_df_ochl(df_m):
+        """
+        给定一个分钟数据，计算其当天的ochl
+        :param df_m:
+        :return:
+        """
+        o = df_m.head(1)['open'].values[0]
+        c = df_m.tail(1)['close'].values[0]
+
+        array = df_m.loc[:, ['open', 'close', 'high', 'low']].values
+        h = np.max(array)
+        l = np.min(array)
+
+        return {
+            'open': o,
+            'close': c,
+            'high': h,
+            'low': l
+        }
 
     @staticmethod
     def cal_today_ochl(df_m):
@@ -569,6 +591,25 @@ class RetestReseau:
         logout()
         return True
 
+    @staticmethod
+    def cal_day_ohlc_by_minute_data(df_minute):
+        """
+        给一个分钟级别的df数据（持续可能超过一天），计算转换成天的ohlc
+        :param df_minute:
+        :return:
+        """
+
+        l_group = list(df_minute.groupby(by='date'))
+
+        # 计算每一天的olch
+        l_ochl = [(x[0], RetestReseau.cal_df_ochl(x[1])) for x in l_group]
+        for t in l_ochl:
+            t[1].update({'date': t[0]})
+
+        df = pd.DataFrame([x[1] for x in l_ochl])
+        df = df.sort_values(by='date', ascending=True)
+        return df
+
     def add_reseau(self):
         """
         计算动态网格，并添加到数据当中
@@ -586,41 +627,37 @@ class RetestReseau:
         # 增加必要index
         self.data_minute = add_stk_index_to_df(self.data_minute).set_index('datetime')
 
-        # 增加rsv数据
-        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span).reset_index(drop=True)
-        
         # 增加最近指定周期的ochl
-        self.data_day = self.cal_days_ochl(self.data_day, 6).set_index('datetime')
-        
-        # 将天数据合并到分钟数据中
-        self.data_minute = pd.concat([self.data_minute, self.data_day.loc[:, ['RSV', 'ochl_days']]], axis=1)
-        self.data_minute = self.data_minute.fillna(method='ffill')
-        
+        self.data_day = self.cal_days_ochl(self.data_day, 6)
+
+        # 增加rsv数据
+        self.data_day = RSV.add_rsv(self.data_day, self.rsv_span).loc[:, ['datetime', 'RSV', 'ochl_days']].set_index('datetime')
+
+        # 将分钟数据与日数据合并
+        self.data_minute = pd.concat([self.data_minute, self.data_day], axis=1)
+        self.data_minute['rsv'] = self.data_minute['RSV'].fillna(method='ffill')
+        self.data_minute = self.data_minute.reset_index(drop=True).fillna(method='ffill')
+
         # 最初的数天数据不进行回测，开始的部分数据因为数据量原因计算不出网格大小
         i_start = self.i_start
         i = len(self.data_minute) - i_start
-
-        # 大循环
         df = self.data_minute[i_start:]
-        
-        # 向df中增加网格
-        # mypc = MyPc(df, [self.reseau_slow, self.reseau_quick])
-        # df['reseau'] = mypc.apply_pl()
-        
+
         for idx in df.index:
-    
+
             """
             此处为提高速度，做了部分简化，没有使用当天的
             实际效果应当不低于测试效果
             """
             # 获取近日数据并计算网格
-            df_day_complete = pd.DataFrame(self.data_minute.loc[idx, 'ochl_days'])
+            df_day_complete = pd.DataFrame(list(filter(lambda x: not pd.isnull(x), self.data_minute.loc[idx, 'ochl_days'])))
 
             reseau_object = Reseau()
             reseau = reseau_object.get_single_stk_reseau_sub(
                 df_=df_day_complete,
                 slow=self.reseau_slow,
                 quick=self.reseau_quick)
+
             self.data_minute.loc[idx, 'reseau'] = reseau
 
             # 调节 buy 和 sale 的 threshold
@@ -645,11 +682,18 @@ class RetestReseau:
 
         pcr = self.read_pcr()
 
+        # 根据仓位对网格进行二次处理逻辑
+        hold_ratio = 0.5                                                    # 初始仓位0.5
+
         for idx in self.data_minute.loc[self.i_start:, :].index:
 
+            # 根据仓位对网格进行加权
+            hold_ratio_buy = hold_ratio / ((1 - hold_ratio) + 1e-20)  # 买入加权
+            hold_ratio_sale = (1 - hold_ratio) / (hold_ratio + 1e-20)  # 买入加权
+
             p_now = self.data_minute.loc[idx, 'close']
-            thh_sale = self.data_minute.loc[idx, 'thh_sale']
-            thh_buy = self.data_minute.loc[idx, 'thh_buy']
+            thh_sale = self.data_minute.loc[idx, 'thh_sale'] * hold_ratio_sale
+            thh_buy = self.data_minute.loc[idx, 'thh_buy'] * hold_ratio_buy
 
             opt_result, money, stk_amount = self.judge_reseau(p_now, thh_sale, thh_buy, pcr)
 
@@ -660,6 +704,14 @@ class RetestReseau:
             self.data_minute.loc[idx, 'money_total'] = money + stk_amount*p_now
             self.data_minute.loc[idx, 'stk_amount'] = stk_amount
             self.data_minute.loc[idx, 'total_earn'] = self.opt_record.opt_dict['total_earn']
+
+            # 记录仓位以及根据仓位修正后的买卖网格大小
+            self.data_minute.loc[idx, 'hold_ratio'] = hold_ratio
+            self.data_minute.loc[idx, 'thh_sale_modify'] = thh_sale
+            self.data_minute.loc[idx, 'thh_buy_modify'] = thh_buy
+
+            # 更新仓位
+            hold_ratio = stk_amount*p_now/(money + stk_amount*p_now)
 
     def save_csv(self):
         if self.debug:
@@ -716,7 +768,7 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='300183', retest_span=5, start_date='2019-01-01', end_date='2019-03-10', debug=True)
+    r = RetestReseau(stk_code='AG2006.XSGE', retest_span=60*4, start_date='2019-05-01', end_date='2019-08-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()

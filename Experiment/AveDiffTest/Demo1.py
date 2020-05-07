@@ -2,7 +2,7 @@
 """
 展示Reseau结果
 """
-from ReseauTest.Sub import SingleReseauJudge
+
 import tushare as ts
 from pylab import *
 

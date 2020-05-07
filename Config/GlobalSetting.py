@@ -4,16 +4,9 @@ import matplotlib
 from sqlalchemy import create_engine
 from sdk.DBOpt import *
 import pymysql
+
 from pylab import *
-import tensorflow as tf
-import tushare as ts
-from pandas import DataFrame
-import pandas as pd
-import numpy as np
-
 mpl.rcParams['font.sans-serif'] = ['SimHei']
-
-import os
 
 total_stk_info_table_name = 'basic_stk_info'
 #
