@@ -2,7 +2,7 @@
 import tushare as ts
 import numpy as np
 from pylab import *
-from SDK.PlotOptSub import add_axis
+from sdk.PlotOptSub import add_axis
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus']=False

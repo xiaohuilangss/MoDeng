@@ -5,7 +5,7 @@ from apscheduler.triggers.combining import OrTrigger
 from apscheduler.triggers.cron import CronTrigger
 from CornerDetectAndAutoEmail.AveMaxMinDetect.Global import h_l_pot_info_url
 from CornerDetectAndAutoEmail.AveMaxMinDetect.MaxMin import judgeAndSendMsg, updatePotInfo
-from SDK.MyTimeOPT import get_current_datetime_str
+from sdk.MyTimeOPT import get_current_datetime_str
 
 
 def time_now():

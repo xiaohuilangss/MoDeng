@@ -1,7 +1,7 @@
 # encoding = utf-8
 
 from Config.GlobalSetting import *
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.MyTimeOPT import get_current_date_str
 
 for year in range(2002, int(get_current_date_str().split('-')[0]) + 1):
     for quarter in range(1, 5):

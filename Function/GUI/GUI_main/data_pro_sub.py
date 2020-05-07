@@ -3,7 +3,7 @@ from History.Debug_Sub import debug_print_txt
 from DataSource.auth_info import jq_login
 from Config.Sub import dict_stk_list
 from DataSource.Data_Sub import get_k_data_JQ
-from SDK.Gen_Stk_Pic_Sub import \
+from sdk.Gen_Stk_Pic_Sub import \
     gen_day_pic_wx, gen_idx_pic_wx
 import jqdatasdk as jq
 

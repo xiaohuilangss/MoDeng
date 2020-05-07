@@ -2,7 +2,7 @@
 # from JQData_Test.auth_info import *
 import pandas as pd
 
-from SDK.MyTimeOPT import convert_str_to_date
+from sdk.MyTimeOPT import convert_str_to_date
 
 from matplotlib import pyplot as plt
 import seaborn as sns

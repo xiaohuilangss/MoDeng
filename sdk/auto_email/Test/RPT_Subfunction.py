@@ -53,7 +53,8 @@ fonts.addMapping('song', 1, 1, 'hei')
 
 """
 # 本脚本是一些与reportlab包有关的子函数
-# 同时也设置reportlab中常用的一些import，其他文件可以通过import该文件来方便地引入常用依赖
+# 同时也设置reportlab中常用的一些import，
+其他文件可以通过import该文件来方便地引入常用依赖
 """
 
 

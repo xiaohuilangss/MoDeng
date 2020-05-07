@@ -1,5 +1,5 @@
 # encoding = utf-8
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 save_dir = "F:/MYAI/文档资料/用于读取的文件/cnn_data/"
 save_dir_ave = "F:/MYAI/文档资料/用于读取的文件/cnn_data_ave/"

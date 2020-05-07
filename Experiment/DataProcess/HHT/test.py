@@ -1,7 +1,7 @@
 # encoding = utf-8
 
 # from General.GlobalSetting import *
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 from PyEMD import EMD
 import numpy as np
 import pylab as plt

@@ -1,6 +1,6 @@
 # encoding = utf-8
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 """
     画出“最高点”、“最低点”的图像

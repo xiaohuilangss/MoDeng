@@ -3,7 +3,7 @@
     本策略主要思想是，通过计算个股与大盘每日价格（指标）涨跌幅度的差值来评估一只stk在一段时间内的强弱
 
 """
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 
 index_list = get_class_df()

@@ -1,5 +1,5 @@
 # encoding=utf-8
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 from DataProcess.Av_Trend_Analysis.PreProcessor import *
 from DataProcess.Av_Trend_Analysis.Gen_Graph import *
 import os

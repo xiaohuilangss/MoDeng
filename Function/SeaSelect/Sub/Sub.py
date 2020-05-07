@@ -16,13 +16,13 @@ from DataSource.auth_info import jq_login, logout
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 from Function.SeaSelect.Sub.reportlab_sub import add_front, print_k_to_pdf, add_tail_page
 from Function.SeaSelect.gen_pic import gen_stk_sea_select_pic
-from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_half_hour_sar
+from sdk.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_half_hour_sar
 
-from SDK.SendMsgByQQ.QQGUI import send_qq
-from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
+from sdk.send_msg_by_qq.QQGUI import send_qq
+from sdk.send_msg_by_qq.SendPicByQQ import send_pic_qq
 
 from pylab import *
-from SDK.MyTimeOPT import get_current_date_str, add_date_str
+from sdk.MyTimeOPT import get_current_date_str, add_date_str
 
 """
 此脚本中的主要函数将逐渐使用select_class.py中的类取代

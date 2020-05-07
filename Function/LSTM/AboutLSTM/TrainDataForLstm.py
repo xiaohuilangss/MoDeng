@@ -12,7 +12,7 @@ from Experiment.Capital_Flow import get_stk_money_flow
 from CornerDetectAndAutoEmail.Sub import genSingleStkTrainData, sliceDfToTrainData
 from LSTM.AboutLSTM.Config import feature_cols, label_col, N_STEPS
 from RelativeRank.Sub import relativeRank
-from SDK.CNN_Data_Prepare import gaussian_normalize, normalize
+from sdk.CNN_Data_Prepare import gaussian_normalize, normalize
 import numpy as np
 import os
 

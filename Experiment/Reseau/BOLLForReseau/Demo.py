@@ -11,7 +11,7 @@ import talib
 from pylab import *
 
 from Experiment.Constraint.Constraint import calBSReseau
-from SDK.MyTimeOPT import minus_date_str
+from sdk.MyTimeOPT import minus_date_str
 from HuiCe.Sub import bs_opt, plot_op_result
 
 stk_code = '300508'

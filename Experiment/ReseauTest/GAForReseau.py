@@ -12,7 +12,7 @@ import tushare as ts
 import numpy as np
 import os
 import time
-from SDK.PickleSaveSub import loadP
+from sdk.PickleSaveSub import loadP
 
 
 # 定义适应度函数

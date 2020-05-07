@@ -3,7 +3,7 @@
 from General.MyTimeOPT import *
 
 from Config.GlobalSetting import *
-from SDK.DBOpt import *
+from sdk.DBOpt import *
 
 
 def get_single_day_dd_data(date_param, code, big_than=400):

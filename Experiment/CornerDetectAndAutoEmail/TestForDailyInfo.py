@@ -16,7 +16,7 @@ from CornerDetectAndAutoEmail.Email_Sub import sendmail
 from CornerDetectAndAutoEmail.HtmlStr import *
 from CornerDetectAndAutoEmail.Sub import genStkPic, genMIMEImageList, genStkIdxPic
 from Config.AutoStkConfig import stk_list
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.MyTimeOPT import get_current_date_str
 import tushare as ts
 from apscheduler.schedulers.blocking import BlockingScheduler
 

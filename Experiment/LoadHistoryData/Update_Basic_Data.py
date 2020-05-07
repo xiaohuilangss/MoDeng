@@ -4,8 +4,8 @@ import tushare as ts
 from Config.GlobalSetting import conn_profit, stk_profit_data_db_name, engine_profit, engine_growth, \
     stk_growth_data_db_name, stk_operation_data_db_name, stk_debtpaying_data_db_name, stk_cashflow_data_db_name, \
     engine_operation, engine_debtpaying, engine_cashflow
-from SDK.DBOpt import *
-from SDK.MyTimeOPT import *
+from sdk.DBOpt import *
+from sdk.MyTimeOPT import *
 year_now = get_current_date_str().split("-")[0]
 
 

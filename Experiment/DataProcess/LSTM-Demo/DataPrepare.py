@@ -1,6 +1,6 @@
 # encoding = utf-8
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 predict_depth = timestep_size = 20
 batch_size = 20

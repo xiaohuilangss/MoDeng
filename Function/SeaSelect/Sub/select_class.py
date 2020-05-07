@@ -22,10 +22,10 @@ from Function.GUI.Sub.sub import text_append_color
 from Function.SeaSelect.Sub.reportlab_sub import add_front, print_k_to_pdf, add_tail_page, SeaSelectPdf
 from Function.SeaSelect.Sub.select_cmd_class import SelectCmd
 from Function.SeaSelect.gen_pic import gen_stk_sea_select_pic
-from SDK.MyTimeOPT import add_date_str, get_current_date_str
+from sdk.MyTimeOPT import add_date_str, get_current_date_str
 from itertools import groupby
 
-from SDK.TimeAndSeconds import minute_reckon
+from sdk.TimeAndSeconds import minute_reckon
 
 
 class SeaSelect:

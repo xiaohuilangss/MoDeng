@@ -1,9 +1,9 @@
 # encoding = utf-8
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 from Config.GlobalSetting import *
-from SDK.MyTimeOPT import add_date_str, minus_date_str
+from sdk.MyTimeOPT import add_date_str, minus_date_str
 
 
 def cal_chain_ratio_average(list_param):

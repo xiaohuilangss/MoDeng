@@ -7,8 +7,8 @@
 每天下载，数据格式为df，命名为“stk_basics”+current date
 '''
 from Config.GlobalSetting import conn_stkBasics, stk_stkBasics_data_db_name
-from SDK.DBOpt import is_table_exist
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.DBOpt import is_table_exist
+from sdk.MyTimeOPT import get_current_date_str
 import tushare as ts
 
 

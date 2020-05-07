@@ -3,7 +3,7 @@
 
 import pandas as pd
 
-from SDK.MyTimeOPT import convert_str_to_date
+from sdk.MyTimeOPT import convert_str_to_date
 
 """
 本脚本用于研究相对估值

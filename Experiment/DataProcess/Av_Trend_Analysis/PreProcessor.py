@@ -2,7 +2,7 @@
 
 # 根据均线来找出相应趋势的stk
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 
 def gen_trend_csv():

@@ -1,10 +1,10 @@
 # encoding = utf-8
 from random import randint
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 from Config.GlobalSetting import *
-from SDK.DBOpt import *
+from sdk.DBOpt import *
 
 '''
 function:get tick data in single day,and then write it to database,

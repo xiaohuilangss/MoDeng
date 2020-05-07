@@ -8,8 +8,8 @@ from Config.GlobalSetting import  mpl, plt, conn_profit, conn_k, stk_profit_data
     conn_debtpaying, conn_cashflow, stk_growth_data_db_name, stk_operation_data_db_name, stk_debtpaying_data_db_name, \
     stk_cashflow_data_db_name,g_total_stk_code
 
-from SDK.DBOpt import is_table_exist, get_total_table_data
-from SDK.MyTimeOPT import get_current_date_str, get_quarter_date, cal_quarter
+from sdk.DBOpt import is_table_exist, get_total_table_data
+from sdk.MyTimeOPT import get_current_date_str, get_quarter_date, cal_quarter
 from pandas import DataFrame
 import pandas as pd
 import numpy as np

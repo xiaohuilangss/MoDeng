@@ -2,12 +2,12 @@
 import gc
 
 from Config.GlobalSetting import *
-from SDK.MyTimeOPT import *
-from SDK.BasicAnalysisSub import get_ss_sb
+from sdk.MyTimeOPT import *
+from sdk.BasicAnalysisSub import get_ss_sb
 import os
-from SDK.MACD_Sub import *
+from sdk.MACD_Sub import *
 
-from SDK.RelativeChangeStrategySub import get_stk_classified_data, stk_k_pro
+from sdk.RelativeChangeStrategySub import get_stk_classified_data, stk_k_pro
 import talib
 
 

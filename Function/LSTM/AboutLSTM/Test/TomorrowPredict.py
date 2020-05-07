@@ -11,9 +11,9 @@ import tensorflow as tf
 from pylab import *
 
 from Global_Value.file_dir import rootPath
-from SDK.DataPro import relative_rank
-from SDK.MyTimeOPT import get_current_date_str, add_date_str
-from SDK.SendMsgByQQ.QQGUI import send_qq
+from sdk.DataPro import relative_rank
+from sdk.MyTimeOPT import get_current_date_str, add_date_str
+from sdk.send_msg_by_qq.QQGUI import send_qq
 
 
 """

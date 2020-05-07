@@ -1,5 +1,5 @@
 # encoding = utf_8
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 for datetime in pd.date_range('2001-01-01',get_current_date_str()):
     date = str(datetime)[0:10]

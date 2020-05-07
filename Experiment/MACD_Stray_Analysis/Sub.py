@@ -12,11 +12,11 @@ from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 
 
-from SDK.SendMsgByQQ.QQGUI import send_qq
-from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
+from sdk.send_msg_by_qq.QQGUI import send_qq
+from sdk.send_msg_by_qq.SendPicByQQ import send_pic_qq
 
 from pylab import *
-from SDK.MyTimeOPT import get_current_date_str, add_date_str
+from sdk.MyTimeOPT import get_current_date_str, add_date_str
 
 
 def week_macd_stray_judge(stk_code):

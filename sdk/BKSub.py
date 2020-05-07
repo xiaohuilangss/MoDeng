@@ -1,6 +1,6 @@
 # encoding = utf-8
 from Config.GlobalSetting import *
-from SDK.SDKHeader import get_MACD
+from sdk.SDKHeader import get_MACD
 
 def save_bk_graph(bk_name,days,save_url):
     """

@@ -8,7 +8,7 @@ from RelativeRank.Sub import get_k_data_JQ
 
 from pylab import *
 
-from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
+from sdk.send_msg_by_qq.SendPicByQQ import send_pic_qq
 
 
 def printStkListPic2QQ(code_list, towho, title=None):

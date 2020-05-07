@@ -13,7 +13,7 @@ from reportlab.pdfgen import canvas
 
 from Auto_Report.Auto_Email.Email_SendPdf import sendMail, loadPickle
 from Auto_Report.ReportLab.SubFunction import RPL_Bk_Page
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.MyTimeOPT import get_current_date_str
 
 
 def MACD_test_daily():

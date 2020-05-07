@@ -9,7 +9,7 @@ import pickle
 from CornerDetectAndAutoEmail.AveMaxMinDetect.Global import h_l_pot_info_url
 from Config.GlobalSetting import g_total_stk_info_mysql
 from HuiCe.Sub import get_name_by_stk_code
-from SDK.SendMsgByQQ.QQGUI import send_qq
+from sdk.send_msg_by_qq.QQGUI import send_qq
 import os
 """
 存储最高点和最低点的数据
@@ -25,7 +25,7 @@ import os
 """
 from Config.AutoStkConfig import stk_list
 import tushare as ts
-from SDK.MyTimeOPT import get_current_date_str, add_date_str
+from sdk.MyTimeOPT import get_current_date_str, add_date_str
 import numpy as np
 import pandas as pd
 

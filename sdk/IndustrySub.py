@@ -1,6 +1,6 @@
 #encoding = utf-8
 from Config.GlobalSetting import conn_k,conn_basic,conn_industry,total_stk_info_table_name,plt
-from SDK.DBOpt import *
+from sdk.DBOpt import *
 import numpy as np
 
 

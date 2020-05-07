@@ -1,5 +1,5 @@
 # encoding = utf-8
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 '''
 思路：找到半年线为水平，60日，30日和14日线的斜率依此增大的stk。并且stk上市超过一定时间。
 '''

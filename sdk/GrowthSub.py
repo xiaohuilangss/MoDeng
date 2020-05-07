@@ -1,8 +1,8 @@
 # encoding = utf-8
 
 from Config.GlobalSetting import conn_growth, mpl, plt
-from SDK.DBOpt import is_table_exist, get_total_table_data
-from SDK.MyTimeOPT import get_current_date_str, get_quarter_date
+from sdk.DBOpt import is_table_exist, get_total_table_data
+from sdk.MyTimeOPT import get_current_date_str, get_quarter_date
 from pandas import DataFrame
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']

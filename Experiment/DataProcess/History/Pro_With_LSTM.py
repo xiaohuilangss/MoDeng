@@ -6,7 +6,7 @@ import tensorflow as tf
 
 from Config.GlobalSetting import conn_k
 from Restore.DataProcessSDK import LSTMRNN
-from SDK.DBOpt import get_total_table_data
+from sdk.DBOpt import get_total_table_data
 
 BATCH_START = 0
 TIME_STEPS = 4

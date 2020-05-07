@@ -16,10 +16,10 @@ from DataSource.auth_info import jq_login, logout
 from Function.GenPic.gen_pic_class import GenPic
 from Global_Value.file_dir import sea_select_pic_dir, rootPath
 
-from SDK.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
-from SDK.Gen_Stk_Pic_Sub import gen_hour_index_pic_local, gen_day_pic_local, \
+from sdk.AboutTimeSub import convertValue2Quarter, stdMonthDate2ISO, convertQuarter2Value, stdMonthDate
+from sdk.Gen_Stk_Pic_Sub import gen_hour_index_pic_local, gen_day_pic_local, \
     gen_w_m_macd_pic_local, gen_idx_pic_local, gen_hour_macd_values
-from SDK.MyTimeOPT import Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
+from sdk.MyTimeOPT import Sec2Datetime, DatetimeStr2Sec, DateStr2Sec, add_date_str, get_current_date_str
 import pandas as pd
 from reportlab.graphics.charts.barcharts import VerticalBarChart
 from reportlab.graphics.charts.legends import Legend

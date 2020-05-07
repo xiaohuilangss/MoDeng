@@ -28,11 +28,11 @@ from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ, get_current_price_JQ, add_stk_index_to_df
 
 from Global_Value.file_dir import opt_record_file_url, hist_pic_dir, opt_record, json_file_url
-from SDK.Debug_Sub import debug_print_txt, myPrint
-from SDK.Gen_Stk_Pic_Sub import \
+from sdk.Debug_Sub import debug_print_txt, myPrint
+from sdk.Gen_Stk_Pic_Sub import \
     gen_hour_macd_values, gen_hour_macd_pic_local, gen_hour_index_pic_local, gen_day_pic_local, gen_w_m_macd_pic_local, \
     gen_idx_pic_local
-from SDK.MyTimeOPT import get_current_datetime_str, add_date_str, get_current_date_str
+from sdk.MyTimeOPT import get_current_datetime_str, add_date_str, get_current_date_str
 
 from DataSource.auth_info import *
 

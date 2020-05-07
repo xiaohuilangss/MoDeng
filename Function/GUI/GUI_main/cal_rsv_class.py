@@ -3,8 +3,8 @@ from Config.Sub import read_config
 from DataSource.Code2Name import code2name
 from DataSource.Data_Sub import get_k_data_JQ
 from Global_Value.p_diff_ratio_last import RSV_Record
-from SDK.Debug_Sub import debug_print_txt
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.Debug_Sub import debug_print_txt
+from sdk.MyTimeOPT import get_current_date_str
 
 
 class RSV:

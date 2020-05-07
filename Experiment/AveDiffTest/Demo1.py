@@ -6,8 +6,8 @@ from ReseauTest.Sub import SingleReseauJudge
 import tushare as ts
 from pylab import *
 
-from SDK.Normalize import normal01
-from SDK.PlotOptSub import add_axis
+from sdk.Normalize import normal01
+from sdk.PlotOptSub import add_axis
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus']=False

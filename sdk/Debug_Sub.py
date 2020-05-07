@@ -4,10 +4,10 @@
 本脚本用于存放测试用函数，主要是debug日志打印函数
 """
 from Config.AutoGenerateConfigFile import data_dir
-from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str
+from sdk.MyTimeOPT import get_current_date_str, get_current_datetime_str
 import os
 
-from SDK.SendMsgByQQ.QQGUI import send_qq
+from sdk.send_msg_by_qq.QQGUI import send_qq
 
 
 def myPrint(str_gui, str_temp, method='n', towho=''):

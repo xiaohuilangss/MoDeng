@@ -9,14 +9,14 @@ from Function.GUI.GUI_main.opt_record_class import OptRecord
 from Global_Value.file_dir import opt_record, opt_record_file_url, json_file_url
 from Global_Value.p_diff_ratio_last import RSV_Record
 from Global_Value.thread_lock import opt_lock
-from SDK.Debug_Sub import debug_print_txt
+from sdk.Debug_Sub import debug_print_txt
 
 import pandas as pd
 import numpy as np
 import math
 
-from SDK.MyTimeOPT import get_current_datetime_str
-from SDK.StdForReseau.Sub import Reseau
+from sdk.MyTimeOPT import get_current_datetime_str
+from sdk.std_for_reseau.Sub import Reseau
 
 
 class ReseauJudge:

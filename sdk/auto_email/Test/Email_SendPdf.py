@@ -10,7 +10,7 @@ from email.mime.audio import MIMEAudio
 from email.mime.image import MIMEImage
 from email.encoders import encode_base64
 
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.MyTimeOPT import get_current_date_str
 
 
 def dumpPickle(data, saveLocation, fileName):

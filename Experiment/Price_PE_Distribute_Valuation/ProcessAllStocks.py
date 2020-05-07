@@ -3,7 +3,7 @@ from CornerDetectAndAutoEmail.TestForDailyInfo import dailyStkInfoEmail, dailySt
 
 import pandas as pd
 
-from SDK.MyTimeOPT import convert_str_to_date
+from sdk.MyTimeOPT import convert_str_to_date
 
 """
 根据价格pe分数估值法，对所有stk进行估值

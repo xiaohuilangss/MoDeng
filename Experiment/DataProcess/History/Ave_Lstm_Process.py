@@ -1,7 +1,7 @@
 #encoding=utf-8
 
-from SDK.LSTM_Class import LSTMRNN
-from SDK.SDKHeader import *
+from sdk.LSTM_Class import LSTMRNN
+from sdk.SDKHeader import *
 
 BATCH_START = 0
 TIME_STEPS = 15

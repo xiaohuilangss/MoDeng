@@ -1,7 +1,7 @@
 # encoding = utf-8
 
 from Config.GlobalSetting import *
-from SDK.AboutTimeSub import stdMonthDate
+from sdk.AboutTimeSub import stdMonthDate
 
 ppi_df = ts.get_ppi()
 

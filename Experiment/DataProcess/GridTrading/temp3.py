@@ -1,6 +1,6 @@
 # encoding = utf-8
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 import talib
 
 

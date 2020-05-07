@@ -1,8 +1,8 @@
 # encoding=utf-8
 
 from History.Sub import judge_single_stk_sub
-from SDK.MyTimeOPT import add_date_str
-from SDK.shelfSub import shelveP, shelveL
+from sdk.MyTimeOPT import add_date_str
+from sdk.shelfSub import shelveP, shelveL
 from pylab import *
 
 if __name__ == '__main__':

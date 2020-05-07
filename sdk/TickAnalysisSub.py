@@ -1,10 +1,10 @@
 
 # encoding = utf-8
 from Config.GlobalSetting import conn_tick
-from SDK.MyTimeOPT import add_date_str
+from sdk.MyTimeOPT import add_date_str
 from pandas import DataFrame
 import pandas as pd
-from SDK.DBOpt import get_total_table_data
+from sdk.DBOpt import get_total_table_data
 # 用于整理tick数据
 
 # 给定dataframe和日期，以及时间跨度，获取该日期的均值

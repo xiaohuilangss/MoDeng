@@ -1,6 +1,6 @@
 # encoding = utf-8
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 
 def get_class_df_by_code(code,belongto_info,class_df_list):

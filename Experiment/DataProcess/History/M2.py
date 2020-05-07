@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import tushare as ts
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 money_supply_df = ts.get_money_supply()[0:30]
 money_supply_df['month_std'] = money_supply_df.apply(lambda x:stdMonthDate(x['month']),axis=1)

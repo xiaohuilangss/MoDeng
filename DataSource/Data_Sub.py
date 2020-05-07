@@ -12,7 +12,7 @@ import jqdatasdk as jq
 import numpy as np
 import pandas as pd
 
-from SDK.MyTimeOPT import get_current_date_str, add_date_str
+from sdk.MyTimeOPT import get_current_date_str, add_date_str
 from talib import MA_Type
 
 

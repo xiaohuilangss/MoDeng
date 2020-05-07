@@ -1,5 +1,5 @@
 # encoding=utf-8
-from SDK.DataPro import relative_rank
+from sdk.DataPro import relative_rank
 import numpy as np
 import math
 

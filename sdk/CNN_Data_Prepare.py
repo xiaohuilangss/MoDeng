@@ -1,12 +1,12 @@
 # encoding = utf-8
 
 from Config.GlobalSetting import stk_tick_data_db_name
-from SDK.DBOpt import is_table_exist
-from SDK.AveAnalysisSub import get_average_array_span, add_inc, get_total_ave_ss
+from sdk.DBOpt import is_table_exist
+from sdk.AveAnalysisSub import get_average_array_span, add_inc, get_total_ave_ss
 import pandas as pd
 import numpy as np
-from SDK.FileOptSub import read_csv_to_df
-from SDK.TickAnalysisSub import get_total_volume_ss
+from sdk.FileOptSub import read_csv_to_df
+from sdk.TickAnalysisSub import get_total_volume_ss
 import os
 import tushare as ts
 '''

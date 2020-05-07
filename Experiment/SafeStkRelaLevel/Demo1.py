@@ -8,13 +8,13 @@ from Config.Sub import readConfig
 # from RelativeRank.Sub import get_k_data_JQ
 from Experiment.MACD_Stray_Analysis.Sub import cal_stk_p_level
 from Experiment.RelativeRank.Sub import get_k_data_JQ
-from SDK.MyTimeOPT import add_date_str, get_current_date_str
+from sdk.MyTimeOPT import add_date_str, get_current_date_str
 
 from pylab import *
 
 from HuiCe.Sub import code2name_dict
-from SDK.SendMsgByQQ.QQGUI import send_qq
-from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
+from sdk.send_msg_by_qq.QQGUI import send_qq
+from sdk.send_msg_by_qq.SendPicByQQ import send_pic_qq
 
 
 

@@ -1,7 +1,7 @@
 
 
 # encoding = utf-8
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 def gen_trend_graph():
     file_url = "F:/MYAI/文档资料/用于读取的文件/av_trend_record/"+'av_trend' + get_current_date_str()+'.csv'

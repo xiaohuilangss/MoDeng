@@ -2,7 +2,7 @@
 
 import tushare as ts
 
-from SDK.BasicAnalysisSub import get_ss_total_basic
+from sdk.BasicAnalysisSub import get_ss_total_basic
 
 """
 测试使用python 下载数据

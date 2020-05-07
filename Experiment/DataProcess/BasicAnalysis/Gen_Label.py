@@ -1,5 +1,5 @@
 # encoding = utf-8
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 
 # 本文件用于计算“基本面分析中的label”

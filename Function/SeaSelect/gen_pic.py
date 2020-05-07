@@ -14,9 +14,9 @@ from DataSource.Data_Sub import get_k_data_JQ
 from DataSource.auth_info import jq_login, logout
 from Function.GenPic.gen_pic_class import GenPic
 from Global_Value.file_dir import sea_select_pic_dir
-from SDK.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_hour_index_pic_local, \
+from sdk.Gen_Stk_Pic_Sub import gen_hour_macd_values, gen_hour_index_pic_local, \
     gen_day_pic_local, gen_w_m_macd_pic_local, gen_idx_pic_local
-from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str
+from sdk.MyTimeOPT import get_current_date_str, get_current_datetime_str
 
 
 def gen_stk_sea_select_pic(stk_code):

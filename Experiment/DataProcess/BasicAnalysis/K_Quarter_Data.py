@@ -1,7 +1,7 @@
 # encoding = utf-8
 
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 import os
 
 # 获取行业所属证券类型

@@ -7,8 +7,8 @@ import tushare as ts
 import numpy as np
 
 from DataSource.Data_Sub import get_k_data_JQ
-from SDK.MyTimeOPT import add_date_str, get_current_date_str
-from SDK.debug_function import print_run_time
+from sdk.MyTimeOPT import add_date_str, get_current_date_str
+from sdk.debug_function import print_run_time
 
 
 class Reseau:

@@ -4,7 +4,7 @@ import tushare as ts
 
 from CornerDetectAndAutoEmail.Sub import JudgeCornerPot, IsPotInCurveMedian
 from Config.AutoStkConfig import tailLengthForMACD, corner_Pot_Retrospective_Half
-from SDK.MyTimeOPT import DateStr2Sec
+from sdk.MyTimeOPT import DateStr2Sec
 from pylab import *
 
 

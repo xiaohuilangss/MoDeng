@@ -5,15 +5,15 @@ import talib
 from talib import MA_Type
 
 import tushare as ts
-from SDK.DataPro import normalize
-from SDK.MyTimeOPT import DateStr2Sec
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.DataPro import normalize
+from sdk.MyTimeOPT import DateStr2Sec
+from sdk.MyTimeOPT import get_current_date_str
 from pylab import *
 import pandas as pd
 
 
 # 无法显示汉字及负号
-from SDK.PlotOptSub import add_axis, addXticklabel_list
+from sdk.PlotOptSub import add_axis, addXticklabel_list
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 matplotlib.rcParams['axes.unicode_minus']=False

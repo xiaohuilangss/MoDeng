@@ -1,5 +1,5 @@
 # encoding = utf-8
-from SDK.DBOpt import *
+from sdk.DBOpt import *
 from Config.GlobalSetting import conn_k
 
 def get_class_df():

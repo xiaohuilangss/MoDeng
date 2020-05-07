@@ -2,7 +2,7 @@
 import tushare as ts
 import numpy as np
 
-from SDK.ExchangeFee import calExchangeFee
+from sdk.ExchangeFee import calExchangeFee
 
 """
 以均线为基础改进网格

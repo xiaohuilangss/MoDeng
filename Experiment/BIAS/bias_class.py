@@ -11,7 +11,7 @@ from Global_Value.file_dir import data_dir
 import json
 import os
 
-from SDK.DataPro import relative_rank
+from sdk.DataPro import relative_rank
 
 
 class BIAS:

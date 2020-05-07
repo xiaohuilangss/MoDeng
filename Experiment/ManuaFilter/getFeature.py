@@ -19,7 +19,7 @@ import talib
 import tushare as ts
 
 from pylab import *
-from SDK.MyTimeOPT import convert_str_to_datetime
+from sdk.MyTimeOPT import convert_str_to_datetime
 
 single_stk = ts.get_k_data('300508')
 

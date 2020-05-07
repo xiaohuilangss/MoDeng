@@ -11,8 +11,8 @@ import math
 
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df, Index
 from DataSource.LocalData.update_local_data import LocalData
-from SDK.DataPro import relative_rank
-from SDK.MyTimeOPT import get_current_date_str, add_date_str
+from sdk.DataPro import relative_rank
+from sdk.MyTimeOPT import get_current_date_str, add_date_str
 
 
 class StkData:

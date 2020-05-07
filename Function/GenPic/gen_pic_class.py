@@ -20,13 +20,13 @@ from PIL import Image
 from io import BytesIO
 from pylab import *
 from DataSource.Data_Sub import get_k_data_JQ, add_stk_index_to_df
-from SDK.Debug_Sub import debug_print_txt
-from SDK.MyTimeOPT import get_current_date_str, get_current_datetime_str, add_date_str
-from SDK.PlotOptSub import addXticklabel_list, add_axis
+from sdk.Debug_Sub import debug_print_txt
+from sdk.MyTimeOPT import get_current_date_str, get_current_datetime_str, add_date_str
+from sdk.PlotOptSub import addXticklabel_list, add_axis
 
 import matplotlib
 
-from SDK.rank_note_class import RankNote
+from sdk.rank_note_class import RankNote
 
 matplotlib.use('agg')
 

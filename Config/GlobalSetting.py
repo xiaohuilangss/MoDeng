@@ -2,7 +2,7 @@
 import matplotlib
 # matplotlib.use('Agg')
 from sqlalchemy import create_engine
-from SDK.DBOpt import *
+from sdk.DBOpt import *
 import pymysql
 from pylab import *
 import tensorflow as tf

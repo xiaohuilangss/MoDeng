@@ -1,6 +1,6 @@
 # encoding = utf-8
 
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 mpl.rcParams['font.sans-serif'] = ['SimHei']
 

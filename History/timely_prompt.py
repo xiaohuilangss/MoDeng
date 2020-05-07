@@ -27,7 +27,7 @@ from Experiment.MiddlePeriodLevelCheck.Demo1 import concerned_stk_middle_check, 
 from Experiment.CornerDetectAndAutoEmail.Sub import genStkIdxPicForQQ, genStkPicForQQ
 from Experiment.MACD_Stray_Analysis.Sub import send_W_M_MACD, check_week_stray_for_all
 from Experiment.RelativeRank.Sub import get_k_data_JQ, calRealtimeRankWithGlobal, updateConcernStkMData
-from SDK.MyTimeOPT import get_current_date_str
+from sdk.MyTimeOPT import get_current_date_str
 
 
 from Config.Sub import read_config
@@ -37,8 +37,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.combining import OrTrigger
 from apscheduler.triggers.cron import CronTrigger
 from pylab import *
-from SDK.SendMsgByQQ.QQGUI import send_qq
-from SDK.SendMsgByQQ.SendPicByQQ import send_pic_qq
+from sdk.send_msg_by_qq.QQGUI import send_qq
+from sdk.send_msg_by_qq.SendPicByQQ import send_pic_qq
 
 
 """ =========================== 子函数 ============================ """

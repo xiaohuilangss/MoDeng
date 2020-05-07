@@ -7,7 +7,7 @@ import pandas as pd
 
 from Global_Value.file_dir import json_file_url
 from Global_Value.thread_lock import opt_record_lock
-from SDK.MyTimeOPT import get_current_datetime_str
+from sdk.MyTimeOPT import get_current_datetime_str
 import numpy as np
 
 

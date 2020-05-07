@@ -1,6 +1,6 @@
 # encoding=utf-8
 
-from SDK.GeneralSub import write_dict_list_to_csv
+from sdk.GeneralSub import write_dict_list_to_csv
 
 from Config.GlobalSetting import *
 from Restore.DataProcessSDK import find_change_ratio_span

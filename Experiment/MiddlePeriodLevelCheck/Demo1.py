@@ -12,7 +12,7 @@ from Config.Sub import read_config
 from DataSource.Data_Sub import get_k_data_JQ
 from Experiment.RelativeRank.Sub import get_RT_price, relativeRank
 # from Experiment.SafeStkRelaLevel.Demo1 import calRelaPLevel, sendPLevel2QQ
-from SDK.MyTimeOPT import get_current_date_str, add_date_str
+from sdk.MyTimeOPT import get_current_date_str, add_date_str
 
 
 def update_middle_period_hour_data():

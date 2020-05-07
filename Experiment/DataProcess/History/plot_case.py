@@ -1,9 +1,9 @@
 # encoding = utf-8
 
-from SDK.GeneralSub import read_csv_to_dict_list
+from sdk.GeneralSub import read_csv_to_dict_list
 
 from Config.GlobalSetting import *
-from SDK.DBOpt import *
+from sdk.DBOpt import *
 
 '''
 给定一个case字典，将图形画出来，普通的时间段为蓝色，符合条件的时间段为红色

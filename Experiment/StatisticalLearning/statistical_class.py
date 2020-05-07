@@ -12,7 +12,7 @@ from DataSource.stk_data_class import StkData
 from pylab import *
 
 from Experiment.BIAS.bias_class import BIAS
-from SDK.PlotOptSub import add_axis
+from sdk.PlotOptSub import add_axis
 
 import pandas as pd
 

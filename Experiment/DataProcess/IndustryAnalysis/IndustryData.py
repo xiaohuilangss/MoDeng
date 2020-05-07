@@ -1,5 +1,5 @@
 # encoding = utf-8
-from SDK.SDKHeader import *
+from sdk.SDKHeader import *
 
 
 # insert_row_to_database(conn_param=conn_industry,field=['c_nmc','f1','f2'],value=['600','dafjoiewf','0.12586'],table_name='金融',db_name=stk_industry_data_db_name)
