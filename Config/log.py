@@ -8,29 +8,28 @@ import logging
 import logging.handlers
 import os
 
-from Global_Value.file_dir import rootPath
-
-root_path = rootPath
+from Sdk.DatetimeOpt.my_time_opt import get_current_datetime_str
+from my_config.config import root_path
 
 
 class MyLog:
-    def __init__(self):
+    def __init__(self, logger_name='unknown'):
         
         # 定义日志格式
+        self.logger_name = logger_name
         self.format = logging.Formatter('%(asctime)s -> %(filename)s ->'
                                         ' [line:%(lineno)d] -> %(funcName)s -> [%(levelname)s]: %(message)s')
         
-        self.logger = logging.getLogger('python-web')
+        self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(logging.DEBUG)
         self.root_path = root_path
         
         # 为了杜绝logger对象多次生成时重复打印的情况，需要进行判断
         if not self.logger.handlers:
-            self.config_log_console(level=logging.WARNING)
-            self.config_log_file(level=logging.WARNING)
+            self.config_log_console(level=logging.DEBUG)
+            self.config_log_file(level=logging.WARNING, time_span=60 * 24)
     
-    def config_log_file(self, save_dir_relative='\logs/', file_name='log_', level=logging.WARNING, time_span=10,
-                        backupCount=100):
+    def config_log_file(self, save_dir_relative='\logs/', level=logging.WARNING, time_span=10, backupCount=100):
         """
         配置打印文件
         :param save_dir_relative:
@@ -39,6 +38,8 @@ class MyLog:
         :param time_span: 日志文件按时间分割，分割间隔
         :return:
         """
+        file_name = self.logger_name + '_pid' + str(os.getpid()) + '_' + get_current_datetime_str()
+        
         # 定义一个打印到文件中的
         log_dir = self.root_path + save_dir_relative
         if not os.path.exists(log_dir):
@@ -46,7 +47,7 @@ class MyLog:
         
         fh = logging.handlers.TimedRotatingFileHandler(filename=log_dir + file_name + str(level) + '.log', when='M',
                                                        interval=time_span,
-                                                       backupCount=backupCount, encoding='utf-8')
+                                                       backupCount=backupCount, encoding='utf-8', )
         # fh = logging.FileHandler(log_dir + file_name + get_current_date_str() + '.log', mode='w', encoding='UTF-8')
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(self.format)
