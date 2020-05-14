@@ -8,8 +8,8 @@ import logging
 import logging.handlers
 import os
 
-from Sdk.DatetimeOpt.my_time_opt import get_current_datetime_str
-from my_config.config import root_path
+from Config.GlobalSetting import root_path
+from sdk.MyTimeOPT import get_current_datetime_str
 
 
 class MyLog:
@@ -38,7 +38,7 @@ class MyLog:
         :param time_span: 日志文件按时间分割，分割间隔
         :return:
         """
-        file_name = self.logger_name + '_pid' + str(os.getpid()) + '_' + get_current_datetime_str()
+        file_name = self.logger_name + '_pid' + str(os.getpid()) + '_' + get_current_datetime_str().replace(':', '-')
         
         # 定义一个打印到文件中的
         log_dir = self.root_path + save_dir_relative
@@ -49,7 +49,7 @@ class MyLog:
                                                        interval=time_span,
                                                        backupCount=backupCount, encoding='utf-8', )
         # fh = logging.FileHandler(log_dir + file_name + get_current_date_str() + '.log', mode='w', encoding='UTF-8')
-        fh.setLevel(logging.DEBUG)
+        fh.setLevel(level=level)
         fh.setFormatter(self.format)
         self.logger.addHandler(fh)
     

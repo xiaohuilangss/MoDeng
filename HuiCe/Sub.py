@@ -768,7 +768,7 @@ class RetestReseau:
 
 if __name__ == '__main__':
 
-    r = RetestReseau(stk_code='AG2006.XSGE', retest_span=60*4, start_date='2019-05-01', end_date='2019-08-10', debug=True)
+    r = RetestReseau(stk_code='AG2006.XSGE', retest_span=1, start_date='2019-05-01', end_date='2019-08-10', debug=True)
 
     # 增加动态网格
     r.add_reseau()

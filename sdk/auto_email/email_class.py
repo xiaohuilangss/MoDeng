@@ -22,7 +22,7 @@ class MyEmail:
     def __init__(self):
         self.sender = ''
         self.passwd = ''
-        self.smtp_domain = ''
+        self.smtp_domain = ''  # 'smtp.163.com'
     
     def config_sender_info_by_json(self, json_file_path):
         """
@@ -38,7 +38,7 @@ class MyEmail:
             return False
         
         try:
-            with open(json_file_path, 'w') as f:
+            with open(json_file_path, 'r') as f:
                 data_json = json.load(f)
                 self.sender = data_json['sender']
                 self.passwd = data_json['passwd']
@@ -48,7 +48,7 @@ class MyEmail:
         except Exception as e_:
             logger.error('从路径【%s】读取发件人账密时出现异常错误！:\n %s' % (json_file_path, str(e_)))
             return False
-        
+    
     @staticmethod
     def get_attachment(attachment_file_path):
         
@@ -64,31 +64,31 @@ class MyEmail:
         # 如果根据文件的名字/后缀识别不出是什么文件类型,使用默认类型
         if content_type is None or encoding is not None:
             content_type = 'application/octet-stream'
-
+        
         # 根据contentType 判断主类型与子类型
         main_type, sub_type = content_type.split('/', 1)
         file = open(attachment_file_path, 'rb')
-
+        
         # 根据主类型不同，调用不同的文件读取方法
         if main_type == 'text':
-            attachment = MIMEBase(main_type,sub_type)
+            attachment = MIMEBase(main_type, sub_type)
             attachment.set_payload(file.read())
             encode_base64(attachment)
-            
+        
         elif main_type == 'message':
             attachment = email.message_from_file(file)
-    
+        
         elif main_type == 'image':
             attachment = MIMEImage(file.read())
-    
+        
         # elif mainType == 'audio':  # 音频
         # attachment = MIMEAudio(file.read(), _subType=subType)
-    
+        
         else:
             attachment = MIMEBase(main_type, sub_type)
             attachment.set_payload(file.read())
             encode_base64(attachment)
-    
+        
         file.close()
         """
             Content-disposition 是 MIME 协议的扩展,
@@ -131,13 +131,20 @@ class MyEmail:
         msg['To'] = ";".join(recipient)
         msg['Subject'] = subject
         msg.attach(MIMEText(text))
-    
+        
         # 添加附件
+        if len(attachment_file_paths) == 1:
+            if (
+                    isinstance(attachment_file_paths[0], type(())) |
+                    isinstance(attachment_file_paths[0], type([]))
+            ):
+                attachment_file_paths = attachment_file_paths[0]
+        
         for attachmentFilePath in attachment_file_paths:
             msg.attach(self.get_attachment(attachmentFilePath))
         
         try:
-            mail_server = smtplib.SMTP('smtp.163.com')
+            mail_server = smtplib.SMTP(self.smtp_domain)
             mail_server.ehlo()
             mail_server.starttls()
             mail_server.ehlo()
@@ -145,6 +152,6 @@ class MyEmail:
             mail_server.sendmail(self.sender, recipient, msg.as_string())
             mail_server.close()
             logger.info('成功向【%s】发送邮件！' % recipient)
-            
+        
         except Exception as e_:
             logger.error('发件失败，原因：\n %s' % str(e_))
