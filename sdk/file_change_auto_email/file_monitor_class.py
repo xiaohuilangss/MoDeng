@@ -188,10 +188,10 @@ if __name__ == '__main__':
     
     fm = FileMonitor(
         monitor_name='实验监控器',
-        file_dir='C:/Users\Administrator\Desktop\99_1服务器/2020-05-14/',
-        file_word='408窗帘',
+        file_dir='C:/Users\Administrator\Desktop\文件监控测试/',
+        file_word='日志',
         sender_info_json_file=email_json,
-        recipient=['1210055099@qq.com'],
+        recipient=['juanlianren@foxmail.com'],
         heart_beat_time_span=30)
     
     fm.monitor(time_span=10)
